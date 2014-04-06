@@ -1,0 +1,133 @@
+package vektah.rust;
+
+import com.intellij.lexer.FlexLexer;
+import com.intellij.psi.tree.IElementType;
+import com.intellij.util.text.CharArrayUtil;
+import com.intellij.psi.TokenType;
+import vektah.rust.psi.RustTokens;
+
+%%
+
+%class RustLexer
+%implements FlexLexer
+%unicode
+%function advance
+%type IElementType
+%{
+	private int start_comment;
+	private int start_raw_string;
+	private int raw_string_hashes;
+%}
+
+WHITE_SPACE = [\ \t\n\r]
+XID_START = [a-zA-Z_]
+XID_CONTINUE = [a-zA-Z0-9_]
+KEYWORD = "as" | "break" | "crate" | "do" | "else" | "enum" | "extern" | "false" | "fn" | "for" | "if" | "impl" | "in" | "let" | "loop" | "match" | "mod" | "mut" | "priv" | "pub" | "ref" | "return" | "self" | "static" | "struct" | "super" | "true" | "trait" | "type" | "unsafe" | "use" | "while"
+HEX_DIGIT = [a-fA-F0-9]
+DOUBLE_QUOTE = \x22
+SINGLE_QUOTE = \x27
+COMMON_ESCAPE = ( [nt0\n\\] | "x" {HEX_DIGIT} {2} | "u" {HEX_DIGIT} {4} | "U" {HEX_DIGIT} {8} )
+CHAR = {SINGLE_QUOTE} ( [^'\\] | "\\" ( {SINGLE_QUOTE} | {COMMON_ESCAPE}) ) {SINGLE_QUOTE}
+STRING = {DOUBLE_QUOTE} ( [^\"\\] | "\\" ( {DOUBLE_QUOTE} | {COMMON_ESCAPE}) )* {DOUBLE_QUOTE}
+NUM_SUFFIX = {INT_SUFFIX} | {FLOAT_SUFFIX}
+INT_SUFFIX = [ui] ( "8" | "16" | "32" | "64" )?
+EXPONENT = [eE] [-+] ([0-9] | "_" )+
+FLOAT_SUFFIX = ( {EXPONENT} | "." [0-9_]+ {EXPONENT}? )? ("f" ("32" | "64")?)?
+DEC_LIT = [0-9] [0-9_]* {NUM_SUFFIX}?
+BIN_LIT = "0"? "b" [01_]+ {INT_SUFFIX}?
+OCT_LIT = "0"? "o" [0-7_]+ {INT_SUFFIX}?
+HEX_LIT = "0"? "x" [a-fA-F0-9_]+ {INT_SUFFIX}?
+
+%state IN_BLOCK_COMMENT
+%state IN_RAW_STRING
+
+%%
+
+<YYINITIAL> {
+	{WHITE_SPACE}+                                  { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+	{KEYWORD}                                       { yybegin(YYINITIAL); return RustTokens.KEYWORD; }
+	"/*"                                            { yybegin(IN_BLOCK_COMMENT); start_comment = zzStartRead; }
+	"//" [^\n\r]*                                   { yybegin(YYINITIAL); return RustTokens.LINE_COMMENT; }
+	{CHAR}                                          { yybegin(YYINITIAL); return RustTokens.CHAR_LIT; }
+	{STRING}                                        { yybegin(YYINITIAL); return RustTokens.STRING_LIT; }
+	"r" "#"* {DOUBLE_QUOTE}                         { yybegin(IN_RAW_STRING); start_raw_string = zzStartRead; raw_string_hashes = yytext().length() - 1; }
+
+	{BIN_LIT}                                       { yybegin(YYINITIAL); return RustTokens.BIN_LIT; }
+	{OCT_LIT}                                       { yybegin(YYINITIAL); return RustTokens.OCT_LIT; }
+	{HEX_LIT}                                       { yybegin(YYINITIAL); return RustTokens.HEX_LIT; }
+	{DEC_LIT}                                       { yybegin(YYINITIAL); return RustTokens.DEC_LIT; }
+	{XID_START}{XID_CONTINUE}*                      { yybegin(YYINITIAL); return RustTokens.IDENTIFIER; }
+
+	"&&"                                            { yybegin(YYINITIAL); return RustTokens.LOGICAL_AND; }
+	"||"                                            { yybegin(YYINITIAL); return RustTokens.LOGICAL_OR; }
+	"||"                                            { yybegin(YYINITIAL); return RustTokens.LOGICAL_OR; }
+	"=>"                                            { yybegin(YYINITIAL); return RustTokens.FAT_ARROW; }
+	"->"                                            { yybegin(YYINITIAL); return RustTokens.THIN_ARROW; }
+	"."                                             { yybegin(YYINITIAL); return RustTokens.DOT; }
+
+	"<<"                                            { yybegin(YYINITIAL); return RustTokens.LEFT_SHIFT; }
+	">>"                                            { yybegin(YYINITIAL); return RustTokens.RIGHT_SHIFT; }
+	"&"                                             { yybegin(YYINITIAL); return RustTokens.BITWISE_AND; }
+	"|"                                             { yybegin(YYINITIAL); return RustTokens.BITWISE_OR; }
+	"^"                                             { yybegin(YYINITIAL); return RustTokens.BITWISE_XOR; }
+
+	"::"                                            { yybegin(YYINITIAL); return RustTokens.DOUBLE_COLON; }
+	":"                                             { yybegin(YYINITIAL); return RustTokens.COLON; }
+
+	"+"                                             { yybegin(YYINITIAL); return RustTokens.PLUS; }
+	"-"                                             { yybegin(YYINITIAL); return RustTokens.MINUS; }
+	"*"                                             { yybegin(YYINITIAL); return RustTokens.MULTIPLY; }
+	"/"                                             { yybegin(YYINITIAL); return RustTokens.DIVIDE; }
+	"%"                                             { yybegin(YYINITIAL); return RustTokens.REMAINDER; }
+
+	"=="                                            { yybegin(YYINITIAL); return RustTokens.EQUAL; }
+	"="                                             { yybegin(YYINITIAL); return RustTokens.ASSIGN; }
+	"!="                                            { yybegin(YYINITIAL); return RustTokens.NOT_EQUAL; }
+	"<="                                            { yybegin(YYINITIAL); return RustTokens.LESS_THAN_OR_EQUAL; }
+	"<"                                             { yybegin(YYINITIAL); return RustTokens.LESS_THAN; }
+	">="                                            { yybegin(YYINITIAL); return RustTokens.GREATER_THAN_OR_EQUAL; }
+	">"                                             { yybegin(YYINITIAL); return RustTokens.GREATER_THAN; }
+
+	"!"                                             { yybegin(YYINITIAL); return RustTokens.NOT; }
+	"~"                                             { yybegin(YYINITIAL); return RustTokens.BOX; }
+	"@"                                             { yybegin(YYINITIAL); return RustTokens.AT; }
+	"'"                                             { yybegin(YYINITIAL); return RustTokens.SINGLE_QUOTE; }
+	"$"                                             { yybegin(YYINITIAL); return RustTokens.DOLLAR; }
+
+	"#"                                             { yybegin(YYINITIAL); return RustTokens.HASH; }
+	"["                                             { yybegin(YYINITIAL); return RustTokens.OPEN_SQUARE_BRACKET; }
+	"]"                                             { yybegin(YYINITIAL); return RustTokens.CLOSE_SQUARE_BRACKET; }
+	"("                                             { yybegin(YYINITIAL); return RustTokens.OPEN_PAREN; }
+	")"                                             { yybegin(YYINITIAL); return RustTokens.CLOSE_PAREN; }
+	"{"                                             { yybegin(YYINITIAL); return RustTokens.OPEN_BRACE; }
+	"}"                                             { yybegin(YYINITIAL); return RustTokens.CLOSE_BRACE; }
+	","                                             { yybegin(YYINITIAL); return RustTokens.COMMA; }
+	";"                                             { yybegin(YYINITIAL); return RustTokens.SEMICOLON; }
+
+}
+
+<IN_BLOCK_COMMENT> {
+	"*/"        { yybegin(YYINITIAL); zzStartRead = start_comment; return RustTokens.BLOCK_COMMENT; }
+	[^*]+       { yybegin(IN_BLOCK_COMMENT); }
+	"*"         { yybegin(IN_BLOCK_COMMENT); }
+}
+
+<IN_RAW_STRING> {
+	{DOUBLE_QUOTE} "#"*   {
+		if (yytext().length() >= raw_string_hashes) {
+			// Greedily ate too many #'s ... lets rewind a sec.
+			if (yytext().length() > raw_string_hashes) {
+				yypushback(yytext().length() - raw_string_hashes);
+			}
+			yybegin(YYINITIAL);
+			zzStartRead = start_raw_string;
+			return RustTokens.RAW_STRING_LIT;
+		} else {
+			yybegin(IN_RAW_STRING);
+		}
+	}
+	[^\"]   { yybegin(IN_RAW_STRING); }
+	.       { yybegin(IN_RAW_STRING); }
+}
+
+.  { yybegin(YYINITIAL); return TokenType.BAD_CHARACTER; }

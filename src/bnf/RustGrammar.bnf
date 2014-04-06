@@ -1,0 +1,26 @@
+{
+	parserClass="vektah.rust.RustParser"
+
+	psiClassPrefix="Rust"
+	psiImplClassSuffix="Impl"
+	psiPackage="vektah.rust.psi"
+	psiImplPackage="vektah.rust.psi.impl"
+
+	elementTypeHolderClass="vektah.rust.psi.RustTokens"
+	elementTypeClass="vektah.rust.psi.RustTokenType"
+	tokenTypeClass="vektah.rust.psi.RustTokenType"
+}
+
+simpleFile ::= token*
+
+private token ::= (simple_token|literal|comment|symbol|operators|PATH|IDENTIFIER)
+private simple_token ::= (KEYWORD|UNOP|BINOP)
+private comment ::= (BLOCK_COMMENT|LINE_COMMENT)
+private literal ::= (STRING_LIT|RAW_STRING_LIT|CHAR_LIT|NUM_LIT|DEC_LIT|BIN_LIT|OCT_LIT|HEX_LIT)
+private symbol ::= (HASH|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN|OPEN_BRACE|CLOSE_BRACE|COMMA|COLON|SEMICOLON|DOUBLE_COLON|THIN_ARROW|FAT_ARROW|DOT|AT|SINGLE_QUOTE|DOLLAR)
+private operators ::= (arithmetic_operators|bitwise_operators|boolean_operators|comparison_operators|unary_operators|AS|ASSIGN)
+private arithmetic_operators ::= (PLUS|MINUS|MULTIPLY|DIVIDE|REMAINDER|)
+private bitwise_operators ::= (BITWISE_AND|BITWISE_OR|BITWISE_XOR|LEFT_SHIFT|RIGHT_SHIFT)
+private boolean_operators ::= (LOGICAL_OR|LOGICAL_AND)
+private unary_operators ::= (NOT|BOX)
+private comparison_operators ::= (EQUAL|GREATER_THAN|LESS_THAN|NOT_EQUAL|GREATER_THAN_OR_EQUAL|LESS_THAN_OR_EQUAL)
