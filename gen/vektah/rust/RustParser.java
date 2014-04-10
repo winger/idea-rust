@@ -20,7 +20,18 @@ public class RustParser implements PsiParser {
     boolean result_;
     builder_ = adapt_builder_(root_, builder_, this, null);
     Marker marker_ = enter_section_(builder_, 0, _COLLAPSE_, null);
-    result_ = parse_root_(root_, builder_, 0);
+    if (root_ == PATH) {
+      result_ = path(builder_, 0);
+    }
+    else if (root_ == TYPE) {
+      result_ = type(builder_, 0);
+    }
+    else if (root_ == USE) {
+      result_ = use(builder_, 0);
+    }
+    else {
+      result_ = parse_root_(root_, builder_, 0);
+    }
     exit_section_(builder_, 0, marker_, root_, result_, true, TRUE_CONDITION);
     return builder_.getTreeBuilt();
   }
@@ -103,6 +114,47 @@ public class RustParser implements PsiParser {
   }
 
   /* ********************************************************** */
+  // KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_ENUM|KW_EXTERN|KW_FALSE|KW_FN|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LET|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_STRUCT|KW_SUPER|KW_TRUE|KW_TRAIT|KW_TYPE|KW_UNSAFE|KW_WHILE
+  static boolean keyword(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "keyword")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, KW_AS);
+    if (!result_) result_ = consumeToken(builder_, KW_BREAK);
+    if (!result_) result_ = consumeToken(builder_, KW_CRATE);
+    if (!result_) result_ = consumeToken(builder_, KW_ELSE);
+    if (!result_) result_ = consumeToken(builder_, KW_ENUM);
+    if (!result_) result_ = consumeToken(builder_, KW_EXTERN);
+    if (!result_) result_ = consumeToken(builder_, KW_FALSE);
+    if (!result_) result_ = consumeToken(builder_, KW_FN);
+    if (!result_) result_ = consumeToken(builder_, KW_FOR);
+    if (!result_) result_ = consumeToken(builder_, KW_IF);
+    if (!result_) result_ = consumeToken(builder_, KW_IMPL);
+    if (!result_) result_ = consumeToken(builder_, KW_IN);
+    if (!result_) result_ = consumeToken(builder_, KW_LET);
+    if (!result_) result_ = consumeToken(builder_, KW_LOOP);
+    if (!result_) result_ = consumeToken(builder_, KW_MATCH);
+    if (!result_) result_ = consumeToken(builder_, KW_MOD);
+    if (!result_) result_ = consumeToken(builder_, KW_MUT);
+    if (!result_) result_ = consumeToken(builder_, KW_PRIV);
+    if (!result_) result_ = consumeToken(builder_, KW_PROC);
+    if (!result_) result_ = consumeToken(builder_, KW_PUB);
+    if (!result_) result_ = consumeToken(builder_, KW_REF);
+    if (!result_) result_ = consumeToken(builder_, KW_RETURN);
+    if (!result_) result_ = consumeToken(builder_, KW_SELF);
+    if (!result_) result_ = consumeToken(builder_, KW_STATIC);
+    if (!result_) result_ = consumeToken(builder_, KW_STRUCT);
+    if (!result_) result_ = consumeToken(builder_, KW_SUPER);
+    if (!result_) result_ = consumeToken(builder_, KW_TRUE);
+    if (!result_) result_ = consumeToken(builder_, KW_TRAIT);
+    if (!result_) result_ = consumeToken(builder_, KW_TYPE);
+    if (!result_) result_ = consumeToken(builder_, KW_UNSAFE);
+    if (!result_) result_ = consumeToken(builder_, KW_WHILE);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
   // STRING_LIT|RAW_STRING_LIT|CHAR_LIT|NUM_LIT|DEC_LIT|BIN_LIT|OCT_LIT|HEX_LIT
   static boolean literal(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "literal")) return false;
@@ -117,6 +169,17 @@ public class RustParser implements PsiParser {
     if (!result_) result_ = consumeToken(builder_, OCT_LIT);
     if (!result_) result_ = consumeToken(builder_, HEX_LIT);
     exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // !(SEMICOLON)
+  static boolean not_semicolon(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "not_semicolon")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_, null);
+    result_ = !consumeToken(builder_, SEMICOLON);
+    exit_section_(builder_, level_, marker_, null, result_, false, null);
     return result_;
   }
 
@@ -138,26 +201,212 @@ public class RustParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // token*
+  // IDENTIFIER (
+  // 	'::' (
+  // 		'<' type (',' type)* '>' |
+  // 		path
+  // 	)
+  // )?
+  public static boolean path(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path")) return false;
+    if (!nextTokenIs(builder_, IDENTIFIER)) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, IDENTIFIER);
+    result_ = result_ && path_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, PATH, result_);
+    return result_;
+  }
+
+  // (
+  // 	'::' (
+  // 		'<' type (',' type)* '>' |
+  // 		path
+  // 	)
+  // )?
+  private static boolean path_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_1")) return false;
+    path_1_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // '::' (
+  // 		'<' type (',' type)* '>' |
+  // 		path
+  // 	)
+  private static boolean path_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, "::");
+    result_ = result_ && path_1_0_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '<' type (',' type)* '>' |
+  // 		path
+  private static boolean path_1_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_1_0_1")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = path_1_0_1_0(builder_, level_ + 1);
+    if (!result_) result_ = path(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '<' type (',' type)* '>'
+  private static boolean path_1_0_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_1_0_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, "<");
+    result_ = result_ && type(builder_, level_ + 1);
+    result_ = result_ && path_1_0_1_0_2(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, ">");
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // (',' type)*
+  private static boolean path_1_0_1_0_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_1_0_1_0_2")) return false;
+    int pos_ = current_position_(builder_);
+    while (true) {
+      if (!path_1_0_1_0_2_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "path_1_0_1_0_2", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    return true;
+  }
+
+  // ',' type
+  private static boolean path_1_0_1_0_2_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_1_0_1_0_2_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, ",");
+    result_ = result_ && type(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // IDENTIFIER ( '::' path_glob)? |
+  // 	'*' |
+  // 	'{' IDENTIFIER ( ',' IDENTIFIER )* '}'
+  static boolean path_glob(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_glob")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = path_glob_0(builder_, level_ + 1);
+    if (!result_) result_ = consumeToken(builder_, "*");
+    if (!result_) result_ = path_glob_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // IDENTIFIER ( '::' path_glob)?
+  private static boolean path_glob_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_glob_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, IDENTIFIER);
+    result_ = result_ && path_glob_0_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // ( '::' path_glob)?
+  private static boolean path_glob_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_glob_0_1")) return false;
+    path_glob_0_1_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // '::' path_glob
+  private static boolean path_glob_0_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_glob_0_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, "::");
+    result_ = result_ && path_glob(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '{' IDENTIFIER ( ',' IDENTIFIER )* '}'
+  private static boolean path_glob_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_glob_2")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, "{");
+    result_ = result_ && consumeToken(builder_, IDENTIFIER);
+    result_ = result_ && path_glob_2_2(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, "}");
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // ( ',' IDENTIFIER )*
+  private static boolean path_glob_2_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_glob_2_2")) return false;
+    int pos_ = current_position_(builder_);
+    while (true) {
+      if (!path_glob_2_2_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "path_glob_2_2", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    return true;
+  }
+
+  // ',' IDENTIFIER
+  private static boolean path_glob_2_2_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "path_glob_2_2_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, ",");
+    result_ = result_ && consumeToken(builder_, IDENTIFIER);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // ( use
+  // 	| token
+  // )*
   static boolean simpleFile(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "simpleFile")) return false;
     int pos_ = current_position_(builder_);
     while (true) {
-      if (!token(builder_, level_ + 1)) break;
+      if (!simpleFile_0(builder_, level_ + 1)) break;
       if (!empty_element_parsed_guard_(builder_, "simpleFile", pos_)) break;
       pos_ = current_position_(builder_);
     }
     return true;
   }
 
-  /* ********************************************************** */
-  // KEYWORD|UNOP|BINOP
-  static boolean simple_token(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "simple_token")) return false;
+  // use
+  // 	| token
+  private static boolean simpleFile_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "simpleFile_0")) return false;
     boolean result_ = false;
     Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, KEYWORD);
-    if (!result_) result_ = consumeToken(builder_, UNOP);
+    result_ = use(builder_, level_ + 1);
+    if (!result_) result_ = token(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // UNOP|BINOP
+  static boolean simple_token(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "simple_token")) return false;
+    if (!nextTokenIs(builder_, "", BINOP, UNOP)) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, UNOP);
     if (!result_) result_ = consumeToken(builder_, BINOP);
     exit_section_(builder_, marker_, null, result_);
     return result_;
@@ -191,7 +440,7 @@ public class RustParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // simple_token|literal|comment|symbol|operators|PATH|IDENTIFIER
+  // simple_token|literal|comment|symbol|operators|keyword|IDENTIFIER
   static boolean token(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "token")) return false;
     boolean result_ = false;
@@ -201,8 +450,102 @@ public class RustParser implements PsiParser {
     if (!result_) result_ = comment(builder_, level_ + 1);
     if (!result_) result_ = symbol(builder_, level_ + 1);
     if (!result_) result_ = operators(builder_, level_ + 1);
-    if (!result_) result_ = consumeToken(builder_, PATH);
+    if (!result_) result_ = keyword(builder_, level_ + 1);
     if (!result_) result_ = consumeToken(builder_, IDENTIFIER);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // IDENTIFIER (
+  // 	'<' type (',' type)* '>' |
+  // 	'::' type
+  // )+
+  public static boolean type(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "type")) return false;
+    if (!nextTokenIs(builder_, IDENTIFIER)) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, IDENTIFIER);
+    result_ = result_ && type_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, TYPE, result_);
+    return result_;
+  }
+
+  // (
+  // 	'<' type (',' type)* '>' |
+  // 	'::' type
+  // )+
+  private static boolean type_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "type_1")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = type_1_0(builder_, level_ + 1);
+    int pos_ = current_position_(builder_);
+    while (result_) {
+      if (!type_1_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "type_1", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '<' type (',' type)* '>' |
+  // 	'::' type
+  private static boolean type_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "type_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = type_1_0_0(builder_, level_ + 1);
+    if (!result_) result_ = type_1_0_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '<' type (',' type)* '>'
+  private static boolean type_1_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "type_1_0_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, "<");
+    result_ = result_ && type(builder_, level_ + 1);
+    result_ = result_ && type_1_0_0_2(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, ">");
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // (',' type)*
+  private static boolean type_1_0_0_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "type_1_0_0_2")) return false;
+    int pos_ = current_position_(builder_);
+    while (true) {
+      if (!type_1_0_0_2_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "type_1_0_0_2", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    return true;
+  }
+
+  // ',' type
+  private static boolean type_1_0_0_2_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "type_1_0_0_2_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, ",");
+    result_ = result_ && type(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '::' type
+  private static boolean type_1_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "type_1_0_1")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, "::");
+    result_ = result_ && type(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -220,4 +563,92 @@ public class RustParser implements PsiParser {
     return result_;
   }
 
+  /* ********************************************************** */
+  // ['pub'] 'use' use_part ';'
+  public static boolean use(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "use")) return false;
+    if (!nextTokenIs(builder_, "<use>", KW_PUB, KW_USE)) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, "<use>");
+    result_ = use_0(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, KW_USE);
+    result_ = result_ && use_part(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, ";");
+    exit_section_(builder_, level_, marker_, USE, result_, false, null);
+    return result_;
+  }
+
+  // ['pub']
+  private static boolean use_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "use_0")) return false;
+    consumeToken(builder_, KW_PUB);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // IDENTIFIER [
+  // 	'=' path |
+  // 	'::' path_glob
+  // ]
+  static boolean use_part(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "use_part")) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, null);
+    result_ = consumeToken(builder_, IDENTIFIER);
+    pinned_ = result_; // pin = 1
+    result_ = result_ && use_part_1(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, null, result_, pinned_, not_semicolon_parser_);
+    return result_ || pinned_;
+  }
+
+  // [
+  // 	'=' path |
+  // 	'::' path_glob
+  // ]
+  private static boolean use_part_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "use_part_1")) return false;
+    use_part_1_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // '=' path |
+  // 	'::' path_glob
+  private static boolean use_part_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "use_part_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = use_part_1_0_0(builder_, level_ + 1);
+    if (!result_) result_ = use_part_1_0_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '=' path
+  private static boolean use_part_1_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "use_part_1_0_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, "=");
+    result_ = result_ && path(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '::' path_glob
+  private static boolean use_part_1_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "use_part_1_0_1")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, "::");
+    result_ = result_ && path_glob(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  final static Parser not_semicolon_parser_ = new Parser() {
+    public boolean parse(PsiBuilder builder_, int level_) {
+      return not_semicolon(builder_, level_ + 1);
+    }
+  };
 }

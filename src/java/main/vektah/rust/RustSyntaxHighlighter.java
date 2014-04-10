@@ -11,6 +11,8 @@ import vektah.rust.psi.RustTokens;
 
 import java.io.Reader;
 
+import static vektah.rust.psi.RustTokens.*;
+
 public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 	public static final TextAttributesKey KEYWORD = TextAttributesKey.createTextAttributesKey("KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
 	public static final TextAttributesKey IDENTIFIER = TextAttributesKey.createTextAttributesKey("IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER);
@@ -50,43 +52,76 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 	@NotNull
 	@Override
 	public TextAttributesKey[] getTokenHighlights(IElementType type) {
-		if (type.equals(RustTokens.KEYWORD)) {
+		if (type == KW_AS |
+			type == KW_BREAK |
+			type == KW_CRATE |
+			type == KW_ELSE |
+			type == KW_ENUM |
+			type == KW_EXTERN |
+			type == KW_FALSE |
+			type == KW_FN |
+			type == KW_FOR |
+			type == KW_IF |
+			type == KW_IMPL |
+			type == KW_IN |
+			type == KW_LET |
+			type == KW_LOOP |
+			type == KW_MATCH |
+			type == KW_MOD |
+			type == KW_MUT |
+			type == KW_PRIV |
+			type == KW_PROC |
+			type == KW_PUB |
+			type == KW_REF |
+			type == KW_RETURN |
+			type == KW_SELF |
+			type == KW_STATIC |
+			type == KW_STRUCT |
+			type == KW_SUPER |
+			type == KW_TRAIT |
+			type == KW_TRUE |
+			type == KW_TYPE |
+			type == KW_UNSAFE |
+			type == KW_USE |
+			type == KW_WHILE)
+		{
 			return KEYWORD_KEYS;
 		}
-		if (type.equals(RustTokens.IDENTIFIER)) {
+
+		if (type == RustTokens.IDENTIFIER) {
 			return IDENTIFIER_KEYS;
 		}
-		if (type.equals(RustTokens.BLOCK_COMMENT)) {
+		if (type == RustTokens.BLOCK_COMMENT) {
 			return BLOCK_COMMENT_KEYS;
 		}
-		if (type.equals(RustTokens.LINE_COMMENT)) {
+		if (type == RustTokens.LINE_COMMENT) {
 			return LINE_COMMENT_KEYS;
 		}
-		if (type.equals(RustTokens.CHAR_LIT) || type.equals(RustTokens.STRING_LIT) || type.equals(RustTokens.RAW_STRING_LIT)) {
+		if (type == CHAR_LIT || type == STRING_LIT || type == RAW_STRING_LIT) {
 			return STRING_KEYS;
 		}
-		if (type.equals(RustTokens.DEC_LIT) || type.equals(RustTokens.OCT_LIT) || type.equals(RustTokens.HEX_LIT) || type.equals(RustTokens.BIN_LIT)) {
+		if (type == DEC_LIT || type == OCT_LIT || type == HEX_LIT || type == BIN_LIT) {
 			return NUMBER_KEYS;
 		}
-		if (type.equals(RustTokens.HASH) || type.equals(RustTokens.DOUBLE_COLON)) {
+		if (type == HASH || type == DOUBLE_COLON) {
 			return SYMBOL_KEYS;
 		}
-		if (type.equals(RustTokens.OPEN_PAREN) || type.equals(RustTokens.CLOSE_PAREN)) {
+		if (type == OPEN_PAREN || type == CLOSE_PAREN) {
 			return PARENTHESES_KEYS;
 		}
-		if (type.equals(RustTokens.OPEN_BRACE) || type.equals(RustTokens.CLOSE_BRACE)) {
+		if (type == OPEN_BRACE || type == CLOSE_BRACE) {
 			return BRACE_KEYS;
 		}
-		if (type.equals(RustTokens.OPEN_SQUARE_BRACKET) || type.equals(RustTokens.CLOSE_SQUARE_BRACKET)) {
+		if (type == OPEN_SQUARE_BRACKET || type == CLOSE_SQUARE_BRACKET) {
 			return BRACKET_KEYS;
 		}
-		if (type.equals(RustTokens.GREATER_THAN) || type.equals(RustTokens.LESS_THAN)) {
+		if (type == GREATER_THAN || type == LESS_THAN) {
 			return OPERATOR_KEYS;
 		}
-		if (type.equals(RustTokens.COMMA)) {
+		if (type == RustTokens.COMMA) {
 			return COMMA_KEYS;
 		}
-		if (type.equals(RustTokens.SEMICOLON)) {
+		if (type == RustTokens.SEMICOLON) {
 			return SEMICOLON_KEYS;
 		}
 

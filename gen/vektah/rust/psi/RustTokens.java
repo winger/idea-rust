@@ -8,6 +8,9 @@ import vektah.rust.psi.impl.*;
 
 public interface RustTokens {
 
+  IElementType PATH = new RustTokenType("PATH");
+  IElementType TYPE = new RustTokenType("TYPE");
+  IElementType USE = new RustTokenType("USE");
 
   IElementType ARITHMETIC_OPERATORS_5_0 = new RustTokenType("arithmetic_operators_5_0");
   IElementType AS = new RustTokenType("AS");
@@ -38,7 +41,38 @@ public interface RustTokens {
   IElementType HASH = new RustTokenType("HASH");
   IElementType HEX_LIT = new RustTokenType("HEX_LIT");
   IElementType IDENTIFIER = new RustTokenType("IDENTIFIER");
-  IElementType KEYWORD = new RustTokenType("KEYWORD");
+  IElementType KW_AS = new RustTokenType("as");
+  IElementType KW_BREAK = new RustTokenType("break");
+  IElementType KW_CRATE = new RustTokenType("crate");
+  IElementType KW_ELSE = new RustTokenType("else");
+  IElementType KW_ENUM = new RustTokenType("enum");
+  IElementType KW_EXTERN = new RustTokenType("extern");
+  IElementType KW_FALSE = new RustTokenType("false");
+  IElementType KW_FN = new RustTokenType("fn");
+  IElementType KW_FOR = new RustTokenType("for");
+  IElementType KW_IF = new RustTokenType("if");
+  IElementType KW_IMPL = new RustTokenType("impl");
+  IElementType KW_IN = new RustTokenType("in");
+  IElementType KW_LET = new RustTokenType("let");
+  IElementType KW_LOOP = new RustTokenType("loop");
+  IElementType KW_MATCH = new RustTokenType("match");
+  IElementType KW_MOD = new RustTokenType("mod");
+  IElementType KW_MUT = new RustTokenType("mut");
+  IElementType KW_PRIV = new RustTokenType("priv");
+  IElementType KW_PROC = new RustTokenType("proc");
+  IElementType KW_PUB = new RustTokenType("pub");
+  IElementType KW_REF = new RustTokenType("ref");
+  IElementType KW_RETURN = new RustTokenType("return");
+  IElementType KW_SELF = new RustTokenType("self");
+  IElementType KW_STATIC = new RustTokenType("static");
+  IElementType KW_STRUCT = new RustTokenType("struct");
+  IElementType KW_SUPER = new RustTokenType("super");
+  IElementType KW_TRAIT = new RustTokenType("trait");
+  IElementType KW_TRUE = new RustTokenType("true");
+  IElementType KW_TYPE = new RustTokenType("type");
+  IElementType KW_UNSAFE = new RustTokenType("unsafe");
+  IElementType KW_USE = new RustTokenType("use");
+  IElementType KW_WHILE = new RustTokenType("while");
   IElementType LEFT_SHIFT = new RustTokenType("LEFT_SHIFT");
   IElementType LESS_THAN = new RustTokenType("LESS_THAN");
   IElementType LESS_THAN_OR_EQUAL = new RustTokenType("LESS_THAN_OR_EQUAL");
@@ -54,7 +88,6 @@ public interface RustTokens {
   IElementType OPEN_BRACE = new RustTokenType("OPEN_BRACE");
   IElementType OPEN_PAREN = new RustTokenType("OPEN_PAREN");
   IElementType OPEN_SQUARE_BRACKET = new RustTokenType("OPEN_SQUARE_BRACKET");
-  IElementType PATH = new RustTokenType("PATH");
   IElementType PLUS = new RustTokenType("PLUS");
   IElementType RAW_STRING_LIT = new RustTokenType("RAW_STRING_LIT");
   IElementType REMAINDER = new RustTokenType("REMAINDER");
@@ -68,6 +101,15 @@ public interface RustTokens {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
+       if (type == PATH) {
+        return new RustPathImpl(node);
+      }
+      else if (type == TYPE) {
+        return new RustTypeImpl(node);
+      }
+      else if (type == USE) {
+        return new RustUseImpl(node);
+      }
       throw new AssertionError("Unknown element type: " + type);
     }
   }

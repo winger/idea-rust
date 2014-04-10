@@ -7,6 +7,18 @@ import com.intellij.psi.PsiElement;
 
 public class RustVisitor extends PsiElementVisitor {
 
+  public void visitPath(@NotNull RustPath o) {
+    visitPsiElement(o);
+  }
+
+  public void visitType(@NotNull RustType o) {
+    visitPsiElement(o);
+  }
+
+  public void visitUse(@NotNull RustUse o) {
+    visitPsiElement(o);
+  }
+
   public void visitPsiElement(@NotNull PsiElement o) {
     visitElement(o);
   }

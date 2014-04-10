@@ -22,7 +22,6 @@ import vektah.rust.psi.RustTokens;
 WHITE_SPACE = [\ \t\n\r]
 XID_START = [a-zA-Z_]
 XID_CONTINUE = [a-zA-Z0-9_]
-KEYWORD = "as" | "break" | "crate" | "do" | "else" | "enum" | "extern" | "false" | "fn" | "for" | "if" | "impl" | "in" | "let" | "loop" | "match" | "mod" | "mut" | "priv" | "pub" | "ref" | "return" | "self" | "static" | "struct" | "super" | "true" | "trait" | "type" | "unsafe" | "use" | "while"
 HEX_DIGIT = [a-fA-F0-9]
 DOUBLE_QUOTE = \x22
 SINGLE_QUOTE = \x27
@@ -45,7 +44,41 @@ HEX_LIT = "0"? "x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 
 <YYINITIAL> {
 	{WHITE_SPACE}+                                  { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
-	{KEYWORD}                                       { yybegin(YYINITIAL); return RustTokens.KEYWORD; }
+
+	// Keywords
+	"as"                                            { yybegin(YYINITIAL); return RustTokens.KW_AS; }
+	"break"                                         { yybegin(YYINITIAL); return RustTokens.KW_BREAK; }
+	"crate"                                         { yybegin(YYINITIAL); return RustTokens.KW_CRATE; }
+	"else"                                          { yybegin(YYINITIAL); return RustTokens.KW_ELSE; }
+	"enum"                                          { yybegin(YYINITIAL); return RustTokens.KW_ENUM; }
+	"extern"                                        { yybegin(YYINITIAL); return RustTokens.KW_EXTERN; }
+	"false"                                         { yybegin(YYINITIAL); return RustTokens.KW_FALSE; }
+	"fn"                                            { yybegin(YYINITIAL); return RustTokens.KW_FN; }
+	"for"                                           { yybegin(YYINITIAL); return RustTokens.KW_FOR; }
+	"if"                                            { yybegin(YYINITIAL); return RustTokens.KW_IF; }
+	"impl"                                          { yybegin(YYINITIAL); return RustTokens.KW_IMPL; }
+	"in"                                            { yybegin(YYINITIAL); return RustTokens.KW_IN; }
+	"let"                                           { yybegin(YYINITIAL); return RustTokens.KW_LET; }
+	"loop"                                          { yybegin(YYINITIAL); return RustTokens.KW_LOOP; }
+	"match"                                         { yybegin(YYINITIAL); return RustTokens.KW_MATCH; }
+	"mod"                                           { yybegin(YYINITIAL); return RustTokens.KW_MOD; }
+	"mut"                                           { yybegin(YYINITIAL); return RustTokens.KW_MUT; }
+	"priv"                                          { yybegin(YYINITIAL); return RustTokens.KW_PRIV; }
+	"proc"                                          { yybegin(YYINITIAL); return RustTokens.KW_PROC; }
+	"pub"                                           { yybegin(YYINITIAL); return RustTokens.KW_PUB; }
+	"ref"                                           { yybegin(YYINITIAL); return RustTokens.KW_REF; }
+	"return"                                        { yybegin(YYINITIAL); return RustTokens.KW_RETURN; }
+	"self"                                          { yybegin(YYINITIAL); return RustTokens.KW_SELF; }
+	"static"                                        { yybegin(YYINITIAL); return RustTokens.KW_STATIC; }
+	"struct"                                        { yybegin(YYINITIAL); return RustTokens.KW_STRUCT; }
+	"super"                                         { yybegin(YYINITIAL); return RustTokens.KW_SUPER; }
+	"true"                                          { yybegin(YYINITIAL); return RustTokens.KW_TRUE; }
+	"trait"                                         { yybegin(YYINITIAL); return RustTokens.KW_TRAIT; }
+	"type"                                          { yybegin(YYINITIAL); return RustTokens.KW_TYPE; }
+	"unsafe"                                        { yybegin(YYINITIAL); return RustTokens.KW_UNSAFE; }
+	"use"                                           { yybegin(YYINITIAL); return RustTokens.KW_USE; }
+	"while"                                         { yybegin(YYINITIAL); return RustTokens.KW_WHILE; }
+
 	"/*"                                            { yybegin(IN_BLOCK_COMMENT); start_comment = zzStartRead; }
 	"//" [^\n\r]*                                   { yybegin(YYINITIAL); return RustTokens.LINE_COMMENT; }
 	{CHAR}                                          { yybegin(YYINITIAL); return RustTokens.CHAR_LIT; }

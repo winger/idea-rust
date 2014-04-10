@@ -1,6 +1,6 @@
 <idea-plugin version="2">
   <id>vektah.rust</id>
-  <name>Rust Language</name>
+  <name>Rust</name>
   <version>0.0.1</version>
   <vendor email="adam@vektah.net" url="http://github.com/Vektah/idea-rust">Vektah</vendor>
 
