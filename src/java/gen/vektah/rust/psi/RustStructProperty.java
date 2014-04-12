@@ -5,6 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustFunctionRecover extends PsiElement {
+public interface RustStructProperty extends PsiElement {
+
+  @NotNull
+  RustStandardArg getStandardArg();
 
 }

@@ -11,14 +11,14 @@ import static vektah.rust.psi.RustTokens.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustTypeTupleImpl extends ASTWrapperPsiElement implements RustTypeTuple {
+public class RustGenericParamsImpl extends ASTWrapperPsiElement implements RustGenericParams {
 
-  public RustTypeTupleImpl(ASTNode node) {
+  public RustGenericParamsImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitTypeTuple(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitGenericParams(this);
     else super.accept(visitor);
   }
 
@@ -26,6 +26,12 @@ public class RustTypeTupleImpl extends ASTWrapperPsiElement implements RustTypeT
   @NotNull
   public List<RustFunctionType> getFunctionTypeList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RustFunctionType.class);
+  }
+
+  @Override
+  @NotNull
+  public List<RustLifetime> getLifetimeList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustLifetime.class);
   }
 
   @Override

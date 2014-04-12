@@ -11,39 +11,45 @@ import static vektah.rust.psi.RustTokens.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustTypeFnImpl extends ASTWrapperPsiElement implements RustTypeFn {
+public class RustTraitImpl extends ASTWrapperPsiElement implements RustTrait {
 
-  public RustTypeFnImpl(ASTNode node) {
+  public RustTraitImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitTypeFn(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitTrait(this);
     else super.accept(visitor);
   }
 
   @Override
   @NotNull
-  public List<RustStandardArg> getStandardArgList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustStandardArg.class);
+  public List<RustFunctionDeclaration> getFunctionDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustFunctionDeclaration.class);
   }
 
   @Override
-  @NotNull
-  public List<RustTypeBasic> getTypeBasicList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustTypeBasic.class);
+  @Nullable
+  public RustFunctionType getFunctionType() {
+    return findChildByClass(RustFunctionType.class);
+  }
+
+  @Override
+  @Nullable
+  public RustGenericParams getGenericParams() {
+    return findChildByClass(RustGenericParams.class);
+  }
+
+  @Override
+  @Nullable
+  public RustTypeBasic getTypeBasic() {
+    return findChildByClass(RustTypeBasic.class);
   }
 
   @Override
   @Nullable
   public RustTypeClosure getTypeClosure() {
     return findChildByClass(RustTypeClosure.class);
-  }
-
-  @Override
-  @Nullable
-  public RustTypeFn getTypeFn() {
-    return findChildByClass(RustTypeFn.class);
   }
 
   @Override

@@ -91,13 +91,10 @@ HEX_LIT = "0"? "x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 	{DEC_LIT}                                       { yybegin(YYINITIAL); return RustTokens.DEC_LIT; }
 	{XID_START}{XID_CONTINUE}*                      { yybegin(YYINITIAL); return RustTokens.IDENTIFIER; }
 
-	"&&"                                            { yybegin(YYINITIAL); return RustTokens.LOGICAL_AND; }
 	"=>"                                            { yybegin(YYINITIAL); return RustTokens.FAT_ARROW; }
 	"->"                                            { yybegin(YYINITIAL); return RustTokens.THIN_ARROW; }
 	"."                                             { yybegin(YYINITIAL); return RustTokens.DOT; }
 
-	"<<"                                            { yybegin(YYINITIAL); return RustTokens.LEFT_SHIFT; }
-	">>"                                            { yybegin(YYINITIAL); return RustTokens.RIGHT_SHIFT; }
 	"&"                                             { yybegin(YYINITIAL); return RustTokens.BITWISE_AND; }
 	"|"                                             { yybegin(YYINITIAL); return RustTokens.BITWISE_OR; }
 	"^"                                             { yybegin(YYINITIAL); return RustTokens.BITWISE_XOR; }

@@ -24,6 +24,12 @@ public class RustGenericImpl extends ASTWrapperPsiElement implements RustGeneric
 
   @Override
   @NotNull
+  public List<RustFunctionType> getFunctionTypeList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustFunctionType.class);
+  }
+
+  @Override
+  @NotNull
   public List<RustLifetime> getLifetimeList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RustLifetime.class);
   }
@@ -38,12 +44,6 @@ public class RustGenericImpl extends ASTWrapperPsiElement implements RustGeneric
   @NotNull
   public List<RustTypeClosure> getTypeClosureList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RustTypeClosure.class);
-  }
-
-  @Override
-  @NotNull
-  public List<RustTypeFn> getTypeFnList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustTypeFn.class);
   }
 
   @Override

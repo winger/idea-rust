@@ -5,19 +5,19 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustTypeFn extends PsiElement {
+public interface RustTupleArg extends PsiElement {
+
+  @Nullable
+  RustFunctionType getFunctionType();
 
   @NotNull
-  List<RustStandardArg> getStandardArgList();
+  List<RustRef> getRefList();
 
-  @NotNull
-  List<RustTypeBasic> getTypeBasicList();
+  @Nullable
+  RustTypeBasic getTypeBasic();
 
   @Nullable
   RustTypeClosure getTypeClosure();
-
-  @Nullable
-  RustTypeFn getTypeFn();
 
   @Nullable
   RustTypeNone getTypeNone();

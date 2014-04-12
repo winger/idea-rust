@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface RustTypeBasic extends PsiElement {
 
   @Nullable
+  RustFunctionType getFunctionType();
+
+  @Nullable
   RustGeneric getGeneric();
 
   @Nullable
@@ -15,5 +18,20 @@ public interface RustTypeBasic extends PsiElement {
 
   @Nullable
   RustRef getRef();
+
+  @Nullable
+  RustTypeBasic getTypeBasic();
+
+  @Nullable
+  RustTypeClosure getTypeClosure();
+
+  @Nullable
+  RustTypeNone getTypeNone();
+
+  @Nullable
+  RustTypeProc getTypeProc();
+
+  @Nullable
+  RustTypeTuple getTypeTuple();
 
 }

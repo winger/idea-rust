@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface RustGeneric extends PsiElement {
 
   @NotNull
+  List<RustFunctionType> getFunctionTypeList();
+
+  @NotNull
   List<RustLifetime> getLifetimeList();
 
   @NotNull
@@ -15,9 +18,6 @@ public interface RustGeneric extends PsiElement {
 
   @NotNull
   List<RustTypeClosure> getTypeClosureList();
-
-  @NotNull
-  List<RustTypeFn> getTypeFnList();
 
   @NotNull
   List<RustTypeNone> getTypeNoneList();

@@ -5,10 +5,13 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustTypeTuple extends PsiElement {
+public interface RustGenericParams extends PsiElement {
 
   @NotNull
   List<RustFunctionType> getFunctionTypeList();
+
+  @NotNull
+  List<RustLifetime> getLifetimeList();
 
   @NotNull
   List<RustTypeBasic> getTypeBasicList();

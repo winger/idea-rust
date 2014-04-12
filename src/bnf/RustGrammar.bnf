@@ -46,13 +46,10 @@
 		KW_USE = "use"
 		KW_WHILE = "while"
 
-		LOGICAL_AND = "&&"
 		FAT_ARROW = "=>"
 		THIN_ARROW = "->"
 		DOT = "."
 
-		LEFT_SHIFT = "<<"
-		RIGHT_SHIFT = ">>"
 		BITWISE_AND = "&"
 		BITWISE_OR = "|"
 		BITWISE_XOR = "^"
@@ -94,66 +91,99 @@
 
 simpleFile ::= ( use
 	| function
+	| struct
+	| trait
+	| extern
 	| token
 )*
 
+// AGGREGATE TYPES
+private numeric_literal ::= BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT;
+
+// Generic recovery predicates
+private not_close_brace ::= !('}')
 private not_semicolon ::= !(SEMICOLON)
 
-path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* '::' generic
 
-private type ::= type_basic | type_tuple | type_closure | type_fn | type_proc | type_none
-type_basic ::= ( ref | lifetime | '*'+ )? 'mut'? '~'? ( type_path | '[' type_path ']' )
+// TYPES
+path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* '::' generic
+private type ::= type_basic | type_tuple | type_closure | function_type | type_proc | type_none
+
+type_basic ::= ( ref 'mut'? | lifetime | '*'+)? 'mut'? ('~' | '@' | '$')? ( type_path | '[' type [',' '.' '.' (IDENTIFIER | numeric_literal)] ']' )
 
 type_tuple ::= '(' type (',' type)* ')'
-type_fn ::= 'fn' '(' type_closure_args ')' ['->' type]
-type_closure ::= '|' type_closure_args '|' ['->' type]
-type_proc ::= 'proc' '(' type_closure_args ')' ['->' type]
-type_none ::= '(' ')'
+function_type ::= 'fn' '(' type_closure_args ')' ['->' return_type]
+type_closure ::= '|' type_closure_args '|' ['->' return_type]
+type_proc ::= 'proc' '(' type_closure_args ')' ['->' return_type]
+type_none ::= '*'? '(' ')'
 private type_closure_args ::=  [ type_closure_arg ( ',' type_closure_arg)* ]
 private type_closure_arg ::= standard_arg | type_basic
 
 private type_path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* generic?
-ref ::= '&' lifetime?
-lifetime ::= "'" IDENTIFIER
+ref ::= '&'+ lifetime?
+lifetime ::= "'" (IDENTIFIER | 'static')
 
+
+// GENERIC PARAM LIST eg function<A>(...)
+generic_params ::= '<' generic_param (',' generic_param)* '>'
+private generic_param ::= lifetime | IDENTIFIER [(':' | '=') type ('+' type)* ]
+
+
+// GENERIC TYPES eg Option<Foo>
 generic ::= generic_internal '>'
 private generic_internal ::= '<' (generic_without_lifetime | generic_with_lifetime)  {pin=1 recoverWhile="generic_recover"}
 private generic_with_lifetime ::= lifetime (',' lifetime)* (',' type)*
 private generic_without_lifetime ::= type ( ',' type)*
 private generic_recover ::= !('>')
 
-use ::= ['pub'] 'use' use_part ';'
 
-private use_part ::= (IDENTIFIER | 'super') [
-	'=' path |
-	'::' path_glob
-] {pin=1 recoverWhile="not_semicolon"}
+// USE
+use ::= use_internal ';'
+private use_internal ::= ['pub'] 'use' use_part ('::' use_part)* use_glob? ['=' path] {pin=2 recoverWhile="not_semicolon"}
+private use_glob ::= '::' ('*' | '{' IDENTIFIER ( ',' IDENTIFIER )* '}')
+private use_part ::= (IDENTIFIER | 'super' | 'self')
 
+
+// FUNCTIONS
 function ::= function_declaration statement_block
-function_declaration ::= ['pub'] 'fn' IDENTIFIER generic? '(' ( arg (',' arg)* )? ')' ['->' type] {pin=2 recoverWhile="function_recover" }
-function_recover ::= !('{')
+function_declaration ::= ['pub'] 'fn' IDENTIFIER generic_params? '(' ( arg (',' arg)* )? ')' ['->' return_type] {pin=2 recoverWhile="function_recover" }
+private return_type ::= type | '!'
+private function_recover ::= !('{'|';')
 
-private arg ::= self_arg | standard_arg
-standard_arg ::= (IDENTIFIER [':' type ])
-self_arg ::= ref? 'mut'? 'self'
+private arg ::= self_arg | standard_arg | tuple_arg
+
+standard_arg ::= arg_name [':' type ]
+tuple_arg ::= '(' arg_name (',' arg_name)* ')' [':' type ]
+self_arg ::= ref? 'mut'? '~'? 'self'
+private arg_name ::= ref? 'mut'? IDENTIFIER
 
 statement_block ::= '{' statement* '}'
-statement ::= statement_block | function | (simple_token|literal|comment|symbol|operators|keyword|IDENTIFIER|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN)
+statement ::= statement_block | function | use | (simple_token|literal|comment|symbol|operators|keyword|IDENTIFIER|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN)
 
-private path_glob ::= IDENTIFIER ( '::' path_glob)? |
-	'*' |
-	'{' IDENTIFIER ( ',' IDENTIFIER )* '}'
+
+// STRUCTS
+struct ::= struct_internal '}'
+private struct_internal ::= ['pub'] 'struct' IDENTIFIER generic_params? '{' [struct_property (',' struct_property)* ] ','? {pin=2 recoverWhile="not_close_brace"}
+struct_property ::= ['priv' | 'pub'] standard_arg
+
+
+// TRAITS
+trait ::= trait_internal '}'
+private trait_internal ::= ['priv' | 'pub'] 'trait' IDENTIFIER generic_params? [':' type] '{' (function_declaration ';')* {pin=2 recoverWhile="not_close_brace"}
+
+// EXTERNALS
+extern ::= extern_internal '}'
+extern_internal ::= 'extern' '{' (function_declaration ';')* {pin = 2 recoverWhile="not_close_brace"}
 
 private token ::= (simple_token|literal|comment|symbol|brackets|operators|keyword|IDENTIFIER)
-private keyword ::= (KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_ENUM|KW_EXTERN|KW_FALSE|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LET|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_STRUCT|KW_SUPER|KW_TRUE|KW_TRAIT|KW_type|KW_UNSAFE|KW_WHILE)
+private keyword ::= (KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_ENUM|KW_EXTERN|KW_FALSE|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LET|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_SUPER|KW_TRUE|KW_TYPE|KW_UNSAFE|KW_WHILE)
 private simple_token ::= (UNOP|BINOP)
 private comment ::= (BLOCK_COMMENT|LINE_COMMENT)
 private literal ::= (STRING_LIT|RAW_STRING_LIT|CHAR_LIT|NUM_LIT|DEC_LIT|BIN_LIT|OCT_LIT|HEX_LIT)
 private brackets ::= (OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN|OPEN_BRACE|CLOSE_BRACE)
 private symbol ::= (HASH|COMMA|SEMICOLON|DOUBLE_COLON|THIN_ARROW|FAT_ARROW|DOT|AT|SINGLE_QUOTE|DOLLAR|':')
-private operators ::= (arithmetic_operators|bitwise_operators|boolean_operators|comparison_operators|unary_operators|AS|ASSIGN)
+private operators ::= (arithmetic_operators|bitwise_operators|comparison_operators|unary_operators|AS|ASSIGN)
 private arithmetic_operators ::= (PLUS|MINUS|MULTIPLY|DIVIDE|REMAINDER|)
-private bitwise_operators ::= (BITWISE_AND|BITWISE_OR|BITWISE_XOR|LEFT_SHIFT|RIGHT_SHIFT)
-private boolean_operators ::= (LOGICAL_OR|LOGICAL_AND)
+private bitwise_operators ::= (BITWISE_AND|BITWISE_OR|BITWISE_XOR)
 private unary_operators ::= (NOT|BOX)
 private comparison_operators ::= (EQUAL|GREATER_THAN|LESS_THAN|NOT_EQUAL|GREATER_THAN_OR_EQUAL|LESS_THAN_OR_EQUAL)

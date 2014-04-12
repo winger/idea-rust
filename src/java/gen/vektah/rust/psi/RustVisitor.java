@@ -7,6 +7,14 @@ import com.intellij.psi.PsiElement;
 
 public class RustVisitor extends PsiElementVisitor {
 
+  public void visitExtern(@NotNull RustExtern o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExternInternal(@NotNull RustExternInternal o) {
+    visitPsiElement(o);
+  }
+
   public void visitFunction(@NotNull RustFunction o) {
     visitPsiElement(o);
   }
@@ -15,11 +23,15 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitFunctionRecover(@NotNull RustFunctionRecover o) {
+  public void visitFunctionType(@NotNull RustFunctionType o) {
     visitPsiElement(o);
   }
 
   public void visitGeneric(@NotNull RustGeneric o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGenericParams(@NotNull RustGenericParams o) {
     visitPsiElement(o);
   }
 
@@ -51,15 +63,27 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitStruct(@NotNull RustStruct o) {
+    visitPsiElement(o);
+  }
+
+  public void visitStructProperty(@NotNull RustStructProperty o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTrait(@NotNull RustTrait o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTupleArg(@NotNull RustTupleArg o) {
+    visitPsiElement(o);
+  }
+
   public void visitTypeBasic(@NotNull RustTypeBasic o) {
     visitPsiElement(o);
   }
 
   public void visitTypeClosure(@NotNull RustTypeClosure o) {
-    visitPsiElement(o);
-  }
-
-  public void visitTypeFn(@NotNull RustTypeFn o) {
     visitPsiElement(o);
   }
 

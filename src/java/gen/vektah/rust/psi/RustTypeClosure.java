@@ -7,6 +7,9 @@ import com.intellij.psi.PsiElement;
 
 public interface RustTypeClosure extends PsiElement {
 
+  @Nullable
+  RustFunctionType getFunctionType();
+
   @NotNull
   List<RustStandardArg> getStandardArgList();
 
@@ -15,9 +18,6 @@ public interface RustTypeClosure extends PsiElement {
 
   @Nullable
   RustTypeClosure getTypeClosure();
-
-  @Nullable
-  RustTypeFn getTypeFn();
 
   @Nullable
   RustTypeNone getTypeNone();

@@ -11,15 +11,27 @@ import static vektah.rust.psi.RustTokens.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustFunctionRecoverImpl extends ASTWrapperPsiElement implements RustFunctionRecover {
+public class RustStructImpl extends ASTWrapperPsiElement implements RustStruct {
 
-  public RustFunctionRecoverImpl(ASTNode node) {
+  public RustStructImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitFunctionRecover(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitStruct(this);
     else super.accept(visitor);
+  }
+
+  @Override
+  @Nullable
+  public RustGenericParams getGenericParams() {
+    return findChildByClass(RustGenericParams.class);
+  }
+
+  @Override
+  @NotNull
+  public List<RustStructProperty> getStructPropertyList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustStructProperty.class);
   }
 
 }

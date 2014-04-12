@@ -23,6 +23,12 @@ public class RustTypeProcImpl extends ASTWrapperPsiElement implements RustTypePr
   }
 
   @Override
+  @Nullable
+  public RustFunctionType getFunctionType() {
+    return findChildByClass(RustFunctionType.class);
+  }
+
+  @Override
   @NotNull
   public List<RustStandardArg> getStandardArgList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RustStandardArg.class);
@@ -38,12 +44,6 @@ public class RustTypeProcImpl extends ASTWrapperPsiElement implements RustTypePr
   @Nullable
   public RustTypeClosure getTypeClosure() {
     return findChildByClass(RustTypeClosure.class);
-  }
-
-  @Override
-  @Nullable
-  public RustTypeFn getTypeFn() {
-    return findChildByClass(RustTypeFn.class);
   }
 
   @Override

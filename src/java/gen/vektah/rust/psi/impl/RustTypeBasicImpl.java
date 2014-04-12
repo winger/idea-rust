@@ -24,6 +24,12 @@ public class RustTypeBasicImpl extends ASTWrapperPsiElement implements RustTypeB
 
   @Override
   @Nullable
+  public RustFunctionType getFunctionType() {
+    return findChildByClass(RustFunctionType.class);
+  }
+
+  @Override
+  @Nullable
   public RustGeneric getGeneric() {
     return findChildByClass(RustGeneric.class);
   }
@@ -38,6 +44,36 @@ public class RustTypeBasicImpl extends ASTWrapperPsiElement implements RustTypeB
   @Nullable
   public RustRef getRef() {
     return findChildByClass(RustRef.class);
+  }
+
+  @Override
+  @Nullable
+  public RustTypeBasic getTypeBasic() {
+    return findChildByClass(RustTypeBasic.class);
+  }
+
+  @Override
+  @Nullable
+  public RustTypeClosure getTypeClosure() {
+    return findChildByClass(RustTypeClosure.class);
+  }
+
+  @Override
+  @Nullable
+  public RustTypeNone getTypeNone() {
+    return findChildByClass(RustTypeNone.class);
+  }
+
+  @Override
+  @Nullable
+  public RustTypeProc getTypeProc() {
+    return findChildByClass(RustTypeProc.class);
+  }
+
+  @Override
+  @Nullable
+  public RustTypeTuple getTypeTuple() {
+    return findChildByClass(RustTypeTuple.class);
   }
 
 }

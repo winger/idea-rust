@@ -5,22 +5,16 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustFunctionDeclaration extends PsiElement {
+public interface RustTrait extends PsiElement {
+
+  @NotNull
+  List<RustFunctionDeclaration> getFunctionDeclarationList();
 
   @Nullable
   RustFunctionType getFunctionType();
 
   @Nullable
   RustGenericParams getGenericParams();
-
-  @NotNull
-  List<RustSelfArg> getSelfArgList();
-
-  @NotNull
-  List<RustStandardArg> getStandardArgList();
-
-  @NotNull
-  List<RustTupleArg> getTupleArgList();
 
   @Nullable
   RustTypeBasic getTypeBasic();

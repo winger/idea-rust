@@ -11,14 +11,14 @@ import static vektah.rust.psi.RustTokens.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustTypeClosureImpl extends ASTWrapperPsiElement implements RustTypeClosure {
+public class RustFunctionTypeImpl extends ASTWrapperPsiElement implements RustFunctionType {
 
-  public RustTypeClosureImpl(ASTNode node) {
+  public RustFunctionTypeImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitTypeClosure(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitFunctionType(this);
     else super.accept(visitor);
   }
 

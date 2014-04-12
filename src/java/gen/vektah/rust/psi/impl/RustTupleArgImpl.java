@@ -11,14 +11,14 @@ import static vektah.rust.psi.RustTokens.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustTypeClosureImpl extends ASTWrapperPsiElement implements RustTypeClosure {
+public class RustTupleArgImpl extends ASTWrapperPsiElement implements RustTupleArg {
 
-  public RustTypeClosureImpl(ASTNode node) {
+  public RustTupleArgImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitTypeClosure(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitTupleArg(this);
     else super.accept(visitor);
   }
 
@@ -30,14 +30,14 @@ public class RustTypeClosureImpl extends ASTWrapperPsiElement implements RustTyp
 
   @Override
   @NotNull
-  public List<RustStandardArg> getStandardArgList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustStandardArg.class);
+  public List<RustRef> getRefList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustRef.class);
   }
 
   @Override
-  @NotNull
-  public List<RustTypeBasic> getTypeBasicList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustTypeBasic.class);
+  @Nullable
+  public RustTypeBasic getTypeBasic() {
+    return findChildByClass(RustTypeBasic.class);
   }
 
   @Override

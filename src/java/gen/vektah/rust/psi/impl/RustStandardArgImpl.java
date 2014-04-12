@@ -24,6 +24,18 @@ public class RustStandardArgImpl extends ASTWrapperPsiElement implements RustSta
 
   @Override
   @Nullable
+  public RustFunctionType getFunctionType() {
+    return findChildByClass(RustFunctionType.class);
+  }
+
+  @Override
+  @Nullable
+  public RustRef getRef() {
+    return findChildByClass(RustRef.class);
+  }
+
+  @Override
+  @Nullable
   public RustTypeBasic getTypeBasic() {
     return findChildByClass(RustTypeBasic.class);
   }
@@ -32,12 +44,6 @@ public class RustStandardArgImpl extends ASTWrapperPsiElement implements RustSta
   @Nullable
   public RustTypeClosure getTypeClosure() {
     return findChildByClass(RustTypeClosure.class);
-  }
-
-  @Override
-  @Nullable
-  public RustTypeFn getTypeFn() {
-    return findChildByClass(RustTypeFn.class);
   }
 
   @Override

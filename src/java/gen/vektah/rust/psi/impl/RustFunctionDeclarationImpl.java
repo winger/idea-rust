@@ -24,8 +24,14 @@ public class RustFunctionDeclarationImpl extends ASTWrapperPsiElement implements
 
   @Override
   @Nullable
-  public RustGeneric getGeneric() {
-    return findChildByClass(RustGeneric.class);
+  public RustFunctionType getFunctionType() {
+    return findChildByClass(RustFunctionType.class);
+  }
+
+  @Override
+  @Nullable
+  public RustGenericParams getGenericParams() {
+    return findChildByClass(RustGenericParams.class);
   }
 
   @Override
@@ -41,6 +47,12 @@ public class RustFunctionDeclarationImpl extends ASTWrapperPsiElement implements
   }
 
   @Override
+  @NotNull
+  public List<RustTupleArg> getTupleArgList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustTupleArg.class);
+  }
+
+  @Override
   @Nullable
   public RustTypeBasic getTypeBasic() {
     return findChildByClass(RustTypeBasic.class);
@@ -50,12 +62,6 @@ public class RustFunctionDeclarationImpl extends ASTWrapperPsiElement implements
   @Nullable
   public RustTypeClosure getTypeClosure() {
     return findChildByClass(RustTypeClosure.class);
-  }
-
-  @Override
-  @Nullable
-  public RustTypeFn getTypeFn() {
-    return findChildByClass(RustTypeFn.class);
   }
 
   @Override

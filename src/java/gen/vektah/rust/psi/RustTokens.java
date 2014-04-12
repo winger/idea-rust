@@ -8,10 +8,13 @@ import vektah.rust.psi.impl.*;
 
 public interface RustTokens {
 
+  IElementType EXTERN = new RustTokenType("EXTERN");
+  IElementType EXTERN_INTERNAL = new RustTokenType("EXTERN_INTERNAL");
   IElementType FUNCTION = new RustTokenType("FUNCTION");
   IElementType FUNCTION_DECLARATION = new RustTokenType("FUNCTION_DECLARATION");
-  IElementType FUNCTION_RECOVER = new RustTokenType("FUNCTION_RECOVER");
+  IElementType FUNCTION_TYPE = new RustTokenType("FUNCTION_TYPE");
   IElementType GENERIC = new RustTokenType("GENERIC");
+  IElementType GENERIC_PARAMS = new RustTokenType("GENERIC_PARAMS");
   IElementType LIFETIME = new RustTokenType("LIFETIME");
   IElementType PATH = new RustTokenType("PATH");
   IElementType REF = new RustTokenType("REF");
@@ -19,9 +22,12 @@ public interface RustTokens {
   IElementType STANDARD_ARG = new RustTokenType("STANDARD_ARG");
   IElementType STATEMENT = new RustTokenType("STATEMENT");
   IElementType STATEMENT_BLOCK = new RustTokenType("STATEMENT_BLOCK");
+  IElementType STRUCT = new RustTokenType("STRUCT");
+  IElementType STRUCT_PROPERTY = new RustTokenType("STRUCT_PROPERTY");
+  IElementType TRAIT = new RustTokenType("TRAIT");
+  IElementType TUPLE_ARG = new RustTokenType("TUPLE_ARG");
   IElementType TYPE_BASIC = new RustTokenType("TYPE_BASIC");
   IElementType TYPE_CLOSURE = new RustTokenType("TYPE_CLOSURE");
-  IElementType TYPE_FN = new RustTokenType("TYPE_FN");
   IElementType TYPE_NONE = new RustTokenType("TYPE_NONE");
   IElementType TYPE_PROC = new RustTokenType("TYPE_PROC");
   IElementType TYPE_TUPLE = new RustTokenType("TYPE_TUPLE");
@@ -84,16 +90,13 @@ public interface RustTokens {
   IElementType KW_SUPER = new RustTokenType("super");
   IElementType KW_TRAIT = new RustTokenType("trait");
   IElementType KW_TRUE = new RustTokenType("true");
-  IElementType KW_TYPE = new RustTokenType("KW_type");
+  IElementType KW_TYPE = new RustTokenType("type");
   IElementType KW_UNSAFE = new RustTokenType("unsafe");
   IElementType KW_USE = new RustTokenType("use");
   IElementType KW_WHILE = new RustTokenType("while");
-  IElementType LEFT_SHIFT = new RustTokenType("<<");
   IElementType LESS_THAN = new RustTokenType("<");
   IElementType LESS_THAN_OR_EQUAL = new RustTokenType("<=");
   IElementType LINE_COMMENT = new RustTokenType("LINE_COMMENT");
-  IElementType LOGICAL_AND = new RustTokenType("&&");
-  IElementType LOGICAL_OR = new RustTokenType("LOGICAL_OR");
   IElementType MINUS = new RustTokenType("-");
   IElementType MULTIPLY = new RustTokenType("*");
   IElementType NOT = new RustTokenType("!");
@@ -106,7 +109,6 @@ public interface RustTokens {
   IElementType PLUS = new RustTokenType("+");
   IElementType RAW_STRING_LIT = new RustTokenType("RAW_STRING_LIT");
   IElementType REMAINDER = new RustTokenType("%");
-  IElementType RIGHT_SHIFT = new RustTokenType(">>");
   IElementType SEMICOLON = new RustTokenType(";");
   IElementType SINGLE_QUOTE = new RustTokenType("'");
   IElementType STRING_LIT = new RustTokenType("STRING_LIT");
@@ -116,17 +118,26 @@ public interface RustTokens {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == FUNCTION) {
+       if (type == EXTERN) {
+        return new RustExternImpl(node);
+      }
+      else if (type == EXTERN_INTERNAL) {
+        return new RustExternInternalImpl(node);
+      }
+      else if (type == FUNCTION) {
         return new RustFunctionImpl(node);
       }
       else if (type == FUNCTION_DECLARATION) {
         return new RustFunctionDeclarationImpl(node);
       }
-      else if (type == FUNCTION_RECOVER) {
-        return new RustFunctionRecoverImpl(node);
+      else if (type == FUNCTION_TYPE) {
+        return new RustFunctionTypeImpl(node);
       }
       else if (type == GENERIC) {
         return new RustGenericImpl(node);
+      }
+      else if (type == GENERIC_PARAMS) {
+        return new RustGenericParamsImpl(node);
       }
       else if (type == LIFETIME) {
         return new RustLifetimeImpl(node);
@@ -149,14 +160,23 @@ public interface RustTokens {
       else if (type == STATEMENT_BLOCK) {
         return new RustStatementBlockImpl(node);
       }
+      else if (type == STRUCT) {
+        return new RustStructImpl(node);
+      }
+      else if (type == STRUCT_PROPERTY) {
+        return new RustStructPropertyImpl(node);
+      }
+      else if (type == TRAIT) {
+        return new RustTraitImpl(node);
+      }
+      else if (type == TUPLE_ARG) {
+        return new RustTupleArgImpl(node);
+      }
       else if (type == TYPE_BASIC) {
         return new RustTypeBasicImpl(node);
       }
       else if (type == TYPE_CLOSURE) {
         return new RustTypeClosureImpl(node);
-      }
-      else if (type == TYPE_FN) {
-        return new RustTypeFnImpl(node);
       }
       else if (type == TYPE_NONE) {
         return new RustTypeNoneImpl(node);

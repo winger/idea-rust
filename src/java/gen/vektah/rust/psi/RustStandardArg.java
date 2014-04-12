@@ -8,13 +8,16 @@ import com.intellij.psi.PsiElement;
 public interface RustStandardArg extends PsiElement {
 
   @Nullable
+  RustFunctionType getFunctionType();
+
+  @Nullable
+  RustRef getRef();
+
+  @Nullable
   RustTypeBasic getTypeBasic();
 
   @Nullable
   RustTypeClosure getTypeClosure();
-
-  @Nullable
-  RustTypeFn getTypeFn();
 
   @Nullable
   RustTypeNone getTypeNone();
