@@ -45,44 +45,112 @@
 		KW_UNSAFE = "unsafe"
 		KW_USE = "use"
 		KW_WHILE = "while"
+
+		LOGICAL_AND = "&&"
+		FAT_ARROW = "=>"
+		THIN_ARROW = "->"
+		DOT = "."
+
+		LEFT_SHIFT = "<<"
+		RIGHT_SHIFT = ">>"
+		BITWISE_AND = "&"
+		BITWISE_OR = "|"
+		BITWISE_XOR = "^"
+
+		DOUBLE_COLON = "::"
+		COLON = ":"
+
+		PLUS = "+"
+		MINUS = "-"
+		MULTIPLY = "*"
+		DIVIDE = "/"
+		REMAINDER = "%"
+
+		EQUAL = "=="
+		ASSIGN = "="
+		NOT_EQUAL = "!="
+		LESS_THAN_OR_EQUAL = "<="
+		LESS_THAN = "<"
+		GREATER_THAN_OR_EQUAL = ">="
+		GREATER_THAN = ">"
+
+		NOT = "!"
+		BOX = "~"
+		AT = "@"
+		SINGLE_QUOTE = "'"
+		DOLLAR = "$"
+
+		HASH = "#"
+		OPEN_SQUARE_BRACKET = "["
+		CLOSE_SQUARE_BRACKET = "]"
+		OPEN_PAREN = "("
+		CLOSE_PAREN = ")"
+		OPEN_BRACE = "{"
+		CLOSE_BRACE = "}"
+		COMMA = ","
+		SEMICOLON = ";"
 	]
 }
 
 simpleFile ::= ( use
+	| function
 	| token
 )*
 
-path ::= IDENTIFIER (
-	'::' (
-		'<' type (',' type)* '>' |
-		path
-	)
-)?
+private not_semicolon ::= !(SEMICOLON)
 
-type ::= IDENTIFIER (
-	'<' type (',' type)* '>' |
-	'::' type
-)+
+path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* '::' generic
+
+private type ::= type_basic | type_tuple | type_closure | type_fn | type_proc | type_none
+type_basic ::= ( ref | lifetime | '*'+ )? 'mut'? '~'? ( type_path | '[' type_path ']' )
+
+type_tuple ::= '(' type (',' type)* ')'
+type_fn ::= 'fn' '(' type_closure_args ')' ['->' type]
+type_closure ::= '|' type_closure_args '|' ['->' type]
+type_proc ::= 'proc' '(' type_closure_args ')' ['->' type]
+type_none ::= '(' ')'
+private type_closure_args ::=  [ type_closure_arg ( ',' type_closure_arg)* ]
+private type_closure_arg ::= standard_arg | type_basic
+
+private type_path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* generic?
+ref ::= '&' lifetime?
+lifetime ::= "'" IDENTIFIER
+
+generic ::= generic_internal '>'
+private generic_internal ::= '<' (generic_without_lifetime | generic_with_lifetime)  {pin=1 recoverWhile="generic_recover"}
+private generic_with_lifetime ::= lifetime (',' lifetime)* (',' type)*
+private generic_without_lifetime ::= type ( ',' type)*
+private generic_recover ::= !('>')
 
 use ::= ['pub'] 'use' use_part ';'
 
-private use_part ::= IDENTIFIER [
+private use_part ::= (IDENTIFIER | 'super') [
 	'=' path |
 	'::' path_glob
 ] {pin=1 recoverWhile="not_semicolon"}
 
-private not_semicolon ::= !(SEMICOLON)
+function ::= function_declaration statement_block
+function_declaration ::= ['pub'] 'fn' IDENTIFIER generic? '(' ( arg (',' arg)* )? ')' ['->' type] {pin=2 recoverWhile="function_recover" }
+function_recover ::= !('{')
+
+private arg ::= self_arg | standard_arg
+standard_arg ::= (IDENTIFIER [':' type ])
+self_arg ::= ref? 'mut'? 'self'
+
+statement_block ::= '{' statement* '}'
+statement ::= statement_block | function | (simple_token|literal|comment|symbol|operators|keyword|IDENTIFIER|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN)
 
 private path_glob ::= IDENTIFIER ( '::' path_glob)? |
 	'*' |
 	'{' IDENTIFIER ( ',' IDENTIFIER )* '}'
 
-private token ::= (simple_token|literal|comment|symbol|operators|keyword|IDENTIFIER)
-private keyword ::= (KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_ENUM|KW_EXTERN|KW_FALSE|KW_FN|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LET|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_STRUCT|KW_SUPER|KW_TRUE|KW_TRAIT|KW_TYPE|KW_UNSAFE|KW_WHILE)
+private token ::= (simple_token|literal|comment|symbol|brackets|operators|keyword|IDENTIFIER)
+private keyword ::= (KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_ENUM|KW_EXTERN|KW_FALSE|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LET|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_STRUCT|KW_SUPER|KW_TRUE|KW_TRAIT|KW_type|KW_UNSAFE|KW_WHILE)
 private simple_token ::= (UNOP|BINOP)
 private comment ::= (BLOCK_COMMENT|LINE_COMMENT)
 private literal ::= (STRING_LIT|RAW_STRING_LIT|CHAR_LIT|NUM_LIT|DEC_LIT|BIN_LIT|OCT_LIT|HEX_LIT)
-private symbol ::= (HASH|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN|OPEN_BRACE|CLOSE_BRACE|COMMA|COLON|SEMICOLON|DOUBLE_COLON|THIN_ARROW|FAT_ARROW|DOT|AT|SINGLE_QUOTE|DOLLAR)
+private brackets ::= (OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN|OPEN_BRACE|CLOSE_BRACE)
+private symbol ::= (HASH|COMMA|SEMICOLON|DOUBLE_COLON|THIN_ARROW|FAT_ARROW|DOT|AT|SINGLE_QUOTE|DOLLAR|':')
 private operators ::= (arithmetic_operators|bitwise_operators|boolean_operators|comparison_operators|unary_operators|AS|ASSIGN)
 private arithmetic_operators ::= (PLUS|MINUS|MULTIPLY|DIVIDE|REMAINDER|)
 private bitwise_operators ::= (BITWISE_AND|BITWISE_OR|BITWISE_XOR|LEFT_SHIFT|RIGHT_SHIFT)

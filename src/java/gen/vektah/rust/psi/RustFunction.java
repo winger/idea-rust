@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustType extends PsiElement {
+public interface RustFunction extends PsiElement {
 
   @NotNull
-  List<RustType> getTypeList();
+  RustFunctionDeclaration getFunctionDeclaration();
+
+  @NotNull
+  RustStatementBlock getStatementBlock();
 
 }

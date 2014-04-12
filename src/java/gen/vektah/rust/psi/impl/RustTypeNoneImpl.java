@@ -11,27 +11,15 @@ import static vektah.rust.psi.RustTokens.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustPathImpl extends ASTWrapperPsiElement implements RustPath {
+public class RustTypeNoneImpl extends ASTWrapperPsiElement implements RustTypeNone {
 
-  public RustPathImpl(ASTNode node) {
+  public RustTypeNoneImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitPath(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitTypeNone(this);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public RustPath getPath() {
-    return findChildByClass(RustPath.class);
-  }
-
-  @Override
-  @NotNull
-  public List<RustType> getTypeList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustType.class);
   }
 
 }
