@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustExternInternal extends PsiElement {
+public interface RustAttributeArg extends PsiElement {
 
   @NotNull
-  List<RustFunctionDeclaration> getFunctionDeclarationList();
+  List<RustAttributeArg> getAttributeArgList();
 
 }

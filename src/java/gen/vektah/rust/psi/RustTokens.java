@@ -8,9 +8,11 @@ import vektah.rust.psi.impl.*;
 
 public interface RustTokens {
 
+  IElementType ATTRIBUTE = new RustTokenType("ATTRIBUTE");
+  IElementType ATTRIBUTE_ARG = new RustTokenType("ATTRIBUTE_ARG");
   IElementType EXPRESSION = new RustTokenType("EXPRESSION");
-  IElementType EXTERN = new RustTokenType("EXTERN");
-  IElementType EXTERN_INTERNAL = new RustTokenType("EXTERN_INTERNAL");
+  IElementType EXTERN_BLOCK = new RustTokenType("EXTERN_BLOCK");
+  IElementType EXTERN_CRATE = new RustTokenType("EXTERN_CRATE");
   IElementType FUNCTION = new RustTokenType("FUNCTION");
   IElementType FUNCTION_DECLARATION = new RustTokenType("FUNCTION_DECLARATION");
   IElementType FUNCTION_TYPE = new RustTokenType("FUNCTION_TYPE");
@@ -28,9 +30,10 @@ public interface RustTokens {
   IElementType STRUCT = new RustTokenType("STRUCT");
   IElementType STRUCT_BODY = new RustTokenType("STRUCT_BODY");
   IElementType STRUCT_PROPERTY = new RustTokenType("STRUCT_PROPERTY");
-  IElementType STRUCT_RECOVER = new RustTokenType("STRUCT_RECOVER");
   IElementType TRAIT = new RustTokenType("TRAIT");
+  IElementType TRAIT_FUNCTION_DECLARATION = new RustTokenType("TRAIT_FUNCTION_DECLARATION");
   IElementType TUPLE_ARG = new RustTokenType("TUPLE_ARG");
+  IElementType TUPLE_BODY = new RustTokenType("TUPLE_BODY");
   IElementType TYPE_BASIC = new RustTokenType("TYPE_BASIC");
   IElementType TYPE_CLOSURE = new RustTokenType("TYPE_CLOSURE");
   IElementType TYPE_DEFINITION = new RustTokenType("TYPE_DEFINITION");
@@ -106,7 +109,6 @@ public interface RustTokens {
   IElementType MULTIPLY = new RustTokenType("*");
   IElementType NOT = new RustTokenType("!");
   IElementType NOT_EQUAL = new RustTokenType("!=");
-  IElementType NUM_LIT = new RustTokenType("NUM_LIT");
   IElementType OCT_LIT = new RustTokenType("OCT_LIT");
   IElementType OPEN_BRACE = new RustTokenType("{");
   IElementType OPEN_PAREN = new RustTokenType("(");
@@ -123,14 +125,20 @@ public interface RustTokens {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == EXPRESSION) {
+       if (type == ATTRIBUTE) {
+        return new RustAttributeImpl(node);
+      }
+      else if (type == ATTRIBUTE_ARG) {
+        return new RustAttributeArgImpl(node);
+      }
+      else if (type == EXPRESSION) {
         return new RustExpressionImpl(node);
       }
-      else if (type == EXTERN) {
-        return new RustExternImpl(node);
+      else if (type == EXTERN_BLOCK) {
+        return new RustExternBlockImpl(node);
       }
-      else if (type == EXTERN_INTERNAL) {
-        return new RustExternInternalImpl(node);
+      else if (type == EXTERN_CRATE) {
+        return new RustExternCrateImpl(node);
       }
       else if (type == FUNCTION) {
         return new RustFunctionImpl(node);
@@ -183,14 +191,17 @@ public interface RustTokens {
       else if (type == STRUCT_PROPERTY) {
         return new RustStructPropertyImpl(node);
       }
-      else if (type == STRUCT_RECOVER) {
-        return new RustStructRecoverImpl(node);
-      }
       else if (type == TRAIT) {
         return new RustTraitImpl(node);
       }
+      else if (type == TRAIT_FUNCTION_DECLARATION) {
+        return new RustTraitFunctionDeclarationImpl(node);
+      }
       else if (type == TUPLE_ARG) {
         return new RustTupleArgImpl(node);
+      }
+      else if (type == TUPLE_BODY) {
+        return new RustTupleBodyImpl(node);
       }
       else if (type == TYPE_BASIC) {
         return new RustTypeBasicImpl(node);

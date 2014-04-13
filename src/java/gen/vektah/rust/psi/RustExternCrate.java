@@ -5,9 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustExtern extends PsiElement {
-
-  @NotNull
-  RustExternInternal getExternInternal();
+public interface RustExternCrate extends PsiElement {
 
 }

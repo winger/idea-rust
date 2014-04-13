@@ -95,25 +95,30 @@ simpleFile ::= ( use
 	| trait
 	| extern
 	| type_definition
+	| attribute
 	| token
 )*
 
 // AGGREGATE TYPES
-private numeric_literal ::= BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT;
+private numeric_literal ::= BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT
+private string_literal ::= STRING_LIT | RAW_STRING_LIT | CHAR_LIT
+private literal ::= string_literal | numeric_literal
 
 // Generic recovery predicates
 private not_close_brace ::= !('}')
-private not_semicolon ::= !(SEMICOLON)
+private not_semicolon ::= !(';')
+private not_close_square_bracket ::= !(']')
+private not_close_parenthesis ::= !(')')
 
 
 // TYPES
 path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* ['::' generic]
 private type ::= type_basic | type_tuple | type_closure | function_type | type_proc | type_none
 
-type_basic ::= ( ref 'mut'? | lifetime | '*'+)? 'mut'? ('~' | '@' | '$')? ( type_path | '[' type [',' '.' '.' (IDENTIFIER | numeric_literal)] ']' )
+type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* ('~' | '@' | '$')? ( type_path | '[' type [',' '.' '.' (IDENTIFIER | numeric_literal)] ']' )
 
 type_tuple ::= '(' type (',' type)* ')'
-function_type ::= ['extern' STRING_LIT] 'fn' '(' type_closure_args ')' ['->' return_type]
+function_type ::= ['extern' STRING_LIT] 'unsafe'? 'fn' '(' type_closure_args ')' ['->' return_type]
 type_closure ::= '|' type_closure_args '|' ['->' return_type]
 type_proc ::= 'proc' '(' type_closure_args ')' ['->' return_type]
 type_none ::= '*'? '(' ')'
@@ -140,8 +145,8 @@ private generic_recover ::= !('>')
 
 // USE
 use ::= use_internal ';'
-private use_internal ::= ['pub'] 'use' use_part ('::' use_part)* use_glob? ['=' path] {pin=2 recoverWhile="not_semicolon"}
-private use_glob ::= '::' ('*' | '{' IDENTIFIER ( ',' IDENTIFIER )* '}')
+private use_internal ::= ['pub'] 'use' (use_glob | use_part ('::' use_part)* ('::' use_glob | '=' path)?) {pin=2 recoverWhile="not_semicolon"}
+private use_glob ::= ('*' | '{' IDENTIFIER ( ',' IDENTIFIER )* '}')
 private use_part ::= (IDENTIFIER | 'super' | 'self')
 
 
@@ -166,24 +171,26 @@ private statement ::= statement_block
 	| statement_wildcard
 	| type_definition
 	| struct
+	| attribute
+	| extern
 statement_wildcard ::= (simple_token|literal|comment|symbol|operators|keyword|IDENTIFIER|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN)
 
 
 // STRUCTS
-struct ::= struct_internal '}'? ';'?
-private struct_internal ::= ['pub'] 'struct' IDENTIFIER generic_params? struct_body? {pin=2 recoverWhile="struct_recover"}
-struct_body ::= '{' [struct_property (',' struct_property)* ] ','?
+struct ::= 'pub'? 'struct' IDENTIFIER generic_params? (struct_body '}' | tuple_body ')' | ';')
+struct_body ::= '{' [struct_property (',' struct_property)* ] ','? {pin=1 recoverWhile="not_close_brace"}
+tuple_body ::= '(' type (',' type)* {pin=1 recoverWhile="not_close_parenthesis"}
 struct_property ::= ['priv' | 'pub'] standard_arg
-struct_recover ::= !(';'|'}')
-
 
 // TRAITS
 trait ::= trait_internal '}'
-private trait_internal ::= ['priv' | 'pub'] 'trait' IDENTIFIER generic_params? [':' type] '{' (function_declaration ';')* {pin=2 recoverWhile="not_close_brace"}
+private trait_internal ::= ['priv' | 'pub'] 'trait' IDENTIFIER generic_params? [':' type] '{' (trait_function_declaration ';')* {pin=2 recoverWhile="not_close_brace"}
+trait_function_declaration ::= ['pub'] 'fn' IDENTIFIER generic_params? '(' ( (arg|type) (',' (arg|type))* )? ')' ['->' return_type] {pin=2 recoverWhile="not_semicolon" }
 
 // EXTERNALS
-extern ::= extern_internal '}'
-extern_internal ::= 'extern' '{' (function_declaration ';')* {pin = 2 recoverWhile="not_close_brace"}
+private extern ::= extern_crate ';' | extern_block '}'
+extern_block ::= 'extern' STRING_LIT? '{' (attribute | trait_function_declaration ';')* {pin=1 recoverWhile="not_close_brace"}
+extern_crate ::= 'extern' 'crate' IDENTIFIER {pin=2 recoverWhile="not_semicolon"}
 
 
 // LET
@@ -193,21 +200,29 @@ private let_destructuring ::= type '{' IDENTIFIER [':' IDENTIFIER] (',' IDENTIFI
 expression ::= expression_wildcard*
 
 
+// ATTRIBUTES
+attribute ::= attribute_internal ']'
+private attribute_internal ::= '#' '!'? '[' attribute_list {pin=1 recoverWhile="not_close_square_bracket"}
+private attribute_list ::= attribute_arg ( ',' attribute_arg )*
+attribute_arg ::= IDENTIFIER [ '=' literal | '(' attribute_list ')' ]
+
+
 // TYPE
-let type_definition ::= 'type' IDENTIFIER '=' type ';'
+type_definition ::= 'type' IDENTIFIER '=' type ';'
 
 private expression_wildcard ::= statement_block
 	| function
 	| use
 	| let
 	| type_definition
+	| attribute
+	| extern
 	| (simple_token|literal|comment|operators|keyword|IDENTIFIER|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN|HASH|COMMA|DOUBLE_COLON|THIN_ARROW|FAT_ARROW|DOT|AT|SINGLE_QUOTE|DOLLAR|':')
 
 private token ::= (simple_token|literal|comment|symbol|brackets|operators|keyword|IDENTIFIER)
-private keyword ::= (KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_LET|KW_STRUCT|KW_ENUM|KW_EXTERN|KW_FALSE|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_SUPER|KW_TRUE|KW_TYPE|KW_UNSAFE|KW_WHILE)
+private keyword ::= (KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_LET|KW_STRUCT|KW_ENUM|KW_FALSE|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_SUPER|KW_TRUE|KW_TYPE|KW_UNSAFE|KW_WHILE)
 private simple_token ::= (UNOP|BINOP)
 private comment ::= (BLOCK_COMMENT|LINE_COMMENT)
-private literal ::= (STRING_LIT|RAW_STRING_LIT|CHAR_LIT|NUM_LIT|DEC_LIT|BIN_LIT|OCT_LIT|HEX_LIT)
 private brackets ::= (OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN|OPEN_BRACE|CLOSE_BRACE)
 private symbol ::= (HASH|COMMA|SEMICOLON|DOUBLE_COLON|THIN_ARROW|FAT_ARROW|DOT|AT|SINGLE_QUOTE|DOLLAR|':')
 private operators ::= (arithmetic_operators|bitwise_operators|comparison_operators|unary_operators|AS|ASSIGN)

@@ -28,6 +28,7 @@
       <fileTypeFactory implementation="vektah.rust.RustFileTypeFactory"/>
       <lang.parserDefinition language="Rust" implementationClass="vektah.rust.RustParserDefinition"/>
       <lang.syntaxHighlighterFactory key="Rust" implementationClass="vektah.rust.RustSyntaxHighlighterFactory"/>
+      <annotator language="Rust" implementationClass="vektah.rust.RustAnnotator"/>
   </extensions>
 
   <application-components>

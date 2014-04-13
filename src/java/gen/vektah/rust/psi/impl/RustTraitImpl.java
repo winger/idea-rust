@@ -23,12 +23,6 @@ public class RustTraitImpl extends ASTWrapperPsiElement implements RustTrait {
   }
 
   @Override
-  @NotNull
-  public List<RustFunctionDeclaration> getFunctionDeclarationList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustFunctionDeclaration.class);
-  }
-
-  @Override
   @Nullable
   public RustFunctionType getFunctionType() {
     return findChildByClass(RustFunctionType.class);
@@ -38,6 +32,12 @@ public class RustTraitImpl extends ASTWrapperPsiElement implements RustTrait {
   @Nullable
   public RustGenericParams getGenericParams() {
     return findChildByClass(RustGenericParams.class);
+  }
+
+  @Override
+  @NotNull
+  public List<RustTraitFunctionDeclaration> getTraitFunctionDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustTraitFunctionDeclaration.class);
   }
 
   @Override

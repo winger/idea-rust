@@ -24,6 +24,24 @@ public class RustExpressionImpl extends ASTWrapperPsiElement implements RustExpr
 
   @Override
   @NotNull
+  public List<RustAttribute> getAttributeList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustAttribute.class);
+  }
+
+  @Override
+  @NotNull
+  public List<RustExternBlock> getExternBlockList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustExternBlock.class);
+  }
+
+  @Override
+  @NotNull
+  public List<RustExternCrate> getExternCrateList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustExternCrate.class);
+  }
+
+  @Override
+  @NotNull
   public List<RustFunction> getFunctionList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RustFunction.class);
   }

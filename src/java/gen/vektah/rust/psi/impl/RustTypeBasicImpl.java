@@ -35,15 +35,15 @@ public class RustTypeBasicImpl extends ASTWrapperPsiElement implements RustTypeB
   }
 
   @Override
-  @Nullable
-  public RustLifetime getLifetime() {
-    return findChildByClass(RustLifetime.class);
+  @NotNull
+  public List<RustLifetime> getLifetimeList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustLifetime.class);
   }
 
   @Override
-  @Nullable
-  public RustRef getRef() {
-    return findChildByClass(RustRef.class);
+  @NotNull
+  public List<RustRef> getRefList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustRef.class);
   }
 
   @Override

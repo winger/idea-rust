@@ -13,4 +13,7 @@ public interface RustStruct extends PsiElement {
   @Nullable
   RustStructBody getStructBody();
 
+  @Nullable
+  RustTupleBody getTupleBody();
+
 }

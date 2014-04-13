@@ -13,11 +13,11 @@ public interface RustTypeBasic extends PsiElement {
   @Nullable
   RustGeneric getGeneric();
 
-  @Nullable
-  RustLifetime getLifetime();
+  @NotNull
+  List<RustLifetime> getLifetimeList();
 
-  @Nullable
-  RustRef getRef();
+  @NotNull
+  List<RustRef> getRefList();
 
   @Nullable
   RustTypeBasic getTypeBasic();

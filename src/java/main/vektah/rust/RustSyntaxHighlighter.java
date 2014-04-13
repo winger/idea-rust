@@ -27,6 +27,7 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 	public static final TextAttributesKey SYMBOL = TextAttributesKey.createTextAttributesKey("SYMBOL", DefaultLanguageHighlighterColors.PREDEFINED_SYMBOL);
 	public static final TextAttributesKey SEMICOLON = TextAttributesKey.createTextAttributesKey("SEMICOLON", DefaultLanguageHighlighterColors.SEMICOLON);
 	public static final TextAttributesKey OPERATOR = TextAttributesKey.createTextAttributesKey("OPERATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN);
+	public static final TextAttributesKey ATTRIBUTE = TextAttributesKey.createTextAttributesKey("ATTRIBUTE", DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE);
 
 	public static final TextAttributesKey[] KEYWORD_KEYS = new TextAttributesKey[]{KEYWORD};
 	public static final TextAttributesKey[] IDENTIFIER_KEYS = new TextAttributesKey[]{IDENTIFIER};
@@ -124,6 +125,7 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 		if (type == RustTokens.SEMICOLON) {
 			return SEMICOLON_KEYS;
 		}
+
 
 		return EMPTY_KEYS;
 	}

@@ -8,6 +8,15 @@ import com.intellij.psi.PsiElement;
 public interface RustExpression extends PsiElement {
 
   @NotNull
+  List<RustAttribute> getAttributeList();
+
+  @NotNull
+  List<RustExternBlock> getExternBlockList();
+
+  @NotNull
+  List<RustExternCrate> getExternCrateList();
+
+  @NotNull
   List<RustFunction> getFunctionList();
 
   @NotNull

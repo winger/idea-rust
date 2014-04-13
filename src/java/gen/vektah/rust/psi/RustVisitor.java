@@ -7,15 +7,23 @@ import com.intellij.psi.PsiElement;
 
 public class RustVisitor extends PsiElementVisitor {
 
+  public void visitAttribute(@NotNull RustAttribute o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAttributeArg(@NotNull RustAttributeArg o) {
+    visitPsiElement(o);
+  }
+
   public void visitExpression(@NotNull RustExpression o) {
     visitPsiElement(o);
   }
 
-  public void visitExtern(@NotNull RustExtern o) {
+  public void visitExternBlock(@NotNull RustExternBlock o) {
     visitPsiElement(o);
   }
 
-  public void visitExternInternal(@NotNull RustExternInternal o) {
+  public void visitExternCrate(@NotNull RustExternCrate o) {
     visitPsiElement(o);
   }
 
@@ -87,15 +95,19 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitStructRecover(@NotNull RustStructRecover o) {
-    visitPsiElement(o);
-  }
-
   public void visitTrait(@NotNull RustTrait o) {
     visitPsiElement(o);
   }
 
+  public void visitTraitFunctionDeclaration(@NotNull RustTraitFunctionDeclaration o) {
+    visitPsiElement(o);
+  }
+
   public void visitTupleArg(@NotNull RustTupleArg o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTupleBody(@NotNull RustTupleBody o) {
     visitPsiElement(o);
   }
 

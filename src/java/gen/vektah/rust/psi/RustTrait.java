@@ -7,14 +7,14 @@ import com.intellij.psi.PsiElement;
 
 public interface RustTrait extends PsiElement {
 
-  @NotNull
-  List<RustFunctionDeclaration> getFunctionDeclarationList();
-
   @Nullable
   RustFunctionType getFunctionType();
 
   @Nullable
   RustGenericParams getGenericParams();
+
+  @NotNull
+  List<RustTraitFunctionDeclaration> getTraitFunctionDeclarationList();
 
   @Nullable
   RustTypeBasic getTypeBasic();
