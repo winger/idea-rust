@@ -8,6 +8,7 @@ import vektah.rust.psi.impl.*;
 
 public interface RustTokens {
 
+  IElementType EXPRESSION = new RustTokenType("EXPRESSION");
   IElementType EXTERN = new RustTokenType("EXTERN");
   IElementType EXTERN_INTERNAL = new RustTokenType("EXTERN_INTERNAL");
   IElementType FUNCTION = new RustTokenType("FUNCTION");
@@ -15,25 +16,29 @@ public interface RustTokens {
   IElementType FUNCTION_TYPE = new RustTokenType("FUNCTION_TYPE");
   IElementType GENERIC = new RustTokenType("GENERIC");
   IElementType GENERIC_PARAMS = new RustTokenType("GENERIC_PARAMS");
+  IElementType LET = new RustTokenType("LET");
   IElementType LIFETIME = new RustTokenType("LIFETIME");
   IElementType PATH = new RustTokenType("PATH");
   IElementType REF = new RustTokenType("REF");
   IElementType SELF_ARG = new RustTokenType("SELF_ARG");
   IElementType STANDARD_ARG = new RustTokenType("STANDARD_ARG");
-  IElementType STATEMENT = new RustTokenType("STATEMENT");
   IElementType STATEMENT_BLOCK = new RustTokenType("STATEMENT_BLOCK");
+  IElementType STATEMENT_BLOCK_INTERNAL = new RustTokenType("STATEMENT_BLOCK_INTERNAL");
+  IElementType STATEMENT_WILDCARD = new RustTokenType("STATEMENT_WILDCARD");
   IElementType STRUCT = new RustTokenType("STRUCT");
+  IElementType STRUCT_BODY = new RustTokenType("STRUCT_BODY");
   IElementType STRUCT_PROPERTY = new RustTokenType("STRUCT_PROPERTY");
+  IElementType STRUCT_RECOVER = new RustTokenType("STRUCT_RECOVER");
   IElementType TRAIT = new RustTokenType("TRAIT");
   IElementType TUPLE_ARG = new RustTokenType("TUPLE_ARG");
   IElementType TYPE_BASIC = new RustTokenType("TYPE_BASIC");
   IElementType TYPE_CLOSURE = new RustTokenType("TYPE_CLOSURE");
+  IElementType TYPE_DEFINITION = new RustTokenType("TYPE_DEFINITION");
   IElementType TYPE_NONE = new RustTokenType("TYPE_NONE");
   IElementType TYPE_PROC = new RustTokenType("TYPE_PROC");
   IElementType TYPE_TUPLE = new RustTokenType("TYPE_TUPLE");
   IElementType USE = new RustTokenType("USE");
 
-  IElementType ARITHMETIC_OPERATORS_5_0 = new RustTokenType("arithmetic_operators_5_0");
   IElementType AS = new RustTokenType("AS");
   IElementType ASSIGN = new RustTokenType("=");
   IElementType AT = new RustTokenType("@");
@@ -118,7 +123,10 @@ public interface RustTokens {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == EXTERN) {
+       if (type == EXPRESSION) {
+        return new RustExpressionImpl(node);
+      }
+      else if (type == EXTERN) {
         return new RustExternImpl(node);
       }
       else if (type == EXTERN_INTERNAL) {
@@ -139,6 +147,9 @@ public interface RustTokens {
       else if (type == GENERIC_PARAMS) {
         return new RustGenericParamsImpl(node);
       }
+      else if (type == LET) {
+        return new RustLetImpl(node);
+      }
       else if (type == LIFETIME) {
         return new RustLifetimeImpl(node);
       }
@@ -154,17 +165,26 @@ public interface RustTokens {
       else if (type == STANDARD_ARG) {
         return new RustStandardArgImpl(node);
       }
-      else if (type == STATEMENT) {
-        return new RustStatementImpl(node);
-      }
       else if (type == STATEMENT_BLOCK) {
         return new RustStatementBlockImpl(node);
+      }
+      else if (type == STATEMENT_BLOCK_INTERNAL) {
+        return new RustStatementBlockInternalImpl(node);
+      }
+      else if (type == STATEMENT_WILDCARD) {
+        return new RustStatementWildcardImpl(node);
       }
       else if (type == STRUCT) {
         return new RustStructImpl(node);
       }
+      else if (type == STRUCT_BODY) {
+        return new RustStructBodyImpl(node);
+      }
       else if (type == STRUCT_PROPERTY) {
         return new RustStructPropertyImpl(node);
+      }
+      else if (type == STRUCT_RECOVER) {
+        return new RustStructRecoverImpl(node);
       }
       else if (type == TRAIT) {
         return new RustTraitImpl(node);
@@ -177,6 +197,9 @@ public interface RustTokens {
       }
       else if (type == TYPE_CLOSURE) {
         return new RustTypeClosureImpl(node);
+      }
+      else if (type == TYPE_DEFINITION) {
+        return new RustTypeDefinitionImpl(node);
       }
       else if (type == TYPE_NONE) {
         return new RustTypeNoneImpl(node);

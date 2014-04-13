@@ -29,9 +29,9 @@ public class RustStructImpl extends ASTWrapperPsiElement implements RustStruct {
   }
 
   @Override
-  @NotNull
-  public List<RustStructProperty> getStructPropertyList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustStructProperty.class);
+  @Nullable
+  public RustStructBody getStructBody() {
+    return findChildByClass(RustStructBody.class);
   }
 
 }

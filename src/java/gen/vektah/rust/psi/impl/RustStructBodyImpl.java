@@ -11,33 +11,21 @@ import static vektah.rust.psi.RustTokens.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustStatementImpl extends ASTWrapperPsiElement implements RustStatement {
+public class RustStructBodyImpl extends ASTWrapperPsiElement implements RustStructBody {
 
-  public RustStatementImpl(ASTNode node) {
+  public RustStructBodyImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitStatement(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitStructBody(this);
     else super.accept(visitor);
   }
 
   @Override
-  @Nullable
-  public RustFunction getFunction() {
-    return findChildByClass(RustFunction.class);
-  }
-
-  @Override
-  @Nullable
-  public RustStatementBlock getStatementBlock() {
-    return findChildByClass(RustStatementBlock.class);
-  }
-
-  @Override
-  @Nullable
-  public RustUse getUse() {
-    return findChildByClass(RustUse.class);
+  @NotNull
+  public List<RustStructProperty> getStructPropertyList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustStructProperty.class);
   }
 
 }

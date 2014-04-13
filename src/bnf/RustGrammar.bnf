@@ -94,6 +94,7 @@ simpleFile ::= ( use
 	| struct
 	| trait
 	| extern
+	| type_definition
 	| token
 )*
 
@@ -106,13 +107,13 @@ private not_semicolon ::= !(SEMICOLON)
 
 
 // TYPES
-path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* '::' generic
+path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* ['::' generic]
 private type ::= type_basic | type_tuple | type_closure | function_type | type_proc | type_none
 
 type_basic ::= ( ref 'mut'? | lifetime | '*'+)? 'mut'? ('~' | '@' | '$')? ( type_path | '[' type [',' '.' '.' (IDENTIFIER | numeric_literal)] ']' )
 
 type_tuple ::= '(' type (',' type)* ')'
-function_type ::= 'fn' '(' type_closure_args ')' ['->' return_type]
+function_type ::= ['extern' STRING_LIT] 'fn' '(' type_closure_args ')' ['->' return_type]
 type_closure ::= '|' type_closure_args '|' ['->' return_type]
 type_proc ::= 'proc' '(' type_closure_args ')' ['->' return_type]
 type_none ::= '*'? '(' ')'
@@ -151,20 +152,29 @@ private return_type ::= type | '!'
 private function_recover ::= !('{'|';')
 
 private arg ::= self_arg | standard_arg | tuple_arg
-
-standard_arg ::= arg_name [':' type ]
-tuple_arg ::= '(' arg_name (',' arg_name)* ')' [':' type ]
+standard_arg ::= var_name [':' type ]
+tuple_arg ::= '(' var_name (',' var_name)* ')' [':' type ]
 self_arg ::= ref? 'mut'? '~'? 'self'
-private arg_name ::= ref? 'mut'? IDENTIFIER
+private var_name ::= ref? 'mut'? IDENTIFIER
 
-statement_block ::= '{' statement* '}'
-statement ::= statement_block | function | use | (simple_token|literal|comment|symbol|operators|keyword|IDENTIFIER|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN)
+statement_block ::= statement_block_internal '}'
+statement_block_internal ::= '{' statement* {pin=1 recoverWhile="not_close_brace"}
+private statement ::= statement_block
+	| function
+	| use
+	| let
+	| statement_wildcard
+	| type_definition
+	| struct
+statement_wildcard ::= (simple_token|literal|comment|symbol|operators|keyword|IDENTIFIER|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN)
 
 
 // STRUCTS
-struct ::= struct_internal '}'
-private struct_internal ::= ['pub'] 'struct' IDENTIFIER generic_params? '{' [struct_property (',' struct_property)* ] ','? {pin=2 recoverWhile="not_close_brace"}
+struct ::= struct_internal '}'? ';'?
+private struct_internal ::= ['pub'] 'struct' IDENTIFIER generic_params? struct_body? {pin=2 recoverWhile="struct_recover"}
+struct_body ::= '{' [struct_property (',' struct_property)* ] ','?
 struct_property ::= ['priv' | 'pub'] standard_arg
+struct_recover ::= !(';'|'}')
 
 
 // TRAITS
@@ -175,15 +185,33 @@ private trait_internal ::= ['priv' | 'pub'] 'trait' IDENTIFIER generic_params? [
 extern ::= extern_internal '}'
 extern_internal ::= 'extern' '{' (function_declaration ';')* {pin = 2 recoverWhile="not_close_brace"}
 
+
+// LET
+let ::= 'let' (type_tuple | let_destructuring | var_name) [':' type] ['=' expression] ';'
+private let_destructuring ::= type '{' IDENTIFIER [':' IDENTIFIER] (',' IDENTIFIER [':' IDENTIFIER] )* [',' '.' '.'] '}'
+// TODO this is not correct, but close enough for now
+expression ::= expression_wildcard*
+
+
+// TYPE
+let type_definition ::= 'type' IDENTIFIER '=' type ';'
+
+private expression_wildcard ::= statement_block
+	| function
+	| use
+	| let
+	| type_definition
+	| (simple_token|literal|comment|operators|keyword|IDENTIFIER|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN|HASH|COMMA|DOUBLE_COLON|THIN_ARROW|FAT_ARROW|DOT|AT|SINGLE_QUOTE|DOLLAR|':')
+
 private token ::= (simple_token|literal|comment|symbol|brackets|operators|keyword|IDENTIFIER)
-private keyword ::= (KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_ENUM|KW_EXTERN|KW_FALSE|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LET|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_SUPER|KW_TRUE|KW_TYPE|KW_UNSAFE|KW_WHILE)
+private keyword ::= (KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_LET|KW_STRUCT|KW_ENUM|KW_EXTERN|KW_FALSE|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_SUPER|KW_TRUE|KW_TYPE|KW_UNSAFE|KW_WHILE)
 private simple_token ::= (UNOP|BINOP)
 private comment ::= (BLOCK_COMMENT|LINE_COMMENT)
 private literal ::= (STRING_LIT|RAW_STRING_LIT|CHAR_LIT|NUM_LIT|DEC_LIT|BIN_LIT|OCT_LIT|HEX_LIT)
 private brackets ::= (OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN|OPEN_BRACE|CLOSE_BRACE)
 private symbol ::= (HASH|COMMA|SEMICOLON|DOUBLE_COLON|THIN_ARROW|FAT_ARROW|DOT|AT|SINGLE_QUOTE|DOLLAR|':')
 private operators ::= (arithmetic_operators|bitwise_operators|comparison_operators|unary_operators|AS|ASSIGN)
-private arithmetic_operators ::= (PLUS|MINUS|MULTIPLY|DIVIDE|REMAINDER|)
+private arithmetic_operators ::= (PLUS|MINUS|MULTIPLY|DIVIDE|REMAINDER)
 private bitwise_operators ::= (BITWISE_AND|BITWISE_OR|BITWISE_XOR)
 private unary_operators ::= (NOT|BOX)
 private comparison_operators ::= (EQUAL|GREATER_THAN|LESS_THAN|NOT_EQUAL|GREATER_THAN_OR_EQUAL|LESS_THAN_OR_EQUAL)

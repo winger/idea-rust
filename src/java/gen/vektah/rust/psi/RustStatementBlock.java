@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RustStatementBlock extends PsiElement {
 
   @NotNull
-  List<RustStatement> getStatementList();
+  RustStatementBlockInternal getStatementBlockInternal();
 
 }

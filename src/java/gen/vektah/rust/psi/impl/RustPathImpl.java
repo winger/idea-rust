@@ -23,9 +23,9 @@ public class RustPathImpl extends ASTWrapperPsiElement implements RustPath {
   }
 
   @Override
-  @NotNull
+  @Nullable
   public RustGeneric getGeneric() {
-    return findNotNullChildByClass(RustGeneric.class);
+    return findChildByClass(RustGeneric.class);
   }
 
 }

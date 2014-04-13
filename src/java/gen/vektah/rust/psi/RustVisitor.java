@@ -7,6 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public class RustVisitor extends PsiElementVisitor {
 
+  public void visitExpression(@NotNull RustExpression o) {
+    visitPsiElement(o);
+  }
+
   public void visitExtern(@NotNull RustExtern o) {
     visitPsiElement(o);
   }
@@ -35,6 +39,10 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitLet(@NotNull RustLet o) {
+    visitPsiElement(o);
+  }
+
   public void visitLifetime(@NotNull RustLifetime o) {
     visitPsiElement(o);
   }
@@ -55,11 +63,15 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitStatement(@NotNull RustStatement o) {
+  public void visitStatementBlock(@NotNull RustStatementBlock o) {
     visitPsiElement(o);
   }
 
-  public void visitStatementBlock(@NotNull RustStatementBlock o) {
+  public void visitStatementBlockInternal(@NotNull RustStatementBlockInternal o) {
+    visitPsiElement(o);
+  }
+
+  public void visitStatementWildcard(@NotNull RustStatementWildcard o) {
     visitPsiElement(o);
   }
 
@@ -67,7 +79,15 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitStructBody(@NotNull RustStructBody o) {
+    visitPsiElement(o);
+  }
+
   public void visitStructProperty(@NotNull RustStructProperty o) {
+    visitPsiElement(o);
+  }
+
+  public void visitStructRecover(@NotNull RustStructRecover o) {
     visitPsiElement(o);
   }
 
@@ -84,6 +104,10 @@ public class RustVisitor extends PsiElementVisitor {
   }
 
   public void visitTypeClosure(@NotNull RustTypeClosure o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTypeDefinition(@NotNull RustTypeDefinition o) {
     visitPsiElement(o);
   }
 

@@ -33,9 +33,9 @@ INT_SUFFIX = [ui] ( "8" | "16" | "32" | "64" )?
 EXPONENT = [eE] [-+] ([0-9] | "_" )+
 FLOAT_SUFFIX = ( {EXPONENT} | "." [0-9_]+ {EXPONENT}? )? ("f" ("32" | "64")?)?
 DEC_LIT = [0-9] [0-9_]* {NUM_SUFFIX}?
-BIN_LIT = "0"? "b" [01_]+ {INT_SUFFIX}?
-OCT_LIT = "0"? "o" [0-7_]+ {INT_SUFFIX}?
-HEX_LIT = "0"? "x" [a-fA-F0-9_]+ {INT_SUFFIX}?
+BIN_LIT = "0b" [01_]+ {INT_SUFFIX}?
+OCT_LIT = "0o" [0-7_]+ {INT_SUFFIX}?
+HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 
 %state IN_BLOCK_COMMENT
 %state IN_RAW_STRING

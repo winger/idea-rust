@@ -5,9 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustPath extends PsiElement {
-
-  @Nullable
-  RustGeneric getGeneric();
+public interface RustStructRecover extends PsiElement {
 
 }

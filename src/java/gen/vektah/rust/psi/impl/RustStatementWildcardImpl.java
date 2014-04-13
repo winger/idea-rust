@@ -11,21 +11,15 @@ import static vektah.rust.psi.RustTokens.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustStatementBlockImpl extends ASTWrapperPsiElement implements RustStatementBlock {
+public class RustStatementWildcardImpl extends ASTWrapperPsiElement implements RustStatementWildcard {
 
-  public RustStatementBlockImpl(ASTNode node) {
+  public RustStatementWildcardImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitStatementBlock(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitStatementWildcard(this);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public RustStatementBlockInternal getStatementBlockInternal() {
-    return findNotNullChildByClass(RustStatementBlockInternal.class);
   }
 
 }

@@ -10,7 +10,7 @@ public interface RustStruct extends PsiElement {
   @Nullable
   RustGenericParams getGenericParams();
 
-  @NotNull
-  List<RustStructProperty> getStructPropertyList();
+  @Nullable
+  RustStructBody getStructBody();
 
 }
