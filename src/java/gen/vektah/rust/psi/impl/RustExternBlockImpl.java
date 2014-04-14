@@ -30,6 +30,12 @@ public class RustExternBlockImpl extends ASTWrapperPsiElement implements RustExt
 
   @Override
   @NotNull
+  public List<RustStandardArg> getStandardArgList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustStandardArg.class);
+  }
+
+  @Override
+  @NotNull
   public List<RustTraitFunctionDeclaration> getTraitFunctionDeclarationList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RustTraitFunctionDeclaration.class);
   }

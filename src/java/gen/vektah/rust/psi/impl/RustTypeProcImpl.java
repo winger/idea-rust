@@ -23,15 +23,21 @@ public class RustTypeProcImpl extends ASTWrapperPsiElement implements RustTypePr
   }
 
   @Override
-  @Nullable
-  public RustFunctionType getFunctionType() {
-    return findChildByClass(RustFunctionType.class);
+  @NotNull
+  public List<RustFunctionType> getFunctionTypeList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustFunctionType.class);
   }
 
   @Override
   @NotNull
-  public List<RustStandardArg> getStandardArgList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustStandardArg.class);
+  public List<RustRef> getRefList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustRef.class);
+  }
+
+  @Override
+  @Nullable
+  public RustTraitBounds getTraitBounds() {
+    return findChildByClass(RustTraitBounds.class);
   }
 
   @Override
@@ -41,27 +47,27 @@ public class RustTypeProcImpl extends ASTWrapperPsiElement implements RustTypePr
   }
 
   @Override
-  @Nullable
-  public RustTypeClosure getTypeClosure() {
-    return findChildByClass(RustTypeClosure.class);
+  @NotNull
+  public List<RustTypeClosure> getTypeClosureList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustTypeClosure.class);
   }
 
   @Override
-  @Nullable
-  public RustTypeNone getTypeNone() {
-    return findChildByClass(RustTypeNone.class);
+  @NotNull
+  public List<RustTypeNone> getTypeNoneList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustTypeNone.class);
   }
 
   @Override
-  @Nullable
-  public RustTypeProc getTypeProc() {
-    return findChildByClass(RustTypeProc.class);
+  @NotNull
+  public List<RustTypeProc> getTypeProcList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustTypeProc.class);
   }
 
   @Override
-  @Nullable
-  public RustTypeTuple getTypeTuple() {
-    return findChildByClass(RustTypeTuple.class);
+  @NotNull
+  public List<RustTypeTuple> getTypeTupleList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustTypeTuple.class);
   }
 
 }

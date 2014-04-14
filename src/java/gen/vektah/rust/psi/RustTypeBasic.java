@@ -20,6 +20,12 @@ public interface RustTypeBasic extends PsiElement {
   List<RustRef> getRefList();
 
   @Nullable
+  RustStaticExpression getStaticExpression();
+
+  @Nullable
+  RustTraitBounds getTraitBounds();
+
+  @Nullable
   RustTypeBasic getTypeBasic();
 
   @Nullable

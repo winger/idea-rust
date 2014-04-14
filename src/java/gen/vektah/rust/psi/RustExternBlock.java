@@ -11,6 +11,9 @@ public interface RustExternBlock extends PsiElement {
   List<RustAttribute> getAttributeList();
 
   @NotNull
+  List<RustStandardArg> getStandardArgList();
+
+  @NotNull
   List<RustTraitFunctionDeclaration> getTraitFunctionDeclarationList();
 
 }

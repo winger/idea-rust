@@ -103,37 +103,43 @@ simpleFile ::= ( use
 private numeric_literal ::= BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT
 private string_literal ::= STRING_LIT | RAW_STRING_LIT | CHAR_LIT
 private literal ::= string_literal | numeric_literal
+private binary_operator ::= '/' | '*' | '+' | '-' | '<' '<' | '>' '>'
 
 // Generic recovery predicates
 private not_close_brace ::= !('}')
 private not_semicolon ::= !(';')
 private not_close_square_bracket ::= !(']')
 private not_close_parenthesis ::= !(')')
+private not_semicolon_or_open_brace ::= !('{' | ';')
+
+// Cut back expressions usable in static contexts
+static_expression ::= (IDENTIFIER | literal | static_expression_group) (binary_operator (IDENTIFIER | literal | static_expression_group))*
+static_expression_group ::= '(' static_expression ')'
 
 
 // TYPES
 path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* ['::' generic]
 private type ::= type_basic | type_tuple | type_closure | function_type | type_proc | type_none
 
-type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* ('~' | '@' | '$')? ( type_path | '[' type [',' '.' '.' (IDENTIFIER | numeric_literal)] ']' )
+type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* ('~' | '@' | '$')? ( type_path | '[' type [',' '.' '.' static_expression] ']' )
 
 type_tuple ::= '(' type (',' type)* ')'
-function_type ::= ['extern' STRING_LIT] 'unsafe'? 'fn' '(' type_closure_args ')' ['->' return_type]
-type_closure ::= '|' type_closure_args '|' ['->' return_type]
-type_proc ::= 'proc' '(' type_closure_args ')' ['->' return_type]
+function_type ::= ['extern' STRING_LIT] 'unsafe'? 'fn' trait_bounds? '(' type_closure_args ')' ['->' return_type]
+type_closure ::= lifetime? '|' type_closure_args '|' ['->' return_type]
+type_proc ::= 'proc' trait_bounds? '(' type_closure_args ')' ['->' return_type]
 type_none ::= '*'? '(' ')'
 private type_closure_args ::=  [ type_closure_arg ( ',' type_closure_arg)* ]
-private type_closure_arg ::= standard_arg | type_basic
+private type_closure_arg ::= var_name ':' type | type_basic
 
-private type_path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* generic?
+private type_path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* generic? trait_bounds?
 ref ::= '&'+ lifetime?
 lifetime ::= "'" (IDENTIFIER | 'static')
 
 
 // GENERIC PARAM LIST eg function<A>(...)
 generic_params ::= '<' generic_param (',' generic_param)* '>'
-private generic_param ::= lifetime | IDENTIFIER [(':' | '=') type ('+' type)* ]
-
+private generic_param ::= lifetime | IDENTIFIER (region_bound | [(':' | '=') type ('+' type)* ])
+region_bound ::= ':' "'" 'static'
 
 // GENERIC TYPES eg Option<Foo>
 generic ::= generic_internal '>'
@@ -160,7 +166,7 @@ private arg ::= self_arg | standard_arg | tuple_arg
 standard_arg ::= var_name [':' type ]
 tuple_arg ::= '(' var_name (',' var_name)* ')' [':' type ]
 self_arg ::= ref? 'mut'? '~'? 'self'
-private var_name ::= ref? 'mut'? IDENTIFIER
+private var_name ::= 'static'? ref? 'mut'? IDENTIFIER
 
 statement_block ::= statement_block_internal '}'
 statement_block_internal ::= '{' statement* {pin=1 recoverWhile="not_close_brace"}
@@ -184,12 +190,14 @@ struct_property ::= ['priv' | 'pub'] standard_arg
 
 // TRAITS
 trait ::= trait_internal '}'
-private trait_internal ::= ['priv' | 'pub'] 'trait' IDENTIFIER generic_params? [':' type] '{' (trait_function_declaration ';')* {pin=2 recoverWhile="not_close_brace"}
-trait_function_declaration ::= ['pub'] 'fn' IDENTIFIER generic_params? '(' ( (arg|type) (',' (arg|type))* )? ')' ['->' return_type] {pin=2 recoverWhile="not_semicolon" }
+private trait_internal ::= ['priv' | 'pub'] 'trait' IDENTIFIER generic_params? [':' type ('+' type)*] '{' (attribute | trait_function_declaration (';' | statement_block) )* {pin=2 recoverWhile="not_close_brace"}
+trait_function_declaration ::= ['pub'] 'fn' IDENTIFIER generic_params? '(' ( (arg|type) (',' (arg|type))* )? ')' ['->' return_type] {pin=3 recoverWhile="not_semicolon_or_open_brace" }
+
+trait_bounds ::= ':' IDENTIFIER?
 
 // EXTERNALS
 private extern ::= extern_crate ';' | extern_block '}'
-extern_block ::= 'extern' STRING_LIT? '{' (attribute | trait_function_declaration ';')* {pin=1 recoverWhile="not_close_brace"}
+extern_block ::= 'extern' STRING_LIT? '{' (attribute | standard_arg ';' | trait_function_declaration ';')* {pin=1 recoverWhile="not_close_brace"}
 extern_crate ::= 'extern' 'crate' IDENTIFIER {pin=2 recoverWhile="not_semicolon"}
 
 
@@ -198,7 +206,6 @@ let ::= 'let' (type_tuple | let_destructuring | var_name) [':' type] ['=' expres
 private let_destructuring ::= type '{' IDENTIFIER [':' IDENTIFIER] (',' IDENTIFIER [':' IDENTIFIER] )* [',' '.' '.'] '}'
 // TODO this is not correct, but close enough for now
 expression ::= expression_wildcard*
-
 
 // ATTRIBUTES
 attribute ::= attribute_internal ']'

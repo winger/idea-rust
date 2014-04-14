@@ -36,6 +36,12 @@ public class RustGenericParamsImpl extends ASTWrapperPsiElement implements RustG
 
   @Override
   @NotNull
+  public List<RustRegionBound> getRegionBoundList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustRegionBound.class);
+  }
+
+  @Override
+  @NotNull
   public List<RustTypeBasic> getTypeBasicList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RustTypeBasic.class);
   }

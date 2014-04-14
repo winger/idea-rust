@@ -63,6 +63,10 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitRegionBound(@NotNull RustRegionBound o) {
+    visitPsiElement(o);
+  }
+
   public void visitSelfArg(@NotNull RustSelfArg o) {
     visitPsiElement(o);
   }
@@ -83,6 +87,14 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitStaticExpression(@NotNull RustStaticExpression o) {
+    visitPsiElement(o);
+  }
+
+  public void visitStaticExpressionGroup(@NotNull RustStaticExpressionGroup o) {
+    visitPsiElement(o);
+  }
+
   public void visitStruct(@NotNull RustStruct o) {
     visitPsiElement(o);
   }
@@ -96,6 +108,10 @@ public class RustVisitor extends PsiElementVisitor {
   }
 
   public void visitTrait(@NotNull RustTrait o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTraitBounds(@NotNull RustTraitBounds o) {
     visitPsiElement(o);
   }
 

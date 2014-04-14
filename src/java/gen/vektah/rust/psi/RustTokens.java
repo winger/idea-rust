@@ -22,15 +22,19 @@ public interface RustTokens {
   IElementType LIFETIME = new RustTokenType("LIFETIME");
   IElementType PATH = new RustTokenType("PATH");
   IElementType REF = new RustTokenType("REF");
+  IElementType REGION_BOUND = new RustTokenType("REGION_BOUND");
   IElementType SELF_ARG = new RustTokenType("SELF_ARG");
   IElementType STANDARD_ARG = new RustTokenType("STANDARD_ARG");
   IElementType STATEMENT_BLOCK = new RustTokenType("STATEMENT_BLOCK");
   IElementType STATEMENT_BLOCK_INTERNAL = new RustTokenType("STATEMENT_BLOCK_INTERNAL");
   IElementType STATEMENT_WILDCARD = new RustTokenType("STATEMENT_WILDCARD");
+  IElementType STATIC_EXPRESSION = new RustTokenType("STATIC_EXPRESSION");
+  IElementType STATIC_EXPRESSION_GROUP = new RustTokenType("STATIC_EXPRESSION_GROUP");
   IElementType STRUCT = new RustTokenType("STRUCT");
   IElementType STRUCT_BODY = new RustTokenType("STRUCT_BODY");
   IElementType STRUCT_PROPERTY = new RustTokenType("STRUCT_PROPERTY");
   IElementType TRAIT = new RustTokenType("TRAIT");
+  IElementType TRAIT_BOUNDS = new RustTokenType("TRAIT_BOUNDS");
   IElementType TRAIT_FUNCTION_DECLARATION = new RustTokenType("TRAIT_FUNCTION_DECLARATION");
   IElementType TUPLE_ARG = new RustTokenType("TUPLE_ARG");
   IElementType TUPLE_BODY = new RustTokenType("TUPLE_BODY");
@@ -167,6 +171,9 @@ public interface RustTokens {
       else if (type == REF) {
         return new RustRefImpl(node);
       }
+      else if (type == REGION_BOUND) {
+        return new RustRegionBoundImpl(node);
+      }
       else if (type == SELF_ARG) {
         return new RustSelfArgImpl(node);
       }
@@ -182,6 +189,12 @@ public interface RustTokens {
       else if (type == STATEMENT_WILDCARD) {
         return new RustStatementWildcardImpl(node);
       }
+      else if (type == STATIC_EXPRESSION) {
+        return new RustStaticExpressionImpl(node);
+      }
+      else if (type == STATIC_EXPRESSION_GROUP) {
+        return new RustStaticExpressionGroupImpl(node);
+      }
       else if (type == STRUCT) {
         return new RustStructImpl(node);
       }
@@ -193,6 +206,9 @@ public interface RustTokens {
       }
       else if (type == TRAIT) {
         return new RustTraitImpl(node);
+      }
+      else if (type == TRAIT_BOUNDS) {
+        return new RustTraitBoundsImpl(node);
       }
       else if (type == TRAIT_FUNCTION_DECLARATION) {
         return new RustTraitFunctionDeclarationImpl(node);

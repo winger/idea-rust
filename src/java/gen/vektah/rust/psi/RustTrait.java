@@ -7,28 +7,34 @@ import com.intellij.psi.PsiElement;
 
 public interface RustTrait extends PsiElement {
 
-  @Nullable
-  RustFunctionType getFunctionType();
+  @NotNull
+  List<RustAttribute> getAttributeList();
+
+  @NotNull
+  List<RustFunctionType> getFunctionTypeList();
 
   @Nullable
   RustGenericParams getGenericParams();
 
   @NotNull
+  List<RustStatementBlock> getStatementBlockList();
+
+  @NotNull
   List<RustTraitFunctionDeclaration> getTraitFunctionDeclarationList();
 
-  @Nullable
-  RustTypeBasic getTypeBasic();
+  @NotNull
+  List<RustTypeBasic> getTypeBasicList();
 
-  @Nullable
-  RustTypeClosure getTypeClosure();
+  @NotNull
+  List<RustTypeClosure> getTypeClosureList();
 
-  @Nullable
-  RustTypeNone getTypeNone();
+  @NotNull
+  List<RustTypeNone> getTypeNoneList();
 
-  @Nullable
-  RustTypeProc getTypeProc();
+  @NotNull
+  List<RustTypeProc> getTypeProcList();
 
-  @Nullable
-  RustTypeTuple getTypeTuple();
+  @NotNull
+  List<RustTypeTuple> getTypeTupleList();
 
 }

@@ -14,6 +14,9 @@ public interface RustGenericParams extends PsiElement {
   List<RustLifetime> getLifetimeList();
 
   @NotNull
+  List<RustRegionBound> getRegionBoundList();
+
+  @NotNull
   List<RustTypeBasic> getTypeBasicList();
 
   @NotNull

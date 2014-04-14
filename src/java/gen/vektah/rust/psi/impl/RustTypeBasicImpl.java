@@ -48,6 +48,18 @@ public class RustTypeBasicImpl extends ASTWrapperPsiElement implements RustTypeB
 
   @Override
   @Nullable
+  public RustStaticExpression getStaticExpression() {
+    return findChildByClass(RustStaticExpression.class);
+  }
+
+  @Override
+  @Nullable
+  public RustTraitBounds getTraitBounds() {
+    return findChildByClass(RustTraitBounds.class);
+  }
+
+  @Override
+  @Nullable
   public RustTypeBasic getTypeBasic() {
     return findChildByClass(RustTypeBasic.class);
   }

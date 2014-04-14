@@ -5,6 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustStructRecover extends PsiElement {
+public interface RustStaticExpressionGroup extends PsiElement {
+
+  @NotNull
+  RustStaticExpression getStaticExpression();
 
 }
