@@ -1,17 +1,20 @@
 <idea-plugin version="2">
   <id>vektah.rust</id>
   <name>Rust</name>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <vendor email="adam@vektah.net" url="http://github.com/Vektah/idea-rust">Vektah</vendor>
 
   <description><![CDATA[
-      Language support for the <a href="http://www.rust-lang.org/">Rust Language</a><br><br>
+        Language support for the <a href="http://www.rust-lang.org/">Rust Language</a><br><br>
 
-      <em>PLEASE NOTE</em>: This does not yet do any auto completion. It is JUST the lexer and highlighting for .rs files. The rest is coming soon!
+        <em>PLEASE NOTE</em>: This does not yet do any auto completion. It is JUST the lexer and highlighting for .rs files. The rest is coming soon!
     ]]></description>
 
   <change-notes><![CDATA[
-      0.0.1: Initial plugin
+    <ul>
+        <li><b>0.0.2</b>: Added grammar support for functions, structs, use, traits, externals, lets, types, struct tuples and static vars</li>
+        <li><b>0.0.1</b>: Initial plugin</li>
+    </ul>
     ]]>
   </change-notes>
 
