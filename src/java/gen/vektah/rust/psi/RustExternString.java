@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustExternBlock extends PsiElement {
+public interface RustExternString extends PsiElement {
 
   @NotNull
   List<RustAttribute> getAttributeList();

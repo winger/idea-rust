@@ -11,8 +11,10 @@ public interface RustTokens {
   IElementType ATTRIBUTE = new RustTokenType("ATTRIBUTE");
   IElementType ATTRIBUTE_ARG = new RustTokenType("ATTRIBUTE_ARG");
   IElementType EXPRESSION = new RustTokenType("EXPRESSION");
-  IElementType EXTERN_BLOCK = new RustTokenType("EXTERN_BLOCK");
+  IElementType EXTERN = new RustTokenType("EXTERN");
   IElementType EXTERN_CRATE = new RustTokenType("EXTERN_CRATE");
+  IElementType EXTERN_FUNCTION = new RustTokenType("EXTERN_FUNCTION");
+  IElementType EXTERN_STRING = new RustTokenType("EXTERN_STRING");
   IElementType FUNCTION = new RustTokenType("FUNCTION");
   IElementType FUNCTION_DECLARATION = new RustTokenType("FUNCTION_DECLARATION");
   IElementType FUNCTION_TYPE = new RustTokenType("FUNCTION_TYPE");
@@ -138,11 +140,17 @@ public interface RustTokens {
       else if (type == EXPRESSION) {
         return new RustExpressionImpl(node);
       }
-      else if (type == EXTERN_BLOCK) {
-        return new RustExternBlockImpl(node);
+      else if (type == EXTERN) {
+        return new RustExternImpl(node);
       }
       else if (type == EXTERN_CRATE) {
         return new RustExternCrateImpl(node);
+      }
+      else if (type == EXTERN_FUNCTION) {
+        return new RustExternFunctionImpl(node);
+      }
+      else if (type == EXTERN_STRING) {
+        return new RustExternStringImpl(node);
       }
       else if (type == FUNCTION) {
         return new RustFunctionImpl(node);

@@ -11,14 +11,14 @@ import static vektah.rust.psi.RustTokens.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustExternBlockImpl extends ASTWrapperPsiElement implements RustExternBlock {
+public class RustExternStringImpl extends ASTWrapperPsiElement implements RustExternString {
 
-  public RustExternBlockImpl(ASTNode node) {
+  public RustExternStringImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitExternBlock(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitExternString(this);
     else super.accept(visitor);
   }
 

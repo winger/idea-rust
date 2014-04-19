@@ -11,10 +11,7 @@ public interface RustExpression extends PsiElement {
   List<RustAttribute> getAttributeList();
 
   @NotNull
-  List<RustExternBlock> getExternBlockList();
-
-  @NotNull
-  List<RustExternCrate> getExternCrateList();
+  List<RustExtern> getExternList();
 
   @NotNull
   List<RustFunction> getFunctionList();

@@ -118,7 +118,7 @@ static_expression_group ::= '(' static_expression ')'
 
 
 // TYPES
-path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* ['::' generic]
+path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* ['::' generic]
 private type ::= type_basic | type_tuple | type_closure | function_type | type_proc | type_none
 
 type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* ('~' | '@' | '$')? ( type_path | '[' type [',' '.' '.' static_expression] ']' )
@@ -131,7 +131,7 @@ type_none ::= '*'? '(' ')'
 private type_closure_args ::=  [ type_closure_arg ( ',' type_closure_arg)* ]
 private type_closure_arg ::= var_name ':' type | type_basic
 
-private type_path ::= '::'? IDENTIFIER ('::' IDENTIFIER)* generic? trait_bounds?
+private type_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* generic? trait_bounds?
 ref ::= '&'+ lifetime?
 lifetime ::= "'" (IDENTIFIER | 'static')
 
@@ -196,9 +196,10 @@ trait_function_declaration ::= ['pub'] 'fn' IDENTIFIER generic_params? '(' ( (ar
 trait_bounds ::= ':' IDENTIFIER?
 
 // EXTERNALS
-private extern ::= extern_crate ';' | extern_block '}'
-extern_block ::= 'extern' STRING_LIT? '{' (attribute | standard_arg ';' | trait_function_declaration ';')* {pin=1 recoverWhile="not_close_brace"}
-extern_crate ::= 'extern' 'crate' IDENTIFIER {pin=2 recoverWhile="not_semicolon"}
+extern ::= 'extern' (extern_crate ';' | extern_string '}' | extern_function)
+extern_string ::= STRING_LIT? '{' (attribute | standard_arg ';' | trait_function_declaration ';')* {pin=2 recoverWhile="not_close_brace"}
+extern_crate ::= 'crate' IDENTIFIER ['=' STRING_LIT] {pin=1 recoverWhile="not_semicolon"}
+extern_function ::= function
 
 
 // LET

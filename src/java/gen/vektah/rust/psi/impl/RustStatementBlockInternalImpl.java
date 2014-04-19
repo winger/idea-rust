@@ -30,14 +30,8 @@ public class RustStatementBlockInternalImpl extends ASTWrapperPsiElement impleme
 
   @Override
   @NotNull
-  public List<RustExternBlock> getExternBlockList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustExternBlock.class);
-  }
-
-  @Override
-  @NotNull
-  public List<RustExternCrate> getExternCrateList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustExternCrate.class);
+  public List<RustExtern> getExternList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustExtern.class);
   }
 
   @Override

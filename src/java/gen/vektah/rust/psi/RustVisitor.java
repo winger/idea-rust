@@ -19,11 +19,19 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitExternBlock(@NotNull RustExternBlock o) {
+  public void visitExtern(@NotNull RustExtern o) {
     visitPsiElement(o);
   }
 
   public void visitExternCrate(@NotNull RustExternCrate o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExternFunction(@NotNull RustExternFunction o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExternString(@NotNull RustExternString o) {
     visitPsiElement(o);
   }
 
