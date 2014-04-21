@@ -6,6 +6,7 @@ import com.intellij.lang.PsiBuilder.Marker;
 import com.intellij.openapi.diagnostic.Logger;
 import static vektah.rust.psi.RustTokens.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
+import com.intellij.lang.LighterASTNode;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.TokenSet;
@@ -18,13 +19,109 @@ public class RustParser implements PsiParser {
 
   public ASTNode parse(IElementType root_, PsiBuilder builder_) {
     boolean result_;
-    builder_ = adapt_builder_(root_, builder_, this, null);
+    builder_ = adapt_builder_(root_, builder_, this, EXTENDS_SETS_);
     Marker marker_ = enter_section_(builder_, 0, _COLLAPSE_, null);
     if (root_ == ATTRIBUTE) {
       result_ = attribute(builder_, 0);
     }
     else if (root_ == ATTRIBUTE_ARG) {
       result_ = attribute_arg(builder_, 0);
+    }
+    else if (root_ == BLOCK_IF) {
+      result_ = block_if(builder_, 0);
+    }
+    else if (root_ == CALL_PARAMS) {
+      result_ = call_params(builder_, 0);
+    }
+    else if (root_ == EXPR) {
+      result_ = expr(builder_, 0, -1);
+    }
+    else if (root_ == EXPR_ASSIGN) {
+      result_ = expr(builder_, 0, 1);
+    }
+    else if (root_ == EXPR_BITWISE_AND) {
+      result_ = expr(builder_, 0, 8);
+    }
+    else if (root_ == EXPR_BITWISE_OR) {
+      result_ = expr(builder_, 0, 6);
+    }
+    else if (root_ == EXPR_BITWISE_XOR) {
+      result_ = expr(builder_, 0, 7);
+    }
+    else if (root_ == EXPR_BLOCK) {
+      result_ = expr_block(builder_, 0);
+    }
+    else if (root_ == EXPR_BORROW) {
+      result_ = expr_borrow(builder_, 0);
+    }
+    else if (root_ == EXPR_BOX) {
+      result_ = expr_box(builder_, 0);
+    }
+    else if (root_ == EXPR_CALL) {
+      result_ = expr(builder_, 0, 0);
+    }
+    else if (root_ == EXPR_DEREF) {
+      result_ = expr_deref(builder_, 0);
+    }
+    else if (root_ == EXPR_DIVIDE) {
+      result_ = expr(builder_, 0, 11);
+    }
+    else if (root_ == EXPR_EQUAL_TO) {
+      result_ = expr(builder_, 0, 4);
+    }
+    else if (root_ == EXPR_FIELD) {
+      result_ = expr(builder_, 0, 13);
+    }
+    else if (root_ == EXPR_GREATER_OR_EQUAL) {
+      result_ = expr(builder_, 0, 5);
+    }
+    else if (root_ == EXPR_GREATER_THAN) {
+      result_ = expr(builder_, 0, 5);
+    }
+    else if (root_ == EXPR_LEFT_SHIFT) {
+      result_ = expr(builder_, 0, 9);
+    }
+    else if (root_ == EXPR_LESS_OR_EQUAL) {
+      result_ = expr(builder_, 0, 5);
+    }
+    else if (root_ == EXPR_LESS_THAN) {
+      result_ = expr(builder_, 0, 5);
+    }
+    else if (root_ == EXPR_LOGICAL_AND) {
+      result_ = expr(builder_, 0, 3);
+    }
+    else if (root_ == EXPR_LOGICAL_OR) {
+      result_ = expr(builder_, 0, 2);
+    }
+    else if (root_ == EXPR_MINUS) {
+      result_ = expr(builder_, 0, 10);
+    }
+    else if (root_ == EXPR_MULTIPLY) {
+      result_ = expr(builder_, 0, 11);
+    }
+    else if (root_ == EXPR_NOT_EQUAL_TO) {
+      result_ = expr(builder_, 0, 4);
+    }
+    else if (root_ == EXPR_PAREN) {
+      result_ = expr_paren(builder_, 0);
+    }
+    else if (root_ == EXPR_PLUS) {
+      result_ = expr(builder_, 0, 10);
+    }
+    else if (root_ == EXPR_RIGHT_SHIFT) {
+      result_ = expr(builder_, 0, 9);
+    }
+    else if (root_ == EXPR_UNARY_MINUS) {
+      result_ = expr_unary_minus(builder_, 0);
+    }
+    else if (root_ == EXPR_UNARY_NOT) {
+      result_ = expr_unary_not(builder_, 0);
+    }
+    else if (root_ == EXPR_UNARY_PLUS) {
+      result_ = expr_unary_plus(builder_, 0);
+    }
+    else if (root_ == EXPR_VALUE) {
+      result_ = expr_value(builder_, 0);
     }
     else if (root_ == EXPRESSION) {
       result_ = expression(builder_, 0);
@@ -82,9 +179,6 @@ public class RustParser implements PsiParser {
     }
     else if (root_ == STATEMENT_BLOCK_INTERNAL) {
       result_ = statement_block_internal(builder_, 0);
-    }
-    else if (root_ == STATEMENT_WILDCARD) {
-      result_ = statement_wildcard(builder_, 0);
     }
     else if (root_ == STATIC_EXPRESSION) {
       result_ = static_expression(builder_, 0);
@@ -147,6 +241,18 @@ public class RustParser implements PsiParser {
   protected boolean parse_root_(final IElementType root_, final PsiBuilder builder_, final int level_) {
     return simpleFile(builder_, level_ + 1);
   }
+
+  public static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
+    create_token_set_(BLOCK_IF, EXPR, EXPR_ASSIGN, EXPR_BITWISE_AND,
+      EXPR_BITWISE_OR, EXPR_BITWISE_XOR, EXPR_BLOCK, EXPR_BORROW,
+      EXPR_BOX, EXPR_CALL, EXPR_DEREF, EXPR_DIVIDE,
+      EXPR_EQUAL_TO, EXPR_FIELD, EXPR_GREATER_OR_EQUAL, EXPR_GREATER_THAN,
+      EXPR_LEFT_SHIFT, EXPR_LESS_OR_EQUAL, EXPR_LESS_THAN, EXPR_LOGICAL_AND,
+      EXPR_LOGICAL_OR, EXPR_MINUS, EXPR_MULTIPLY, EXPR_NOT_EQUAL_TO,
+      EXPR_PAREN, EXPR_PLUS, EXPR_RIGHT_SHIFT, EXPR_UNARY_MINUS,
+      EXPR_UNARY_NOT, EXPR_UNARY_PLUS, EXPR_VALUE),
+    create_token_set_(BLOCK_IF, EXPR_BLOCK),
+  };
 
   /* ********************************************************** */
   // self_arg | standard_arg | tuple_arg
@@ -354,6 +460,39 @@ public class RustParser implements PsiParser {
   }
 
   /* ********************************************************** */
+  // 'if' expr statement_block ['else' statement_block]
+  public static boolean block_if(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "block_if")) return false;
+    if (!nextTokenIs(builder_, KW_IF)) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, KW_IF);
+    result_ = result_ && expr(builder_, level_ + 1, -1);
+    result_ = result_ && statement_block(builder_, level_ + 1);
+    result_ = result_ && block_if_3(builder_, level_ + 1);
+    exit_section_(builder_, marker_, BLOCK_IF, result_);
+    return result_;
+  }
+
+  // ['else' statement_block]
+  private static boolean block_if_3(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "block_if_3")) return false;
+    block_if_3_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // 'else' statement_block
+  private static boolean block_if_3_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "block_if_3_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, KW_ELSE);
+    result_ = result_ && statement_block(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
   // OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN|OPEN_BRACE|CLOSE_BRACE
   static boolean brackets(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "brackets")) return false;
@@ -365,6 +504,41 @@ public class RustParser implements PsiParser {
     if (!result_) result_ = consumeToken(builder_, CLOSE_PAREN);
     if (!result_) result_ = consumeToken(builder_, OPEN_BRACE);
     if (!result_) result_ = consumeToken(builder_, CLOSE_BRACE);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // expr (',' expr)*
+  public static boolean call_params(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "call_params")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, "<call params>");
+    result_ = expr(builder_, level_ + 1, -1);
+    result_ = result_ && call_params_1(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, CALL_PARAMS, result_, false, null);
+    return result_;
+  }
+
+  // (',' expr)*
+  private static boolean call_params_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "call_params_1")) return false;
+    int pos_ = current_position_(builder_);
+    while (true) {
+      if (!call_params_1_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "call_params_1", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    return true;
+  }
+
+  // ',' expr
+  private static boolean call_params_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "call_params_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, COMMA);
+    result_ = result_ && expr(builder_, level_ + 1, -1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -1768,10 +1942,11 @@ public class RustParser implements PsiParser {
 
   /* ********************************************************** */
   // statement_block
+  // 	| expr_block
+  // 	| expr ';'?
   // 	| function
   // 	| use
   // 	| let
-  // 	| statement_wildcard
   // 	| type_definition
   // 	| struct
   // 	| attribute
@@ -1781,16 +1956,35 @@ public class RustParser implements PsiParser {
     boolean result_ = false;
     Marker marker_ = enter_section_(builder_);
     result_ = statement_block(builder_, level_ + 1);
+    if (!result_) result_ = expr_block(builder_, level_ + 1);
+    if (!result_) result_ = statement_2(builder_, level_ + 1);
     if (!result_) result_ = function(builder_, level_ + 1);
     if (!result_) result_ = use(builder_, level_ + 1);
     if (!result_) result_ = let(builder_, level_ + 1);
-    if (!result_) result_ = statement_wildcard(builder_, level_ + 1);
     if (!result_) result_ = type_definition(builder_, level_ + 1);
     if (!result_) result_ = struct(builder_, level_ + 1);
     if (!result_) result_ = attribute(builder_, level_ + 1);
     if (!result_) result_ = extern(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
+  }
+
+  // expr ';'?
+  private static boolean statement_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "statement_2")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = expr(builder_, level_ + 1, -1);
+    result_ = result_ && statement_2_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // ';'?
+  private static boolean statement_2_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "statement_2_1")) return false;
+    consumeToken(builder_, SEMICOLON);
+    return true;
   }
 
   /* ********************************************************** */
@@ -1830,27 +2024,6 @@ public class RustParser implements PsiParser {
       pos_ = current_position_(builder_);
     }
     return true;
-  }
-
-  /* ********************************************************** */
-  // simple_token|literal|comment|symbol|operators|keyword|IDENTIFIER|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN
-  public static boolean statement_wildcard(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "statement_wildcard")) return false;
-    boolean result_ = false;
-    Marker marker_ = enter_section_(builder_, level_, _NONE_, "<statement wildcard>");
-    result_ = simple_token(builder_, level_ + 1);
-    if (!result_) result_ = literal(builder_, level_ + 1);
-    if (!result_) result_ = comment(builder_, level_ + 1);
-    if (!result_) result_ = symbol(builder_, level_ + 1);
-    if (!result_) result_ = operators(builder_, level_ + 1);
-    if (!result_) result_ = keyword(builder_, level_ + 1);
-    if (!result_) result_ = consumeToken(builder_, IDENTIFIER);
-    if (!result_) result_ = consumeToken(builder_, OPEN_SQUARE_BRACKET);
-    if (!result_) result_ = consumeToken(builder_, CLOSE_SQUARE_BRACKET);
-    if (!result_) result_ = consumeToken(builder_, OPEN_PAREN);
-    if (!result_) result_ = consumeToken(builder_, CLOSE_PAREN);
-    exit_section_(builder_, level_, marker_, STATEMENT_WILDCARD, result_, false, null);
-    return result_;
   }
 
   /* ********************************************************** */
@@ -3213,6 +3386,350 @@ public class RustParser implements PsiParser {
     if (!recursion_guard_(builder_, level_, "var_name_2")) return false;
     consumeToken(builder_, KW_MUT);
     return true;
+  }
+
+  /* ********************************************************** */
+  // Expression root: expr
+  // Operator priority table:
+  // 0: ATOM(expr_block)
+  // 1: POSTFIX(expr_call)
+  // 2: BINARY(expr_assign)
+  // 3: BINARY(expr_logical_or)
+  // 4: BINARY(expr_logical_and)
+  // 5: BINARY(expr_equal_to) BINARY(expr_not_equal_to)
+  // 6: BINARY(expr_greater_than) BINARY(expr_less_than) BINARY(expr_greater_or_equal) BINARY(expr_less_or_equal)
+  // 7: BINARY(expr_bitwise_or)
+  // 8: BINARY(expr_bitwise_xor)
+  // 9: BINARY(expr_bitwise_and)
+  // 10: BINARY(expr_left_shift) BINARY(expr_right_shift)
+  // 11: BINARY(expr_plus) BINARY(expr_minus)
+  // 12: BINARY(expr_multiply) BINARY(expr_divide)
+  // 13: PREFIX(expr_unary_plus) PREFIX(expr_unary_minus) PREFIX(expr_unary_not) PREFIX(expr_deref) PREFIX(expr_box) PREFIX(expr_borrow)
+  // 14: POSTFIX(expr_field)
+  // 15: PREFIX(expr_paren) ATOM(expr_value)
+  public static boolean expr(PsiBuilder builder_, int level_, int priority_) {
+    if (!recursion_guard_(builder_, level_, "expr")) return false;
+    addVariant(builder_, "<expr>");
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, "<expr>");
+    result_ = expr_block(builder_, level_ + 1);
+    if (!result_) result_ = expr_borrow(builder_, level_ + 1);
+    if (!result_) result_ = expr_unary_plus(builder_, level_ + 1);
+    if (!result_) result_ = expr_unary_minus(builder_, level_ + 1);
+    if (!result_) result_ = expr_deref(builder_, level_ + 1);
+    if (!result_) result_ = expr_unary_not(builder_, level_ + 1);
+    if (!result_) result_ = expr_box(builder_, level_ + 1);
+    if (!result_) result_ = expr_paren(builder_, level_ + 1);
+    if (!result_) result_ = expr_value(builder_, level_ + 1);
+    pinned_ = result_;
+    result_ = result_ && expr_0(builder_, level_ + 1, priority_);
+    exit_section_(builder_, level_, marker_, null, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  public static boolean expr_0(PsiBuilder builder_, int level_, int priority_) {
+    if (!recursion_guard_(builder_, level_, "expr_0")) return false;
+    boolean result_ = true;
+    while (true) {
+      Marker left_marker_ = (Marker) builder_.getLatestDoneMarker();
+      if (!invalid_left_marker_guard_(builder_, left_marker_, "expr_0")) return false;
+      Marker marker_ = builder_.mark();
+      if (priority_ < 1 && expr_call_0(builder_, level_ + 1)) {
+        result_ = true;
+        marker_.drop();
+        left_marker_.precede().done(EXPR_CALL);
+      }
+      else if (priority_ < 2 && consumeTokenFast(builder_, ASSIGN)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 1));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_ASSIGN);
+      }
+      else if (priority_ < 3 && expr_logical_or_0(builder_, level_ + 1)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 3));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_LOGICAL_OR);
+      }
+      else if (priority_ < 4 && expr_logical_and_0(builder_, level_ + 1)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 4));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_LOGICAL_AND);
+      }
+      else if (priority_ < 5 && consumeTokenFast(builder_, EQUAL)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 5));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_EQUAL_TO);
+      }
+      else if (priority_ < 5 && consumeTokenFast(builder_, NOT_EQUAL)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 5));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_NOT_EQUAL_TO);
+      }
+      else if (priority_ < 6 && consumeTokenFast(builder_, GREATER_THAN)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 6));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_GREATER_THAN);
+      }
+      else if (priority_ < 6 && consumeTokenFast(builder_, LESS_THAN)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 6));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_LESS_THAN);
+      }
+      else if (priority_ < 6 && consumeTokenFast(builder_, GREATER_THAN_OR_EQUAL)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 6));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_GREATER_OR_EQUAL);
+      }
+      else if (priority_ < 6 && consumeTokenFast(builder_, LESS_THAN_OR_EQUAL)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 6));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_LESS_OR_EQUAL);
+      }
+      else if (priority_ < 7 && consumeTokenFast(builder_, BITWISE_OR)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 7));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_BITWISE_OR);
+      }
+      else if (priority_ < 8 && consumeTokenFast(builder_, BITWISE_XOR)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 8));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_BITWISE_XOR);
+      }
+      else if (priority_ < 9 && consumeTokenFast(builder_, BITWISE_AND)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 9));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_BITWISE_AND);
+      }
+      else if (priority_ < 10 && expr_left_shift_0(builder_, level_ + 1)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 10));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_LEFT_SHIFT);
+      }
+      else if (priority_ < 10 && expr_right_shift_0(builder_, level_ + 1)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 10));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_RIGHT_SHIFT);
+      }
+      else if (priority_ < 11 && consumeTokenFast(builder_, PLUS)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 11));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_PLUS);
+      }
+      else if (priority_ < 11 && consumeTokenFast(builder_, MINUS)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 11));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_MINUS);
+      }
+      else if (priority_ < 12 && consumeTokenFast(builder_, MULTIPLY)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 12));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_MULTIPLY);
+      }
+      else if (priority_ < 12 && consumeTokenFast(builder_, DIVIDE)) {
+        result_ = report_error_(builder_, expr(builder_, level_, 12));
+        marker_.drop();
+        left_marker_.precede().done(EXPR_DIVIDE);
+      }
+      else if (priority_ < 14 && expr_field_0(builder_, level_ + 1)) {
+        result_ = true;
+        marker_.drop();
+        left_marker_.precede().done(EXPR_FIELD);
+      }
+      else {
+        exit_section_(builder_, marker_, null, false);
+        break;
+      }
+    }
+    return result_;
+  }
+
+  // block_if
+  public static boolean expr_block(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_block")) return false;
+    if (!nextTokenIsFast(builder_, KW_IF)) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _COLLAPSE_, null);
+    result_ = block_if(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, EXPR_BLOCK, result_, false, null);
+    return result_;
+  }
+
+  // '!'? '(' call_params ')'
+  private static boolean expr_call_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_call_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = expr_call_0_0(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, OPEN_PAREN);
+    result_ = result_ && call_params(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, CLOSE_PAREN);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '!'?
+  private static boolean expr_call_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_call_0_0")) return false;
+    consumeTokenFast(builder_, NOT);
+    return true;
+  }
+
+  // '|' '|'
+  private static boolean expr_logical_or_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_logical_or_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokenFast(builder_, BITWISE_OR);
+    result_ = result_ && consumeToken(builder_, BITWISE_OR);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '&' '&'
+  private static boolean expr_logical_and_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_logical_and_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokenFast(builder_, BITWISE_AND);
+    result_ = result_ && consumeToken(builder_, BITWISE_AND);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  public static boolean expr_borrow(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_borrow")) return false;
+    if (!nextTokenIsFast(builder_, BITWISE_AND)) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, null);
+    result_ = consumeTokenFast(builder_, BITWISE_AND);
+    pinned_ = result_;
+    result_ = pinned_ && expr(builder_, level_, 13);
+    exit_section_(builder_, level_, marker_, EXPR_BORROW, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  // '<' '<'
+  private static boolean expr_left_shift_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_left_shift_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokenFast(builder_, LESS_THAN);
+    result_ = result_ && consumeToken(builder_, LESS_THAN);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '>' '>'
+  private static boolean expr_right_shift_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_right_shift_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokenFast(builder_, GREATER_THAN);
+    result_ = result_ && consumeToken(builder_, GREATER_THAN);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  public static boolean expr_unary_plus(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_unary_plus")) return false;
+    if (!nextTokenIsFast(builder_, PLUS)) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, null);
+    result_ = consumeTokenFast(builder_, PLUS);
+    pinned_ = result_;
+    result_ = pinned_ && expr(builder_, level_, 13);
+    exit_section_(builder_, level_, marker_, EXPR_UNARY_PLUS, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  public static boolean expr_unary_minus(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_unary_minus")) return false;
+    if (!nextTokenIsFast(builder_, MINUS)) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, null);
+    result_ = consumeTokenFast(builder_, MINUS);
+    pinned_ = result_;
+    result_ = pinned_ && expr(builder_, level_, 13);
+    exit_section_(builder_, level_, marker_, EXPR_UNARY_MINUS, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  public static boolean expr_deref(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_deref")) return false;
+    if (!nextTokenIsFast(builder_, MULTIPLY)) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, null);
+    result_ = consumeTokenFast(builder_, MULTIPLY);
+    pinned_ = result_;
+    result_ = pinned_ && expr(builder_, level_, 13);
+    exit_section_(builder_, level_, marker_, EXPR_DEREF, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  public static boolean expr_unary_not(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_unary_not")) return false;
+    if (!nextTokenIsFast(builder_, NOT)) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, null);
+    result_ = consumeTokenFast(builder_, NOT);
+    pinned_ = result_;
+    result_ = pinned_ && expr(builder_, level_, 13);
+    exit_section_(builder_, level_, marker_, EXPR_UNARY_NOT, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  public static boolean expr_box(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_box")) return false;
+    if (!nextTokenIsFast(builder_, BOX)) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, null);
+    result_ = consumeTokenFast(builder_, BOX);
+    pinned_ = result_;
+    result_ = pinned_ && expr(builder_, level_, 13);
+    exit_section_(builder_, level_, marker_, EXPR_BOX, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  // '.' IDENTIFIER
+  private static boolean expr_field_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_field_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokenFast(builder_, DOT);
+    result_ = result_ && consumeToken(builder_, IDENTIFIER);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  public static boolean expr_paren(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_paren")) return false;
+    if (!nextTokenIsFast(builder_, OPEN_PAREN)) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, null);
+    result_ = consumeTokenFast(builder_, OPEN_PAREN);
+    pinned_ = result_;
+    result_ = pinned_ && expr(builder_, level_, -1);
+    result_ = pinned_ && report_error_(builder_, consumeToken(builder_, CLOSE_PAREN)) && result_;
+    exit_section_(builder_, level_, marker_, EXPR_PAREN, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  // IDENTIFIER | literal
+  public static boolean expr_value(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_value")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _COLLAPSE_, "<expr value>");
+    result_ = consumeTokenFast(builder_, IDENTIFIER);
+    if (!result_) result_ = literal(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, EXPR_VALUE, result_, false, null);
+    return result_;
   }
 
   final static Parser function_recover_parser_ = new Parser() {

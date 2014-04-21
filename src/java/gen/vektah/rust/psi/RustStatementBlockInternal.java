@@ -11,6 +11,9 @@ public interface RustStatementBlockInternal extends PsiElement {
   List<RustAttribute> getAttributeList();
 
   @NotNull
+  List<RustExpr> getExprList();
+
+  @NotNull
   List<RustExtern> getExternList();
 
   @NotNull
@@ -21,9 +24,6 @@ public interface RustStatementBlockInternal extends PsiElement {
 
   @NotNull
   List<RustStatementBlock> getStatementBlockList();
-
-  @NotNull
-  List<RustStatementWildcard> getStatementWildcardList();
 
   @NotNull
   List<RustStruct> getStructList();

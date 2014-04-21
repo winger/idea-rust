@@ -5,6 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustStatementWildcard extends PsiElement {
+public interface RustExprLessThan extends RustExpr {
+
+  @NotNull
+  List<RustExpr> getExprList();
 
 }

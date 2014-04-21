@@ -12,6 +12,10 @@
 
 	tokenTypeClass("keyword")="vektah.rust.psi.RustKeywordTokenType"
 
+	extends("expr_.*")=expr
+	extends("block_.*")=expr_block
+	consumeTokenMethod("expr_.*|expr")="consumeTokenFast"
+
 	tokens = [
 		KW_AS = "as"
 		KW_BREAK = "break"
@@ -117,6 +121,79 @@ static_expression ::= (IDENTIFIER | literal | static_expression_group) (binary_o
 static_expression_group ::= '(' static_expression ')'
 
 
+// EXPRESSIONS! - this is based heavily https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md
+// These are in increasing order of precedence  (opposite of rust manual)
+expr ::= expr_block
+	| expr_call
+	| expr_assign
+	| expr_logical_or
+	| expr_logical_and
+	| equals_group
+	| comparison_group
+	| expr_bitwise_or
+	| expr_bitwise_xor
+	| expr_bitwise_and
+	| shift_group
+	| add_group
+	| mul_group
+	| unary_group
+	| expr_field
+	| primary_group
+
+// Private rules to define operators with the same priority
+private unary_group ::= expr_unary_plus | expr_unary_minus | expr_unary_not | expr_deref | expr_box | expr_borrow
+private mul_group ::= expr_multiply | expr_divide
+private add_group ::= expr_plus | expr_minus
+private shift_group ::= expr_left_shift | expr_right_shift
+private comparison_group ::= expr_greater_than | expr_less_than | expr_greater_or_equal | expr_less_or_equal
+private equals_group ::= expr_equal_to | expr_not_equal_to
+private primary_group ::= expr_paren | expr_value
+
+expr_assign ::= expr '=' expr {rightAssociative=true}
+
+expr_unary_minus ::= '-' expr
+expr_unary_plus ::= '+' expr
+expr_unary_not ::= '!' expr
+expr_deref ::= '*' expr
+expr_box ::= '~' expr
+expr_borrow ::= '&' expr
+
+expr_divide ::= expr '/' expr
+expr_multiply ::= expr '*' expr
+
+expr_plus ::= expr '+' expr
+expr_minus ::= expr '-' expr
+
+expr_left_shift ::= expr '<' '<' expr
+expr_right_shift ::= expr '>' '>' expr
+
+expr_bitwise_and ::= expr '&' expr
+expr_bitwise_xor ::= expr '^' expr
+expr_bitwise_or ::= expr '|' expr
+
+expr_less_or_equal ::= expr '<=' expr
+expr_less_than ::= expr '<' expr
+expr_greater_or_equal ::= expr '>=' expr
+expr_greater_than ::= expr '>' expr
+
+expr_not_equal_to ::= expr '!=' expr
+expr_equal_to ::= expr '==' expr
+
+expr_logical_and ::= expr '&' '&' expr
+expr_logical_or ::= expr '|' '|' expr
+
+expr_paren ::= '(' expr ')'
+expr_field ::= expr '.' IDENTIFIER
+expr_value ::= IDENTIFIER | literal
+
+expr_call ::= expr '!'? '(' call_params ')'
+call_params ::= expr (',' expr)*
+
+// These constructs don't need a trailing semicolon unless found as part of an expression
+expr_block ::= block_if
+block_if  ::= 'if' expr statement_block ['else' statement_block]
+
+
 // TYPES
 path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* ['::' generic]
 private type ::= type_basic | type_tuple | type_closure | function_type | type_proc | type_none
@@ -171,16 +248,15 @@ private var_name ::= 'static'? ref? 'mut'? IDENTIFIER
 statement_block ::= statement_block_internal '}'
 statement_block_internal ::= '{' statement* {pin=1 recoverWhile="not_close_brace"}
 private statement ::= statement_block
+	| expr_block
+	| expr ';'?
 	| function
 	| use
 	| let
-	| statement_wildcard
 	| type_definition
 	| struct
 	| attribute
 	| extern
-statement_wildcard ::= (simple_token|literal|comment|symbol|operators|keyword|IDENTIFIER|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN)
-
 
 // STRUCTS
 struct ::= 'pub'? 'struct' IDENTIFIER generic_params? (struct_body '}' | tuple_body ')' | ';')

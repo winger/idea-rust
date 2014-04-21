@@ -15,6 +15,134 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitBlockIf(@NotNull RustBlockIf o) {
+    visitExprBlock(o);
+  }
+
+  public void visitCallParams(@NotNull RustCallParams o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExpr(@NotNull RustExpr o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExprAssign(@NotNull RustExprAssign o) {
+    visitExpr(o);
+  }
+
+  public void visitExprBitwiseAnd(@NotNull RustExprBitwiseAnd o) {
+    visitExpr(o);
+  }
+
+  public void visitExprBitwiseOr(@NotNull RustExprBitwiseOr o) {
+    visitExpr(o);
+  }
+
+  public void visitExprBitwiseXor(@NotNull RustExprBitwiseXor o) {
+    visitExpr(o);
+  }
+
+  public void visitExprBlock(@NotNull RustExprBlock o) {
+    visitExpr(o);
+  }
+
+  public void visitExprBorrow(@NotNull RustExprBorrow o) {
+    visitExpr(o);
+  }
+
+  public void visitExprBox(@NotNull RustExprBox o) {
+    visitExpr(o);
+  }
+
+  public void visitExprCall(@NotNull RustExprCall o) {
+    visitExpr(o);
+  }
+
+  public void visitExprDeref(@NotNull RustExprDeref o) {
+    visitExpr(o);
+  }
+
+  public void visitExprDivide(@NotNull RustExprDivide o) {
+    visitExpr(o);
+  }
+
+  public void visitExprEqualTo(@NotNull RustExprEqualTo o) {
+    visitExpr(o);
+  }
+
+  public void visitExprField(@NotNull RustExprField o) {
+    visitExpr(o);
+  }
+
+  public void visitExprGreaterOrEqual(@NotNull RustExprGreaterOrEqual o) {
+    visitExpr(o);
+  }
+
+  public void visitExprGreaterThan(@NotNull RustExprGreaterThan o) {
+    visitExpr(o);
+  }
+
+  public void visitExprLeftShift(@NotNull RustExprLeftShift o) {
+    visitExpr(o);
+  }
+
+  public void visitExprLessOrEqual(@NotNull RustExprLessOrEqual o) {
+    visitExpr(o);
+  }
+
+  public void visitExprLessThan(@NotNull RustExprLessThan o) {
+    visitExpr(o);
+  }
+
+  public void visitExprLogicalAnd(@NotNull RustExprLogicalAnd o) {
+    visitExpr(o);
+  }
+
+  public void visitExprLogicalOr(@NotNull RustExprLogicalOr o) {
+    visitExpr(o);
+  }
+
+  public void visitExprMinus(@NotNull RustExprMinus o) {
+    visitExpr(o);
+  }
+
+  public void visitExprMultiply(@NotNull RustExprMultiply o) {
+    visitExpr(o);
+  }
+
+  public void visitExprNotEqualTo(@NotNull RustExprNotEqualTo o) {
+    visitExpr(o);
+  }
+
+  public void visitExprParen(@NotNull RustExprParen o) {
+    visitExpr(o);
+  }
+
+  public void visitExprPlus(@NotNull RustExprPlus o) {
+    visitExpr(o);
+  }
+
+  public void visitExprRightShift(@NotNull RustExprRightShift o) {
+    visitExpr(o);
+  }
+
+  public void visitExprUnaryMinus(@NotNull RustExprUnaryMinus o) {
+    visitExpr(o);
+  }
+
+  public void visitExprUnaryNot(@NotNull RustExprUnaryNot o) {
+    visitExpr(o);
+  }
+
+  public void visitExprUnaryPlus(@NotNull RustExprUnaryPlus o) {
+    visitExpr(o);
+  }
+
+  public void visitExprValue(@NotNull RustExprValue o) {
+    visitExpr(o);
+  }
+
   public void visitExpression(@NotNull RustExpression o) {
     visitPsiElement(o);
   }
@@ -88,10 +216,6 @@ public class RustVisitor extends PsiElementVisitor {
   }
 
   public void visitStatementBlockInternal(@NotNull RustStatementBlockInternal o) {
-    visitPsiElement(o);
-  }
-
-  public void visitStatementWildcard(@NotNull RustStatementWildcard o) {
     visitPsiElement(o);
   }
 

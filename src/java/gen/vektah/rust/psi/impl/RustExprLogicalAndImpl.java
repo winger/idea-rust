@@ -8,18 +8,23 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static vektah.rust.psi.RustTokens.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustStatementWildcardImpl extends ASTWrapperPsiElement implements RustStatementWildcard {
+public class RustExprLogicalAndImpl extends RustExprImpl implements RustExprLogicalAnd {
 
-  public RustStatementWildcardImpl(ASTNode node) {
+  public RustExprLogicalAndImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitStatementWildcard(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitExprLogicalAnd(this);
     else super.accept(visitor);
+  }
+
+  @Override
+  @NotNull
+  public List<RustExpr> getExprList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustExpr.class);
   }
 
 }

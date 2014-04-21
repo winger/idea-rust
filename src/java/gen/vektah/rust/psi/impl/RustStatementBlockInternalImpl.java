@@ -30,6 +30,12 @@ public class RustStatementBlockInternalImpl extends ASTWrapperPsiElement impleme
 
   @Override
   @NotNull
+  public List<RustExpr> getExprList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustExpr.class);
+  }
+
+  @Override
+  @NotNull
   public List<RustExtern> getExternList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RustExtern.class);
   }
@@ -50,12 +56,6 @@ public class RustStatementBlockInternalImpl extends ASTWrapperPsiElement impleme
   @NotNull
   public List<RustStatementBlock> getStatementBlockList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RustStatementBlock.class);
-  }
-
-  @Override
-  @NotNull
-  public List<RustStatementWildcard> getStatementWildcardList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustStatementWildcard.class);
   }
 
   @Override

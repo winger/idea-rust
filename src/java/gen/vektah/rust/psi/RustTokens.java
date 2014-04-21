@@ -10,7 +10,39 @@ public interface RustTokens {
 
   IElementType ATTRIBUTE = new RustTokenType("ATTRIBUTE");
   IElementType ATTRIBUTE_ARG = new RustTokenType("ATTRIBUTE_ARG");
+  IElementType BLOCK_IF = new RustTokenType("BLOCK_IF");
+  IElementType CALL_PARAMS = new RustTokenType("CALL_PARAMS");
+  IElementType EXPR = new RustTokenType("EXPR");
   IElementType EXPRESSION = new RustTokenType("EXPRESSION");
+  IElementType EXPR_ASSIGN = new RustTokenType("EXPR_ASSIGN");
+  IElementType EXPR_BITWISE_AND = new RustTokenType("EXPR_BITWISE_AND");
+  IElementType EXPR_BITWISE_OR = new RustTokenType("EXPR_BITWISE_OR");
+  IElementType EXPR_BITWISE_XOR = new RustTokenType("EXPR_BITWISE_XOR");
+  IElementType EXPR_BLOCK = new RustTokenType("EXPR_BLOCK");
+  IElementType EXPR_BORROW = new RustTokenType("EXPR_BORROW");
+  IElementType EXPR_BOX = new RustTokenType("EXPR_BOX");
+  IElementType EXPR_CALL = new RustTokenType("EXPR_CALL");
+  IElementType EXPR_DEREF = new RustTokenType("EXPR_DEREF");
+  IElementType EXPR_DIVIDE = new RustTokenType("EXPR_DIVIDE");
+  IElementType EXPR_EQUAL_TO = new RustTokenType("EXPR_EQUAL_TO");
+  IElementType EXPR_FIELD = new RustTokenType("EXPR_FIELD");
+  IElementType EXPR_GREATER_OR_EQUAL = new RustTokenType("EXPR_GREATER_OR_EQUAL");
+  IElementType EXPR_GREATER_THAN = new RustTokenType("EXPR_GREATER_THAN");
+  IElementType EXPR_LEFT_SHIFT = new RustTokenType("EXPR_LEFT_SHIFT");
+  IElementType EXPR_LESS_OR_EQUAL = new RustTokenType("EXPR_LESS_OR_EQUAL");
+  IElementType EXPR_LESS_THAN = new RustTokenType("EXPR_LESS_THAN");
+  IElementType EXPR_LOGICAL_AND = new RustTokenType("EXPR_LOGICAL_AND");
+  IElementType EXPR_LOGICAL_OR = new RustTokenType("EXPR_LOGICAL_OR");
+  IElementType EXPR_MINUS = new RustTokenType("EXPR_MINUS");
+  IElementType EXPR_MULTIPLY = new RustTokenType("EXPR_MULTIPLY");
+  IElementType EXPR_NOT_EQUAL_TO = new RustTokenType("EXPR_NOT_EQUAL_TO");
+  IElementType EXPR_PAREN = new RustTokenType("EXPR_PAREN");
+  IElementType EXPR_PLUS = new RustTokenType("EXPR_PLUS");
+  IElementType EXPR_RIGHT_SHIFT = new RustTokenType("EXPR_RIGHT_SHIFT");
+  IElementType EXPR_UNARY_MINUS = new RustTokenType("EXPR_UNARY_MINUS");
+  IElementType EXPR_UNARY_NOT = new RustTokenType("EXPR_UNARY_NOT");
+  IElementType EXPR_UNARY_PLUS = new RustTokenType("EXPR_UNARY_PLUS");
+  IElementType EXPR_VALUE = new RustTokenType("EXPR_VALUE");
   IElementType EXTERN = new RustTokenType("EXTERN");
   IElementType EXTERN_CRATE = new RustTokenType("EXTERN_CRATE");
   IElementType EXTERN_FUNCTION = new RustTokenType("EXTERN_FUNCTION");
@@ -29,7 +61,6 @@ public interface RustTokens {
   IElementType STANDARD_ARG = new RustTokenType("STANDARD_ARG");
   IElementType STATEMENT_BLOCK = new RustTokenType("STATEMENT_BLOCK");
   IElementType STATEMENT_BLOCK_INTERNAL = new RustTokenType("STATEMENT_BLOCK_INTERNAL");
-  IElementType STATEMENT_WILDCARD = new RustTokenType("STATEMENT_WILDCARD");
   IElementType STATIC_EXPRESSION = new RustTokenType("STATIC_EXPRESSION");
   IElementType STATIC_EXPRESSION_GROUP = new RustTokenType("STATIC_EXPRESSION_GROUP");
   IElementType STRUCT = new RustTokenType("STRUCT");
@@ -137,8 +168,104 @@ public interface RustTokens {
       else if (type == ATTRIBUTE_ARG) {
         return new RustAttributeArgImpl(node);
       }
+      else if (type == BLOCK_IF) {
+        return new RustBlockIfImpl(node);
+      }
+      else if (type == CALL_PARAMS) {
+        return new RustCallParamsImpl(node);
+      }
+      else if (type == EXPR) {
+        return new RustExprImpl(node);
+      }
       else if (type == EXPRESSION) {
         return new RustExpressionImpl(node);
+      }
+      else if (type == EXPR_ASSIGN) {
+        return new RustExprAssignImpl(node);
+      }
+      else if (type == EXPR_BITWISE_AND) {
+        return new RustExprBitwiseAndImpl(node);
+      }
+      else if (type == EXPR_BITWISE_OR) {
+        return new RustExprBitwiseOrImpl(node);
+      }
+      else if (type == EXPR_BITWISE_XOR) {
+        return new RustExprBitwiseXorImpl(node);
+      }
+      else if (type == EXPR_BLOCK) {
+        return new RustExprBlockImpl(node);
+      }
+      else if (type == EXPR_BORROW) {
+        return new RustExprBorrowImpl(node);
+      }
+      else if (type == EXPR_BOX) {
+        return new RustExprBoxImpl(node);
+      }
+      else if (type == EXPR_CALL) {
+        return new RustExprCallImpl(node);
+      }
+      else if (type == EXPR_DEREF) {
+        return new RustExprDerefImpl(node);
+      }
+      else if (type == EXPR_DIVIDE) {
+        return new RustExprDivideImpl(node);
+      }
+      else if (type == EXPR_EQUAL_TO) {
+        return new RustExprEqualToImpl(node);
+      }
+      else if (type == EXPR_FIELD) {
+        return new RustExprFieldImpl(node);
+      }
+      else if (type == EXPR_GREATER_OR_EQUAL) {
+        return new RustExprGreaterOrEqualImpl(node);
+      }
+      else if (type == EXPR_GREATER_THAN) {
+        return new RustExprGreaterThanImpl(node);
+      }
+      else if (type == EXPR_LEFT_SHIFT) {
+        return new RustExprLeftShiftImpl(node);
+      }
+      else if (type == EXPR_LESS_OR_EQUAL) {
+        return new RustExprLessOrEqualImpl(node);
+      }
+      else if (type == EXPR_LESS_THAN) {
+        return new RustExprLessThanImpl(node);
+      }
+      else if (type == EXPR_LOGICAL_AND) {
+        return new RustExprLogicalAndImpl(node);
+      }
+      else if (type == EXPR_LOGICAL_OR) {
+        return new RustExprLogicalOrImpl(node);
+      }
+      else if (type == EXPR_MINUS) {
+        return new RustExprMinusImpl(node);
+      }
+      else if (type == EXPR_MULTIPLY) {
+        return new RustExprMultiplyImpl(node);
+      }
+      else if (type == EXPR_NOT_EQUAL_TO) {
+        return new RustExprNotEqualToImpl(node);
+      }
+      else if (type == EXPR_PAREN) {
+        return new RustExprParenImpl(node);
+      }
+      else if (type == EXPR_PLUS) {
+        return new RustExprPlusImpl(node);
+      }
+      else if (type == EXPR_RIGHT_SHIFT) {
+        return new RustExprRightShiftImpl(node);
+      }
+      else if (type == EXPR_UNARY_MINUS) {
+        return new RustExprUnaryMinusImpl(node);
+      }
+      else if (type == EXPR_UNARY_NOT) {
+        return new RustExprUnaryNotImpl(node);
+      }
+      else if (type == EXPR_UNARY_PLUS) {
+        return new RustExprUnaryPlusImpl(node);
+      }
+      else if (type == EXPR_VALUE) {
+        return new RustExprValueImpl(node);
       }
       else if (type == EXTERN) {
         return new RustExternImpl(node);
@@ -193,9 +320,6 @@ public interface RustTokens {
       }
       else if (type == STATEMENT_BLOCK_INTERNAL) {
         return new RustStatementBlockInternalImpl(node);
-      }
-      else if (type == STATEMENT_WILDCARD) {
-        return new RustStatementWildcardImpl(node);
       }
       else if (type == STATIC_EXPRESSION) {
         return new RustStaticExpressionImpl(node);
