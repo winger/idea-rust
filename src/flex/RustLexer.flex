@@ -146,7 +146,7 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 		if (--comment_depth == 0) {
 			yybegin(YYINITIAL);
 			zzStartRead = start_comment;
-			eturn doc_comment ? RustTokens.BLOCK_DOC_COMMENT : RustTokens.BLOCK_COMMENT;
+			return doc_comment ? RustTokens.BLOCK_DOC_COMMENT : RustTokens.BLOCK_COMMENT;
 		} else {
 			yybegin(IN_BLOCK_COMMENT);
 		}
