@@ -544,14 +544,15 @@ public class RustParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // BLOCK_COMMENT|LINE_COMMENT
+  // BLOCK_COMMENT|BLOCK_DOC_COMMENT|LINE_COMMENT|LINE_DOC_COMMENT
   static boolean comment(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "comment")) return false;
-    if (!nextTokenIs(builder_, "", BLOCK_COMMENT, LINE_COMMENT)) return false;
     boolean result_ = false;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, BLOCK_COMMENT);
+    if (!result_) result_ = consumeToken(builder_, BLOCK_DOC_COMMENT);
     if (!result_) result_ = consumeToken(builder_, LINE_COMMENT);
+    if (!result_) result_ = consumeToken(builder_, LINE_DOC_COMMENT);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -1278,7 +1279,7 @@ public class RustParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_LET|KW_STRUCT|KW_ENUM|KW_FALSE|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_SUPER|KW_TRUE|KW_TYPE|KW_UNSAFE|KW_WHILE
+  // KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_LET|KW_STRUCT|KW_ENUM|KW_FALSE|KW_FOR|KW_FN|KW_IF|KW_IMPL|KW_IN|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_SUPER|KW_TRUE|KW_TYPE|KW_UNSAFE|KW_WHILE
   static boolean keyword(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "keyword")) return false;
     boolean result_ = false;
@@ -1292,6 +1293,7 @@ public class RustParser implements PsiParser {
     if (!result_) result_ = consumeToken(builder_, KW_ENUM);
     if (!result_) result_ = consumeToken(builder_, KW_FALSE);
     if (!result_) result_ = consumeToken(builder_, KW_FOR);
+    if (!result_) result_ = consumeToken(builder_, KW_FN);
     if (!result_) result_ = consumeToken(builder_, KW_IF);
     if (!result_) result_ = consumeToken(builder_, KW_IMPL);
     if (!result_) result_ = consumeToken(builder_, KW_IN);

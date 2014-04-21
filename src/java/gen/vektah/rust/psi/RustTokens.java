@@ -88,6 +88,7 @@ public interface RustTokens {
   IElementType BITWISE_OR = new RustTokenType("|");
   IElementType BITWISE_XOR = new RustTokenType("^");
   IElementType BLOCK_COMMENT = new RustTokenType("BLOCK_COMMENT");
+  IElementType BLOCK_DOC_COMMENT = new RustTokenType("BLOCK_DOC_COMMENT");
   IElementType BOX = new RustTokenType("~");
   IElementType CHAR_LIT = new RustTokenType("CHAR_LIT");
   IElementType CLOSE_BRACE = new RustTokenType("}");
@@ -142,6 +143,7 @@ public interface RustTokens {
   IElementType LESS_THAN = new RustTokenType("<");
   IElementType LESS_THAN_OR_EQUAL = new RustTokenType("<=");
   IElementType LINE_COMMENT = new RustTokenType("LINE_COMMENT");
+  IElementType LINE_DOC_COMMENT = new RustTokenType("LINE_DOC_COMMENT");
   IElementType MINUS = new RustTokenType("-");
   IElementType MULTIPLY = new RustTokenType("*");
   IElementType NOT = new RustTokenType("!");

@@ -18,6 +18,7 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 	public static final TextAttributesKey IDENTIFIER = TextAttributesKey.createTextAttributesKey("IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER);
 	public static final TextAttributesKey BLOCK_COMMENT = TextAttributesKey.createTextAttributesKey("BLOCK_COMMENT", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
 	public static final TextAttributesKey LINE_COMMENT = TextAttributesKey.createTextAttributesKey("LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
+	public static final TextAttributesKey DOC_COMMENT = TextAttributesKey.createTextAttributesKey("DOC_COMMENT", DefaultLanguageHighlighterColors.DOC_COMMENT);
 	public static final TextAttributesKey STRING = TextAttributesKey.createTextAttributesKey("STRING", DefaultLanguageHighlighterColors.STRING);
 	public static final TextAttributesKey NUMBER = TextAttributesKey.createTextAttributesKey("NUMBER", DefaultLanguageHighlighterColors.NUMBER);
 	public static final TextAttributesKey BRACKETS = TextAttributesKey.createTextAttributesKey("BRACKETS", DefaultLanguageHighlighterColors.BRACKETS);
@@ -27,12 +28,14 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 	public static final TextAttributesKey SYMBOL = TextAttributesKey.createTextAttributesKey("SYMBOL", DefaultLanguageHighlighterColors.PREDEFINED_SYMBOL);
 	public static final TextAttributesKey SEMICOLON = TextAttributesKey.createTextAttributesKey("SEMICOLON", DefaultLanguageHighlighterColors.SEMICOLON);
 	public static final TextAttributesKey OPERATOR = TextAttributesKey.createTextAttributesKey("OPERATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN);
-	public static final TextAttributesKey ATTRIBUTE = TextAttributesKey.createTextAttributesKey("ATTRIBUTE", DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE);
+	public static final TextAttributesKey PATH_SEPARATOR = TextAttributesKey.createTextAttributesKey("PATH_SEPARATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN);
+	public static final TextAttributesKey ATTRIBUTE = TextAttributesKey.createTextAttributesKey("ATTRIBUTE", DefaultLanguageHighlighterColors.METADATA);
 
 	public static final TextAttributesKey[] KEYWORD_KEYS = new TextAttributesKey[]{KEYWORD};
 	public static final TextAttributesKey[] IDENTIFIER_KEYS = new TextAttributesKey[]{IDENTIFIER};
 	public static final TextAttributesKey[] BLOCK_COMMENT_KEYS = new TextAttributesKey[]{BLOCK_COMMENT};
 	public static final TextAttributesKey[] LINE_COMMENT_KEYS = new TextAttributesKey[]{LINE_COMMENT};
+	public static final TextAttributesKey[] DOC_COMMENT_KEYS = new TextAttributesKey[]{DOC_COMMENT};
 	public static final TextAttributesKey[] STRING_KEYS = new TextAttributesKey[]{STRING};
 	public static final TextAttributesKey[] NUMBER_KEYS = new TextAttributesKey[]{NUMBER};
 	public static final TextAttributesKey[] BRACKET_KEYS = new TextAttributesKey[]{BRACKETS};
@@ -42,6 +45,7 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 	public static final TextAttributesKey[] SYMBOL_KEYS = new TextAttributesKey[]{SYMBOL};
 	public static final TextAttributesKey[] SEMICOLON_KEYS = new TextAttributesKey[]{SEMICOLON};
 	public static final TextAttributesKey[] OPERATOR_KEYS = new TextAttributesKey[]{OPERATOR};
+	public static final TextAttributesKey[] PATH_SEPARATOR_KEYS = new TextAttributesKey[]{PATH_SEPARATOR};
 	public static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
 	@NotNull
@@ -98,13 +102,16 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 		if (type == RustTokens.LINE_COMMENT) {
 			return LINE_COMMENT_KEYS;
 		}
+		if (type == RustTokens.BLOCK_DOC_COMMENT || type == RustTokens.LINE_DOC_COMMENT) {
+			return DOC_COMMENT_KEYS;
+		}
 		if (type == CHAR_LIT || type == STRING_LIT || type == RAW_STRING_LIT) {
 			return STRING_KEYS;
 		}
 		if (type == DEC_LIT || type == OCT_LIT || type == HEX_LIT || type == BIN_LIT) {
 			return NUMBER_KEYS;
 		}
-		if (type == HASH || type == DOUBLE_COLON) {
+		if (type == HASH) {
 			return SYMBOL_KEYS;
 		}
 		if (type == OPEN_PAREN || type == CLOSE_PAREN) {
@@ -125,7 +132,9 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 		if (type == RustTokens.SEMICOLON) {
 			return SEMICOLON_KEYS;
 		}
-
+		if (type == RustTokens.DOUBLE_COLON) {
+			return PATH_SEPARATOR_KEYS;
+		}
 
 		return EMPTY_KEYS;
 	}

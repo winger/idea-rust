@@ -17,6 +17,8 @@ import vektah.rust.psi.RustTokens;
 	private int start_comment;
 	private int start_raw_string;
 	private int raw_string_hashes;
+	private int comment_depth;
+	private boolean doc_comment;
 %}
 
 WHITE_SPACE = [\ \t\n\r]
@@ -79,7 +81,11 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 	"use"                                           { yybegin(YYINITIAL); return RustTokens.KW_USE; }
 	"while"                                         { yybegin(YYINITIAL); return RustTokens.KW_WHILE; }
 
-	"/*"                                            { yybegin(IN_BLOCK_COMMENT); start_comment = zzStartRead; }
+	"/*" ("!"|"*"[^*/])                             { yybegin(IN_BLOCK_COMMENT); start_comment = zzStartRead; doc_comment = true; comment_depth = 1; }
+	"/**" / "/"                                     { yybegin(IN_BLOCK_COMMENT); start_comment = zzStartRead; doc_comment = true; comment_depth = 1; }
+	"/*"                                            { yybegin(IN_BLOCK_COMMENT); start_comment = zzStartRead; doc_comment = false; comment_depth = 1; }
+	"///" $                                         { yybegin(YYINITIAL); return RustTokens.LINE_DOC_COMMENT; }
+	"//" ("!"|"/"[^/\n\r])[^\n\r]*                  { yybegin(YYINITIAL); return RustTokens.LINE_DOC_COMMENT; }
 	"//" [^\n\r]*                                   { yybegin(YYINITIAL); return RustTokens.LINE_COMMENT; }
 	{CHAR}                                          { yybegin(YYINITIAL); return RustTokens.CHAR_LIT; }
 	{STRING}                                        { yybegin(YYINITIAL); return RustTokens.STRING_LIT; }
@@ -132,12 +138,23 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 	","                                             { yybegin(YYINITIAL); return RustTokens.COMMA; }
 	";"                                             { yybegin(YYINITIAL); return RustTokens.SEMICOLON; }
 
+	.                                               { yybegin(YYINITIAL); return TokenType.BAD_CHARACTER; }
 }
 
 <IN_BLOCK_COMMENT> {
-	"*/"        { yybegin(YYINITIAL); zzStartRead = start_comment; return RustTokens.BLOCK_COMMENT; }
-	[^*]+       { yybegin(IN_BLOCK_COMMENT); }
-	"*"         { yybegin(IN_BLOCK_COMMENT); }
+	"*/"        {
+		if (--comment_depth == 0) {
+			yybegin(YYINITIAL);
+			zzStartRead = start_comment;
+			eturn doc_comment ? RustTokens.BLOCK_DOC_COMMENT : RustTokens.BLOCK_COMMENT;
+		} else {
+			yybegin(IN_BLOCK_COMMENT);
+		}
+	}
+	"/*"        { yybegin(IN_BLOCK_COMMENT); ++comment_depth; }
+	[^*/]+      { yybegin(IN_BLOCK_COMMENT); }
+	<<EOF>>     { yybegin(YYINITIAL); zzStartRead = start_comment; return RustTokens.BLOCK_COMMENT; }
+	.           { yybegin(IN_BLOCK_COMMENT); }
 }
 
 <IN_RAW_STRING> {
@@ -155,7 +172,6 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 		}
 	}
 	[^\"]   { yybegin(IN_RAW_STRING); }
+	<<EOF>> { yybegin(YYINITIAL); zzStartRead = start_raw_string; return RustTokens.RAW_STRING_LIT; }
 	.       { yybegin(IN_RAW_STRING); }
 }
-
-.  { yybegin(YYINITIAL); return TokenType.BAD_CHARACTER; }
