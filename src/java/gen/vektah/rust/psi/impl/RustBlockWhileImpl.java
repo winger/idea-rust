@@ -10,21 +10,27 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static vektah.rust.psi.RustTokens.*;
 import vektah.rust.psi.*;
 
-public class RustExprParenImpl extends RustExprImpl implements RustExprParen {
+public class RustBlockWhileImpl extends RustExprBlockImpl implements RustBlockWhile {
 
-  public RustExprParenImpl(ASTNode node) {
+  public RustBlockWhileImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitExprParen(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitBlockWhile(this);
     else super.accept(visitor);
   }
 
   @Override
   @NotNull
-  public List<RustExpr> getExprList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustExpr.class);
+  public RustExpr getExpr() {
+    return findNotNullChildByClass(RustExpr.class);
+  }
+
+  @Override
+  @NotNull
+  public RustStatementBlock getStatementBlock() {
+    return findNotNullChildByClass(RustStatementBlock.class);
   }
 
 }

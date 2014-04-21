@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static vektah.rust.psi.RustTokens.*;
 import vektah.rust.psi.*;
 
-public class RustExprParenImpl extends RustExprImpl implements RustExprParen {
+public class RustExprTupleBodyImpl extends RustExprImpl implements RustExprTupleBody {
 
-  public RustExprParenImpl(ASTNode node) {
+  public RustExprTupleBodyImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitExprParen(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitExprTupleBody(this);
     else super.accept(visitor);
   }
 

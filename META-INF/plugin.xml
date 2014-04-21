@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>vektah.rust</id>
   <name>Rust</name>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <vendor email="adam@vektah.net" url="http://github.com/Vektah/idea-rust">Vektah</vendor>
 
   <description><![CDATA[
@@ -12,6 +12,7 @@
 
   <change-notes><![CDATA[
     <ul>
+        <li><b>0.0.3</b>: Added expression support, disabled wildcards. Grammar should now be more or less complete</li>
         <li><b>0.0.2</b>: Added grammar support for functions, structs, use, traits, externals, lets, types, struct tuples and static vars</li>
         <li><b>0.0.1</b>: Initial plugin</li>
     </ul>

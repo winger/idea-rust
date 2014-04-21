@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustExprParen extends RustExpr {
+public interface RustExprContinue extends RustExpr {
 
-  @NotNull
-  List<RustExpr> getExprList();
+  @Nullable
+  RustLifetime getLifetime();
 
 }

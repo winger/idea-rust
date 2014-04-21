@@ -15,7 +15,19 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitBlockFor(@NotNull RustBlockFor o) {
+    visitExprBlock(o);
+  }
+
   public void visitBlockIf(@NotNull RustBlockIf o) {
+    visitExprBlock(o);
+  }
+
+  public void visitBlockLoop(@NotNull RustBlockLoop o) {
+    visitExprBlock(o);
+  }
+
+  public void visitBlockWhile(@NotNull RustBlockWhile o) {
     visitExprBlock(o);
   }
 
@@ -55,7 +67,15 @@ public class RustVisitor extends PsiElementVisitor {
     visitExpr(o);
   }
 
+  public void visitExprBreak(@NotNull RustExprBreak o) {
+    visitExpr(o);
+  }
+
   public void visitExprCall(@NotNull RustExprCall o) {
+    visitExpr(o);
+  }
+
+  public void visitExprContinue(@NotNull RustExprContinue o) {
     visitExpr(o);
   }
 
@@ -124,6 +144,10 @@ public class RustVisitor extends PsiElementVisitor {
   }
 
   public void visitExprRightShift(@NotNull RustExprRightShift o) {
+    visitExpr(o);
+  }
+
+  public void visitExprTupleBody(@NotNull RustExprTupleBody o) {
     visitExpr(o);
   }
 

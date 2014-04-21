@@ -49,6 +49,7 @@
 		KW_UNSAFE = "unsafe"
 		KW_USE = "use"
 		KW_WHILE = "while"
+		KW_CONTINUE = "continue"
 
 		FAT_ARROW = "=>"
 		THIN_ARROW = "->"
@@ -106,13 +107,12 @@ simpleFile ::= ( use
 // AGGREGATE TYPES
 private numeric_literal ::= BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT
 private string_literal ::= STRING_LIT | RAW_STRING_LIT | CHAR_LIT
-private literal ::= string_literal | numeric_literal
+private literal ::= string_literal | numeric_literal | 'true' | 'false' | 'self'
 private binary_operator ::= '/' | '*' | '+' | '-' | '<' '<' | '>' '>'
 
 // Generic recovery predicates
 private not_close_brace ::= !('}')
 private not_semicolon ::= !(';')
-private not_close_square_bracket ::= !(']')
 private not_close_parenthesis ::= !(')')
 private not_semicolon_or_open_brace ::= !('{' | ';')
 
@@ -125,6 +125,7 @@ static_expression_group ::= '(' static_expression ')'
 // These are in increasing order of precedence  (opposite of rust manual)
 expr ::= expr_block
 	| expr_call
+	| builtin_expression_group
 	| expr_assign
 	| expr_logical_or
 	| expr_logical_and
@@ -182,16 +183,25 @@ expr_equal_to ::= expr '==' expr
 expr_logical_and ::= expr '&' '&' expr
 expr_logical_or ::= expr '|' '|' expr
 
-expr_paren ::= '(' expr ')'
+expr_paren ::= '(' expr expr_tuple_body? ')'
+expr_tuple_body ::= ',' [expr (',' expr)*]
 expr_field ::= expr '.' IDENTIFIER
 expr_value ::= IDENTIFIER | literal
 
 expr_call ::= expr '!'? '(' call_params ')'
-call_params ::= expr (',' expr)*
+call_params ::= expr? (',' expr)*
+
+// Builtin expressions
+private builtin_expression_group ::= expr_continue | expr_break
+expr_continue ::= 'continue' lifetime?
+expr_break ::= 'break' lifetime?
 
 // These constructs don't need a trailing semicolon unless found as part of an expression
-expr_block ::= block_if
+expr_block ::= block_if | block_for | block_while | block_loop
 block_if  ::= 'if' expr statement_block ['else' statement_block]
+block_for ::= 'for' expr 'in' expr statement_block
+block_while ::= 'while' expr statement_block
+block_loop ::= [lifetime ':'] 'loop' statement_block
 
 
 // TYPES
@@ -286,9 +296,10 @@ expression ::= expression_wildcard*
 
 // ATTRIBUTES
 attribute ::= attribute_internal ']'
-private attribute_internal ::= '#' '!'? '[' attribute_list {pin=1 recoverWhile="not_close_square_bracket"}
+private attribute_internal ::= '#' '!'? '[' attribute_list {pin=1 recoverWhile="attrib_recover"}
 private attribute_list ::= attribute_arg ( ',' attribute_arg )*
 attribute_arg ::= IDENTIFIER [ '=' literal | '(' attribute_list ')' ]
+private attrib_recover ::= !(']' | ';')
 
 
 // TYPE

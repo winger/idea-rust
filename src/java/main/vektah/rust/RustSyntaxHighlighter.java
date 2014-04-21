@@ -88,7 +88,8 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 			type == KW_TYPE |
 			type == KW_UNSAFE |
 			type == KW_USE |
-			type == KW_WHILE)
+			type == KW_WHILE |
+			type == KW_CONTINUE)
 		{
 			return KEYWORD_KEYS;
 		}

@@ -10,7 +10,10 @@ public interface RustTokens {
 
   IElementType ATTRIBUTE = new RustTokenType("ATTRIBUTE");
   IElementType ATTRIBUTE_ARG = new RustTokenType("ATTRIBUTE_ARG");
+  IElementType BLOCK_FOR = new RustTokenType("BLOCK_FOR");
   IElementType BLOCK_IF = new RustTokenType("BLOCK_IF");
+  IElementType BLOCK_LOOP = new RustTokenType("BLOCK_LOOP");
+  IElementType BLOCK_WHILE = new RustTokenType("BLOCK_WHILE");
   IElementType CALL_PARAMS = new RustTokenType("CALL_PARAMS");
   IElementType EXPR = new RustTokenType("EXPR");
   IElementType EXPRESSION = new RustTokenType("EXPRESSION");
@@ -21,7 +24,9 @@ public interface RustTokens {
   IElementType EXPR_BLOCK = new RustTokenType("EXPR_BLOCK");
   IElementType EXPR_BORROW = new RustTokenType("EXPR_BORROW");
   IElementType EXPR_BOX = new RustTokenType("EXPR_BOX");
+  IElementType EXPR_BREAK = new RustTokenType("EXPR_BREAK");
   IElementType EXPR_CALL = new RustTokenType("EXPR_CALL");
+  IElementType EXPR_CONTINUE = new RustTokenType("EXPR_CONTINUE");
   IElementType EXPR_DEREF = new RustTokenType("EXPR_DEREF");
   IElementType EXPR_DIVIDE = new RustTokenType("EXPR_DIVIDE");
   IElementType EXPR_EQUAL_TO = new RustTokenType("EXPR_EQUAL_TO");
@@ -39,6 +44,7 @@ public interface RustTokens {
   IElementType EXPR_PAREN = new RustTokenType("EXPR_PAREN");
   IElementType EXPR_PLUS = new RustTokenType("EXPR_PLUS");
   IElementType EXPR_RIGHT_SHIFT = new RustTokenType("EXPR_RIGHT_SHIFT");
+  IElementType EXPR_TUPLE_BODY = new RustTokenType("EXPR_TUPLE_BODY");
   IElementType EXPR_UNARY_MINUS = new RustTokenType("EXPR_UNARY_MINUS");
   IElementType EXPR_UNARY_NOT = new RustTokenType("EXPR_UNARY_NOT");
   IElementType EXPR_UNARY_PLUS = new RustTokenType("EXPR_UNARY_PLUS");
@@ -110,6 +116,7 @@ public interface RustTokens {
   IElementType IDENTIFIER = new RustTokenType("IDENTIFIER");
   IElementType KW_AS = new RustTokenType("as");
   IElementType KW_BREAK = new RustTokenType("break");
+  IElementType KW_CONTINUE = new RustTokenType("continue");
   IElementType KW_CRATE = new RustTokenType("crate");
   IElementType KW_ELSE = new RustTokenType("else");
   IElementType KW_ENUM = new RustTokenType("enum");
@@ -170,8 +177,17 @@ public interface RustTokens {
       else if (type == ATTRIBUTE_ARG) {
         return new RustAttributeArgImpl(node);
       }
+      else if (type == BLOCK_FOR) {
+        return new RustBlockForImpl(node);
+      }
       else if (type == BLOCK_IF) {
         return new RustBlockIfImpl(node);
+      }
+      else if (type == BLOCK_LOOP) {
+        return new RustBlockLoopImpl(node);
+      }
+      else if (type == BLOCK_WHILE) {
+        return new RustBlockWhileImpl(node);
       }
       else if (type == CALL_PARAMS) {
         return new RustCallParamsImpl(node);
@@ -203,8 +219,14 @@ public interface RustTokens {
       else if (type == EXPR_BOX) {
         return new RustExprBoxImpl(node);
       }
+      else if (type == EXPR_BREAK) {
+        return new RustExprBreakImpl(node);
+      }
       else if (type == EXPR_CALL) {
         return new RustExprCallImpl(node);
+      }
+      else if (type == EXPR_CONTINUE) {
+        return new RustExprContinueImpl(node);
       }
       else if (type == EXPR_DEREF) {
         return new RustExprDerefImpl(node);
@@ -256,6 +278,9 @@ public interface RustTokens {
       }
       else if (type == EXPR_RIGHT_SHIFT) {
         return new RustExprRightShiftImpl(node);
+      }
+      else if (type == EXPR_TUPLE_BODY) {
+        return new RustExprTupleBodyImpl(node);
       }
       else if (type == EXPR_UNARY_MINUS) {
         return new RustExprUnaryMinusImpl(node);
