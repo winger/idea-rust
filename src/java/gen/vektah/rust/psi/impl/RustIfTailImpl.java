@@ -11,21 +11,27 @@ import static vektah.rust.psi.RustTokens.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustUseImpl extends ASTWrapperPsiElement implements RustUse {
+public class RustIfTailImpl extends ASTWrapperPsiElement implements RustIfTail {
 
-  public RustUseImpl(ASTNode node) {
+  public RustIfTailImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitUse(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitIfTail(this);
     else super.accept(visitor);
   }
 
   @Override
-  @Nullable
-  public RustExprPath getExprPath() {
-    return findChildByClass(RustExprPath.class);
+  @NotNull
+  public List<RustExpr> getExprList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustExpr.class);
+  }
+
+  @Override
+  @NotNull
+  public List<RustStatementBlock> getStatementBlockList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RustStatementBlock.class);
   }
 
 }

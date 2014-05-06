@@ -19,10 +19,6 @@ public class RustVisitor extends PsiElementVisitor {
     visitExprBlock(o);
   }
 
-  public void visitBlockIf(@NotNull RustBlockIf o) {
-    visitExprBlock(o);
-  }
-
   public void visitBlockLoop(@NotNull RustBlockLoop o) {
     visitExprBlock(o);
   }
@@ -32,6 +28,10 @@ public class RustVisitor extends PsiElementVisitor {
   }
 
   public void visitCallParams(@NotNull RustCallParams o) {
+    visitPsiElement(o);
+  }
+
+  public void visitEnumMatchPattern(@NotNull RustEnumMatchPattern o) {
     visitPsiElement(o);
   }
 
@@ -103,6 +103,14 @@ public class RustVisitor extends PsiElementVisitor {
     visitExpr(o);
   }
 
+  public void visitExprIdentifier(@NotNull RustExprIdentifier o) {
+    visitExpr(o);
+  }
+
+  public void visitExprIf(@NotNull RustExprIf o) {
+    visitExpr(o);
+  }
+
   public void visitExprLeftShift(@NotNull RustExprLeftShift o) {
     visitExpr(o);
   }
@@ -123,6 +131,10 @@ public class RustVisitor extends PsiElementVisitor {
     visitExpr(o);
   }
 
+  public void visitExprMatch(@NotNull RustExprMatch o) {
+    visitExpr(o);
+  }
+
   public void visitExprMinus(@NotNull RustExprMinus o) {
     visitExpr(o);
   }
@@ -139,11 +151,19 @@ public class RustVisitor extends PsiElementVisitor {
     visitExpr(o);
   }
 
+  public void visitExprPath(@NotNull RustExprPath o) {
+    visitExpr(o);
+  }
+
   public void visitExprPlus(@NotNull RustExprPlus o) {
     visitExpr(o);
   }
 
   public void visitExprRightShift(@NotNull RustExprRightShift o) {
+    visitExpr(o);
+  }
+
+  public void visitExprStructInitializer(@NotNull RustExprStructInitializer o) {
     visitExpr(o);
   }
 
@@ -207,6 +227,10 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitIfTail(@NotNull RustIfTail o) {
+    visitPsiElement(o);
+  }
+
   public void visitLet(@NotNull RustLet o) {
     visitPsiElement(o);
   }
@@ -215,7 +239,23 @@ public class RustVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitPath(@NotNull RustPath o) {
+  public void visitMatchBody(@NotNull RustMatchBody o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchFilter(@NotNull RustMatchFilter o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchIf(@NotNull RustMatchIf o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchPattern(@NotNull RustMatchPattern o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMatchRule(@NotNull RustMatchRule o) {
     visitPsiElement(o);
   }
 
@@ -224,6 +264,10 @@ public class RustVisitor extends PsiElementVisitor {
   }
 
   public void visitRegionBound(@NotNull RustRegionBound o) {
+    visitPsiElement(o);
+  }
+
+  public void visitReturnStatement(@NotNull RustReturnStatement o) {
     visitPsiElement(o);
   }
 
@@ -256,6 +300,10 @@ public class RustVisitor extends PsiElementVisitor {
   }
 
   public void visitStructBody(@NotNull RustStructBody o) {
+    visitPsiElement(o);
+  }
+
+  public void visitStructInitializerList(@NotNull RustStructInitializerList o) {
     visitPsiElement(o);
   }
 
@@ -308,6 +356,10 @@ public class RustVisitor extends PsiElementVisitor {
   }
 
   public void visitUse(@NotNull RustUse o) {
+    visitPsiElement(o);
+  }
+
+  public void visitVectorMatchPattern(@NotNull RustVectorMatchPattern o) {
     visitPsiElement(o);
   }
 

@@ -11,21 +11,27 @@ import static vektah.rust.psi.RustTokens.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustUseImpl extends ASTWrapperPsiElement implements RustUse {
+public class RustMatchFilterImpl extends ASTWrapperPsiElement implements RustMatchFilter {
 
-  public RustUseImpl(ASTNode node) {
+  public RustMatchFilterImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitUse(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitMatchFilter(this);
     else super.accept(visitor);
   }
 
   @Override
   @Nullable
-  public RustExprPath getExprPath() {
-    return findChildByClass(RustExprPath.class);
+  public RustMatchIf getMatchIf() {
+    return findChildByClass(RustMatchIf.class);
+  }
+
+  @Override
+  @NotNull
+  public RustMatchPattern getMatchPattern() {
+    return findNotNullChildByClass(RustMatchPattern.class);
   }
 
 }

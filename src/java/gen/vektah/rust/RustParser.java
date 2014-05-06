@@ -30,9 +30,6 @@ public class RustParser implements PsiParser {
     else if (root_ == BLOCK_FOR) {
       result_ = block_for(builder_, 0);
     }
-    else if (root_ == BLOCK_IF) {
-      result_ = block_if(builder_, 0);
-    }
     else if (root_ == BLOCK_LOOP) {
       result_ = block_loop(builder_, 0);
     }
@@ -41,6 +38,9 @@ public class RustParser implements PsiParser {
     }
     else if (root_ == CALL_PARAMS) {
       result_ = call_params(builder_, 0);
+    }
+    else if (root_ == ENUM_MATCH_PATTERN) {
+      result_ = enum_match_pattern(builder_, 0);
     }
     else if (root_ == EXPR) {
       result_ = expr(builder_, 0, -1);
@@ -93,6 +93,12 @@ public class RustParser implements PsiParser {
     else if (root_ == EXPR_GREATER_THAN) {
       result_ = expr(builder_, 0, 6);
     }
+    else if (root_ == EXPR_IDENTIFIER) {
+      result_ = expr_identifier(builder_, 0);
+    }
+    else if (root_ == EXPR_IF) {
+      result_ = expr_if(builder_, 0);
+    }
     else if (root_ == EXPR_LEFT_SHIFT) {
       result_ = expr(builder_, 0, 10);
     }
@@ -108,6 +114,9 @@ public class RustParser implements PsiParser {
     else if (root_ == EXPR_LOGICAL_OR) {
       result_ = expr(builder_, 0, 3);
     }
+    else if (root_ == EXPR_MATCH) {
+      result_ = expr_match(builder_, 0);
+    }
     else if (root_ == EXPR_MINUS) {
       result_ = expr(builder_, 0, 11);
     }
@@ -120,11 +129,17 @@ public class RustParser implements PsiParser {
     else if (root_ == EXPR_PAREN) {
       result_ = expr_paren(builder_, 0);
     }
+    else if (root_ == EXPR_PATH) {
+      result_ = expr_path(builder_, 0);
+    }
     else if (root_ == EXPR_PLUS) {
       result_ = expr(builder_, 0, 11);
     }
     else if (root_ == EXPR_RIGHT_SHIFT) {
       result_ = expr(builder_, 0, 10);
+    }
+    else if (root_ == EXPR_STRUCT_INITIALIZER) {
+      result_ = expr(builder_, 0, 15);
     }
     else if (root_ == EXPR_TUPLE_BODY) {
       result_ = expr_tuple_body(builder_, 0);
@@ -171,20 +186,38 @@ public class RustParser implements PsiParser {
     else if (root_ == GENERIC_PARAMS) {
       result_ = generic_params(builder_, 0);
     }
+    else if (root_ == IF_TAIL) {
+      result_ = if_tail(builder_, 0);
+    }
     else if (root_ == LET) {
       result_ = let(builder_, 0);
     }
     else if (root_ == LIFETIME) {
       result_ = lifetime(builder_, 0);
     }
-    else if (root_ == PATH) {
-      result_ = path(builder_, 0);
+    else if (root_ == MATCH_BODY) {
+      result_ = match_body(builder_, 0);
+    }
+    else if (root_ == MATCH_FILTER) {
+      result_ = match_filter(builder_, 0);
+    }
+    else if (root_ == MATCH_IF) {
+      result_ = match_if(builder_, 0);
+    }
+    else if (root_ == MATCH_PATTERN) {
+      result_ = match_pattern(builder_, 0);
+    }
+    else if (root_ == MATCH_RULE) {
+      result_ = match_rule(builder_, 0);
     }
     else if (root_ == REF) {
       result_ = ref(builder_, 0);
     }
     else if (root_ == REGION_BOUND) {
       result_ = region_bound(builder_, 0);
+    }
+    else if (root_ == RETURN_STATEMENT) {
+      result_ = return_statement(builder_, 0);
     }
     else if (root_ == SELF_ARG) {
       result_ = self_arg(builder_, 0);
@@ -209,6 +242,9 @@ public class RustParser implements PsiParser {
     }
     else if (root_ == STRUCT_BODY) {
       result_ = struct_body(builder_, 0);
+    }
+    else if (root_ == STRUCT_INITIALIZER_LIST) {
+      result_ = struct_initializer_list(builder_, 0);
     }
     else if (root_ == STRUCT_PROPERTY) {
       result_ = struct_property(builder_, 0);
@@ -249,6 +285,9 @@ public class RustParser implements PsiParser {
     else if (root_ == USE) {
       result_ = use(builder_, 0);
     }
+    else if (root_ == VECTOR_MATCH_PATTERN) {
+      result_ = vector_match_pattern(builder_, 0);
+    }
     else {
       result_ = parse_root_(root_, builder_, 0);
     }
@@ -261,18 +300,18 @@ public class RustParser implements PsiParser {
   }
 
   public static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
-    create_token_set_(BLOCK_FOR, BLOCK_IF, BLOCK_LOOP, BLOCK_WHILE,
-      EXPR, EXPR_ASSIGN, EXPR_BITWISE_AND, EXPR_BITWISE_OR,
-      EXPR_BITWISE_XOR, EXPR_BLOCK, EXPR_BORROW, EXPR_BOX,
-      EXPR_BREAK, EXPR_CALL, EXPR_CONTINUE, EXPR_DEREF,
-      EXPR_DIVIDE, EXPR_EQUAL_TO, EXPR_FIELD, EXPR_GREATER_OR_EQUAL,
-      EXPR_GREATER_THAN, EXPR_LEFT_SHIFT, EXPR_LESS_OR_EQUAL, EXPR_LESS_THAN,
-      EXPR_LOGICAL_AND, EXPR_LOGICAL_OR, EXPR_MINUS, EXPR_MULTIPLY,
-      EXPR_NOT_EQUAL_TO, EXPR_PAREN, EXPR_PLUS, EXPR_RIGHT_SHIFT,
+    create_token_set_(BLOCK_FOR, BLOCK_LOOP, BLOCK_WHILE, EXPR,
+      EXPR_ASSIGN, EXPR_BITWISE_AND, EXPR_BITWISE_OR, EXPR_BITWISE_XOR,
+      EXPR_BLOCK, EXPR_BORROW, EXPR_BOX, EXPR_BREAK,
+      EXPR_CALL, EXPR_CONTINUE, EXPR_DEREF, EXPR_DIVIDE,
+      EXPR_EQUAL_TO, EXPR_FIELD, EXPR_GREATER_OR_EQUAL, EXPR_GREATER_THAN,
+      EXPR_IDENTIFIER, EXPR_IF, EXPR_LEFT_SHIFT, EXPR_LESS_OR_EQUAL,
+      EXPR_LESS_THAN, EXPR_LOGICAL_AND, EXPR_LOGICAL_OR, EXPR_MATCH,
+      EXPR_MINUS, EXPR_MULTIPLY, EXPR_NOT_EQUAL_TO, EXPR_PAREN,
+      EXPR_PATH, EXPR_PLUS, EXPR_RIGHT_SHIFT, EXPR_STRUCT_INITIALIZER,
       EXPR_TUPLE_BODY, EXPR_UNARY_MINUS, EXPR_UNARY_NOT, EXPR_UNARY_PLUS,
       EXPR_VALUE),
-    create_token_set_(BLOCK_FOR, BLOCK_IF, BLOCK_LOOP, BLOCK_WHILE,
-      EXPR_BLOCK),
+    create_token_set_(BLOCK_FOR, BLOCK_LOOP, BLOCK_WHILE, EXPR_BLOCK),
   };
 
   /* ********************************************************** */
@@ -519,39 +558,6 @@ public class RustParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // 'if' expr statement_block ['else' statement_block]
-  public static boolean block_if(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "block_if")) return false;
-    if (!nextTokenIs(builder_, KW_IF)) return false;
-    boolean result_ = false;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, KW_IF);
-    result_ = result_ && expr(builder_, level_ + 1, -1);
-    result_ = result_ && statement_block(builder_, level_ + 1);
-    result_ = result_ && block_if_3(builder_, level_ + 1);
-    exit_section_(builder_, marker_, BLOCK_IF, result_);
-    return result_;
-  }
-
-  // ['else' statement_block]
-  private static boolean block_if_3(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "block_if_3")) return false;
-    block_if_3_0(builder_, level_ + 1);
-    return true;
-  }
-
-  // 'else' statement_block
-  private static boolean block_if_3_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "block_if_3_0")) return false;
-    boolean result_ = false;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, KW_ELSE);
-    result_ = result_ && statement_block(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  /* ********************************************************** */
   // [lifetime ':'] 'loop' statement_block
   public static boolean block_loop(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "block_loop")) return false;
@@ -681,6 +687,86 @@ public class RustParser implements PsiParser {
     if (!result_) result_ = consumeToken(builder_, NOT_EQUAL);
     if (!result_) result_ = consumeToken(builder_, GREATER_THAN_OR_EQUAL);
     if (!result_) result_ = consumeToken(builder_, LESS_THAN_OR_EQUAL);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // IDENTIFIER | '.' '.' | enum_match_pattern | literal
+  static boolean enum_match_identifier(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "enum_match_identifier")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, IDENTIFIER);
+    if (!result_) result_ = enum_match_identifier_1(builder_, level_ + 1);
+    if (!result_) result_ = enum_match_pattern(builder_, level_ + 1);
+    if (!result_) result_ = literal(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '.' '.'
+  private static boolean enum_match_identifier_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "enum_match_identifier_1")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, DOT);
+    result_ = result_ && consumeToken(builder_, DOT);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // type ['(' enum_match_identifier (',' enum_match_identifier)* ')']
+  public static boolean enum_match_pattern(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "enum_match_pattern")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, "<enum match pattern>");
+    result_ = type(builder_, level_ + 1);
+    result_ = result_ && enum_match_pattern_1(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, ENUM_MATCH_PATTERN, result_, false, null);
+    return result_;
+  }
+
+  // ['(' enum_match_identifier (',' enum_match_identifier)* ')']
+  private static boolean enum_match_pattern_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "enum_match_pattern_1")) return false;
+    enum_match_pattern_1_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // '(' enum_match_identifier (',' enum_match_identifier)* ')'
+  private static boolean enum_match_pattern_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "enum_match_pattern_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, OPEN_PAREN);
+    result_ = result_ && enum_match_identifier(builder_, level_ + 1);
+    result_ = result_ && enum_match_pattern_1_0_2(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, CLOSE_PAREN);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // (',' enum_match_identifier)*
+  private static boolean enum_match_pattern_1_0_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "enum_match_pattern_1_0_2")) return false;
+    int pos_ = current_position_(builder_);
+    while (true) {
+      if (!enum_match_pattern_1_0_2_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "enum_match_pattern_1_0_2", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    return true;
+  }
+
+  // ',' enum_match_identifier
+  private static boolean enum_match_pattern_1_0_2_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "enum_match_pattern_1_0_2_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, COMMA);
+    result_ = result_ && enum_match_identifier(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -1445,6 +1531,61 @@ public class RustParser implements PsiParser {
   }
 
   /* ********************************************************** */
+  // ('else' 'if' expr statement_block)* ['else' statement_block]
+  public static boolean if_tail(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_tail")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, "<if tail>");
+    result_ = if_tail_0(builder_, level_ + 1);
+    result_ = result_ && if_tail_1(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, IF_TAIL, result_, false, null);
+    return result_;
+  }
+
+  // ('else' 'if' expr statement_block)*
+  private static boolean if_tail_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_tail_0")) return false;
+    int pos_ = current_position_(builder_);
+    while (true) {
+      if (!if_tail_0_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "if_tail_0", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    return true;
+  }
+
+  // 'else' 'if' expr statement_block
+  private static boolean if_tail_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_tail_0_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, KW_ELSE);
+    result_ = result_ && consumeToken(builder_, KW_IF);
+    result_ = result_ && expr(builder_, level_ + 1, -1);
+    result_ = result_ && statement_block(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // ['else' statement_block]
+  private static boolean if_tail_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_tail_1")) return false;
+    if_tail_1_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // 'else' statement_block
+  private static boolean if_tail_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "if_tail_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, KW_ELSE);
+    result_ = result_ && statement_block(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
   // KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_LET|KW_STRUCT|KW_ENUM|KW_FALSE|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_SUPER|KW_TRUE|KW_TYPE|KW_UNSAFE|KW_WHILE
   static boolean keyword(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "keyword")) return false;
@@ -1682,6 +1823,131 @@ public class RustParser implements PsiParser {
   }
 
   /* ********************************************************** */
+  // match_rule*
+  public static boolean match_body(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "match_body")) return false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, "<match body>");
+    int pos_ = current_position_(builder_);
+    while (true) {
+      if (!match_rule(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "match_body", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    exit_section_(builder_, level_, marker_, MATCH_BODY, true, false, null);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // match_pattern match_if?
+  public static boolean match_filter(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "match_filter")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, "<match filter>");
+    result_ = match_pattern(builder_, level_ + 1);
+    result_ = result_ && match_filter_1(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, MATCH_FILTER, result_, false, null);
+    return result_;
+  }
+
+  // match_if?
+  private static boolean match_filter_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "match_filter_1")) return false;
+    match_if(builder_, level_ + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // 'if' expr
+  public static boolean match_if(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "match_if")) return false;
+    if (!nextTokenIs(builder_, KW_IF)) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, KW_IF);
+    result_ = result_ && expr(builder_, level_ + 1, -1);
+    exit_section_(builder_, marker_, MATCH_IF, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // enum_match_pattern | vector_match_pattern
+  public static boolean match_pattern(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "match_pattern")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, "<match pattern>");
+    result_ = enum_match_pattern(builder_, level_ + 1);
+    if (!result_) result_ = vector_match_pattern(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, MATCH_PATTERN, result_, false, null);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // match_filter ('|' match_filter)* '=>' (statement_block | statement ','?)
+  public static boolean match_rule(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "match_rule")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, "<match rule>");
+    result_ = match_filter(builder_, level_ + 1);
+    result_ = result_ && match_rule_1(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, FAT_ARROW);
+    result_ = result_ && match_rule_3(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, MATCH_RULE, result_, false, null);
+    return result_;
+  }
+
+  // ('|' match_filter)*
+  private static boolean match_rule_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "match_rule_1")) return false;
+    int pos_ = current_position_(builder_);
+    while (true) {
+      if (!match_rule_1_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "match_rule_1", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    return true;
+  }
+
+  // '|' match_filter
+  private static boolean match_rule_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "match_rule_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, BITWISE_OR);
+    result_ = result_ && match_filter(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // statement_block | statement ','?
+  private static boolean match_rule_3(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "match_rule_3")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = statement_block(builder_, level_ + 1);
+    if (!result_) result_ = match_rule_3_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // statement ','?
+  private static boolean match_rule_3_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "match_rule_3_1")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = statement(builder_, level_ + 1);
+    result_ = result_ && match_rule_3_1_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // ','?
+  private static boolean match_rule_3_1_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "match_rule_3_1_1")) return false;
+    consumeToken(builder_, COMMA);
+    return true;
+  }
+
+  /* ********************************************************** */
   // !('}')
   static boolean not_close_brace(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "not_close_brace")) return false;
@@ -1797,114 +2063,6 @@ public class RustParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* ['::' generic]
-  public static boolean path(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "path")) return false;
-    boolean result_ = false;
-    Marker marker_ = enter_section_(builder_, level_, _NONE_, "<path>");
-    result_ = path_0(builder_, level_ + 1);
-    result_ = result_ && path_1(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, IDENTIFIER);
-    result_ = result_ && path_3(builder_, level_ + 1);
-    result_ = result_ && path_4(builder_, level_ + 1);
-    exit_section_(builder_, level_, marker_, PATH, result_, false, null);
-    return result_;
-  }
-
-  // '::'?
-  private static boolean path_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "path_0")) return false;
-    consumeToken(builder_, DOUBLE_COLON);
-    return true;
-  }
-
-  // ('self' '::' | 'super' '::')*
-  private static boolean path_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "path_1")) return false;
-    int pos_ = current_position_(builder_);
-    while (true) {
-      if (!path_1_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "path_1", pos_)) break;
-      pos_ = current_position_(builder_);
-    }
-    return true;
-  }
-
-  // 'self' '::' | 'super' '::'
-  private static boolean path_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "path_1_0")) return false;
-    boolean result_ = false;
-    Marker marker_ = enter_section_(builder_);
-    result_ = path_1_0_0(builder_, level_ + 1);
-    if (!result_) result_ = path_1_0_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // 'self' '::'
-  private static boolean path_1_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "path_1_0_0")) return false;
-    boolean result_ = false;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, KW_SELF);
-    result_ = result_ && consumeToken(builder_, DOUBLE_COLON);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // 'super' '::'
-  private static boolean path_1_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "path_1_0_1")) return false;
-    boolean result_ = false;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, KW_SUPER);
-    result_ = result_ && consumeToken(builder_, DOUBLE_COLON);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // ('::' IDENTIFIER)*
-  private static boolean path_3(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "path_3")) return false;
-    int pos_ = current_position_(builder_);
-    while (true) {
-      if (!path_3_0(builder_, level_ + 1)) break;
-      if (!empty_element_parsed_guard_(builder_, "path_3", pos_)) break;
-      pos_ = current_position_(builder_);
-    }
-    return true;
-  }
-
-  // '::' IDENTIFIER
-  private static boolean path_3_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "path_3_0")) return false;
-    boolean result_ = false;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, DOUBLE_COLON);
-    result_ = result_ && consumeToken(builder_, IDENTIFIER);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // ['::' generic]
-  private static boolean path_4(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "path_4")) return false;
-    path_4_0(builder_, level_ + 1);
-    return true;
-  }
-
-  // '::' generic
-  private static boolean path_4_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "path_4_0")) return false;
-    boolean result_ = false;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, DOUBLE_COLON);
-    result_ = result_ && generic(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  /* ********************************************************** */
   // '&'+ lifetime?
   public static boolean ref(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "ref")) return false;
@@ -1952,6 +2110,34 @@ public class RustParser implements PsiParser {
     result_ = result_ && consumeToken(builder_, KW_STATIC);
     exit_section_(builder_, marker_, REGION_BOUND, result_);
     return result_;
+  }
+
+  /* ********************************************************** */
+  // 'return' expr? ';'?
+  public static boolean return_statement(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "return_statement")) return false;
+    if (!nextTokenIs(builder_, KW_RETURN)) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, KW_RETURN);
+    result_ = result_ && return_statement_1(builder_, level_ + 1);
+    result_ = result_ && return_statement_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, RETURN_STATEMENT, result_);
+    return result_;
+  }
+
+  // expr?
+  private static boolean return_statement_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "return_statement_1")) return false;
+    expr(builder_, level_ + 1, -1);
+    return true;
+  }
+
+  // ';'?
+  private static boolean return_statement_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "return_statement_2")) return false;
+    consumeToken(builder_, SEMICOLON);
+    return true;
   }
 
   /* ********************************************************** */
@@ -2100,6 +2286,7 @@ public class RustParser implements PsiParser {
   // 	| struct
   // 	| attribute
   // 	| extern
+  // 	| return_statement
   static boolean statement(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "statement")) return false;
     boolean result_ = false;
@@ -2114,6 +2301,7 @@ public class RustParser implements PsiParser {
     if (!result_) result_ = struct(builder_, level_ + 1);
     if (!result_) result_ = attribute(builder_, level_ + 1);
     if (!result_) result_ = extern(builder_, level_ + 1);
+    if (!result_) result_ = return_statement(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -2386,6 +2574,46 @@ public class RustParser implements PsiParser {
     if (!recursion_guard_(builder_, level_, "struct_body_2")) return false;
     consumeToken(builder_, COMMA);
     return true;
+  }
+
+  /* ********************************************************** */
+  // IDENTIFIER ':' expr (',' IDENTIFIER ':' expr)*
+  public static boolean struct_initializer_list(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "struct_initializer_list")) return false;
+    if (!nextTokenIs(builder_, IDENTIFIER)) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, IDENTIFIER);
+    result_ = result_ && consumeToken(builder_, COLON);
+    result_ = result_ && expr(builder_, level_ + 1, -1);
+    result_ = result_ && struct_initializer_list_3(builder_, level_ + 1);
+    exit_section_(builder_, marker_, STRUCT_INITIALIZER_LIST, result_);
+    return result_;
+  }
+
+  // (',' IDENTIFIER ':' expr)*
+  private static boolean struct_initializer_list_3(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "struct_initializer_list_3")) return false;
+    int pos_ = current_position_(builder_);
+    while (true) {
+      if (!struct_initializer_list_3_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "struct_initializer_list_3", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    return true;
+  }
+
+  // ',' IDENTIFIER ':' expr
+  private static boolean struct_initializer_list_3_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "struct_initializer_list_3_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, COMMA);
+    result_ = result_ && consumeToken(builder_, IDENTIFIER);
+    result_ = result_ && consumeToken(builder_, COLON);
+    result_ = result_ && expr(builder_, level_ + 1, -1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
   }
 
   /* ********************************************************** */
@@ -3382,7 +3610,7 @@ public class RustParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // ['pub'] 'use' (use_glob | use_part ('::' use_part)* ('::' use_glob | '=' path)?)
+  // ['pub'] 'use' (use_glob | use_part ('::' use_part)* ('::' use_glob | '=' expr_path)?)
   static boolean use_internal(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "use_internal")) return false;
     boolean result_ = false;
@@ -3403,7 +3631,7 @@ public class RustParser implements PsiParser {
     return true;
   }
 
-  // use_glob | use_part ('::' use_part)* ('::' use_glob | '=' path)?
+  // use_glob | use_part ('::' use_part)* ('::' use_glob | '=' expr_path)?
   private static boolean use_internal_2(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "use_internal_2")) return false;
     boolean result_ = false;
@@ -3414,7 +3642,7 @@ public class RustParser implements PsiParser {
     return result_;
   }
 
-  // use_part ('::' use_part)* ('::' use_glob | '=' path)?
+  // use_part ('::' use_part)* ('::' use_glob | '=' expr_path)?
   private static boolean use_internal_2_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "use_internal_2_1")) return false;
     boolean result_ = false;
@@ -3449,14 +3677,14 @@ public class RustParser implements PsiParser {
     return result_;
   }
 
-  // ('::' use_glob | '=' path)?
+  // ('::' use_glob | '=' expr_path)?
   private static boolean use_internal_2_1_2(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "use_internal_2_1_2")) return false;
     use_internal_2_1_2_0(builder_, level_ + 1);
     return true;
   }
 
-  // '::' use_glob | '=' path
+  // '::' use_glob | '=' expr_path
   private static boolean use_internal_2_1_2_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "use_internal_2_1_2_0")) return false;
     boolean result_ = false;
@@ -3478,13 +3706,13 @@ public class RustParser implements PsiParser {
     return result_;
   }
 
-  // '=' path
+  // '=' expr_path
   private static boolean use_internal_2_1_2_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "use_internal_2_1_2_0_1")) return false;
     boolean result_ = false;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, ASSIGN);
-    result_ = result_ && path(builder_, level_ + 1);
+    result_ = result_ && expr_path(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -3538,6 +3766,93 @@ public class RustParser implements PsiParser {
   }
 
   /* ********************************************************** */
+  // IDENTIFIER | ('.' '.' IDENTIFIER? )
+  static boolean vector_match_identifier(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "vector_match_identifier")) return false;
+    if (!nextTokenIs(builder_, "", DOT, IDENTIFIER)) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, IDENTIFIER);
+    if (!result_) result_ = vector_match_identifier_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '.' '.' IDENTIFIER?
+  private static boolean vector_match_identifier_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "vector_match_identifier_1")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, DOT);
+    result_ = result_ && consumeToken(builder_, DOT);
+    result_ = result_ && vector_match_identifier_1_2(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // IDENTIFIER?
+  private static boolean vector_match_identifier_1_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "vector_match_identifier_1_2")) return false;
+    consumeToken(builder_, IDENTIFIER);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // '[' [vector_match_identifier (',' vector_match_identifier)* ] ']'
+  public static boolean vector_match_pattern(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "vector_match_pattern")) return false;
+    if (!nextTokenIs(builder_, OPEN_SQUARE_BRACKET)) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, OPEN_SQUARE_BRACKET);
+    result_ = result_ && vector_match_pattern_1(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, CLOSE_SQUARE_BRACKET);
+    exit_section_(builder_, marker_, VECTOR_MATCH_PATTERN, result_);
+    return result_;
+  }
+
+  // [vector_match_identifier (',' vector_match_identifier)* ]
+  private static boolean vector_match_pattern_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "vector_match_pattern_1")) return false;
+    vector_match_pattern_1_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // vector_match_identifier (',' vector_match_identifier)*
+  private static boolean vector_match_pattern_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "vector_match_pattern_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = vector_match_identifier(builder_, level_ + 1);
+    result_ = result_ && vector_match_pattern_1_0_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // (',' vector_match_identifier)*
+  private static boolean vector_match_pattern_1_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "vector_match_pattern_1_0_1")) return false;
+    int pos_ = current_position_(builder_);
+    while (true) {
+      if (!vector_match_pattern_1_0_1_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "vector_match_pattern_1_0_1", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    return true;
+  }
+
+  // ',' vector_match_identifier
+  private static boolean vector_match_pattern_1_0_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "vector_match_pattern_1_0_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, COMMA);
+    result_ = result_ && vector_match_identifier(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  /* ********************************************************** */
   // Expression root: expr
   // Operator priority table:
   // 0: ATOM(expr_block)
@@ -3556,7 +3871,7 @@ public class RustParser implements PsiParser {
   // 13: BINARY(expr_multiply) BINARY(expr_divide)
   // 14: PREFIX(expr_unary_plus) PREFIX(expr_unary_minus) PREFIX(expr_unary_not) PREFIX(expr_deref) PREFIX(expr_box) PREFIX(expr_borrow)
   // 15: POSTFIX(expr_field)
-  // 16: ATOM(expr_paren) ATOM(expr_value)
+  // 16: ATOM(expr_paren) PREFIX(expr_if) POSTFIX(expr_struct_initializer) PREFIX(expr_match) ATOM(expr_path) ATOM(expr_identifier) ATOM(expr_value)
   public static boolean expr(PsiBuilder builder_, int level_, int priority_) {
     if (!recursion_guard_(builder_, level_, "expr")) return false;
     addVariant(builder_, "<expr>");
@@ -3573,6 +3888,10 @@ public class RustParser implements PsiParser {
     if (!result_) result_ = expr_unary_not(builder_, level_ + 1);
     if (!result_) result_ = expr_box(builder_, level_ + 1);
     if (!result_) result_ = expr_paren(builder_, level_ + 1);
+    if (!result_) result_ = expr_if(builder_, level_ + 1);
+    if (!result_) result_ = expr_match(builder_, level_ + 1);
+    if (!result_) result_ = expr_path(builder_, level_ + 1);
+    if (!result_) result_ = expr_identifier(builder_, level_ + 1);
     if (!result_) result_ = expr_value(builder_, level_ + 1);
     pinned_ = result_;
     result_ = result_ && expr_0(builder_, level_ + 1, priority_);
@@ -3687,6 +4006,11 @@ public class RustParser implements PsiParser {
         marker_.drop();
         left_marker_.precede().done(EXPR_FIELD);
       }
+      else if (priority_ < 16 && expr_struct_initializer_0(builder_, level_ + 1)) {
+        result_ = true;
+        marker_.drop();
+        left_marker_.precede().done(EXPR_STRUCT_INITIALIZER);
+      }
       else {
         exit_section_(builder_, marker_, null, false);
         break;
@@ -3695,13 +4019,12 @@ public class RustParser implements PsiParser {
     return result_;
   }
 
-  // block_if | block_for | block_while | block_loop
+  // block_for | block_while | block_loop
   public static boolean expr_block(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "expr_block")) return false;
     boolean result_ = false;
     Marker marker_ = enter_section_(builder_, level_, _COLLAPSE_, "<expr block>");
-    result_ = block_if(builder_, level_ + 1);
-    if (!result_) result_ = block_for(builder_, level_ + 1);
+    result_ = block_for(builder_, level_ + 1);
     if (!result_) result_ = block_while(builder_, level_ + 1);
     if (!result_) result_ = block_loop(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, EXPR_BLOCK, result_, false, null);
@@ -3920,13 +4243,193 @@ public class RustParser implements PsiParser {
     return true;
   }
 
-  // IDENTIFIER | literal
+  public static boolean expr_if(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_if")) return false;
+    if (!nextTokenIsFast(builder_, KW_IF)) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, null);
+    result_ = consumeTokenFast(builder_, KW_IF);
+    pinned_ = result_;
+    result_ = pinned_ && expr(builder_, level_, -1);
+    result_ = pinned_ && report_error_(builder_, expr_if_1(builder_, level_ + 1)) && result_;
+    exit_section_(builder_, level_, marker_, EXPR_IF, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  // statement_block if_tail
+  private static boolean expr_if_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_if_1")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = statement_block(builder_, level_ + 1);
+    result_ = result_ && if_tail(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '{' struct_initializer_list "}"
+  private static boolean expr_struct_initializer_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_struct_initializer_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokenFast(builder_, OPEN_BRACE);
+    result_ = result_ && struct_initializer_list(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, CLOSE_BRACE);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  public static boolean expr_match(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_match")) return false;
+    if (!nextTokenIsFast(builder_, KW_MATCH)) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, null);
+    result_ = consumeTokenFast(builder_, KW_MATCH);
+    pinned_ = result_;
+    result_ = pinned_ && expr(builder_, level_, -1);
+    result_ = pinned_ && report_error_(builder_, expr_match_1(builder_, level_ + 1)) && result_;
+    exit_section_(builder_, level_, marker_, EXPR_MATCH, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  // '{' match_body '}'
+  private static boolean expr_match_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_match_1")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokenFast(builder_, OPEN_BRACE);
+    result_ = result_ && match_body(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, CLOSE_BRACE);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* ['::' generic]
+  public static boolean expr_path(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_path")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, "<expr path>");
+    result_ = expr_path_0(builder_, level_ + 1);
+    result_ = result_ && expr_path_1(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, IDENTIFIER);
+    result_ = result_ && expr_path_3(builder_, level_ + 1);
+    result_ = result_ && expr_path_4(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, EXPR_PATH, result_, false, null);
+    return result_;
+  }
+
+  // '::'?
+  private static boolean expr_path_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_path_0")) return false;
+    consumeTokenFast(builder_, DOUBLE_COLON);
+    return true;
+  }
+
+  // ('self' '::' | 'super' '::')*
+  private static boolean expr_path_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_path_1")) return false;
+    int pos_ = current_position_(builder_);
+    while (true) {
+      if (!expr_path_1_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "expr_path_1", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    return true;
+  }
+
+  // 'self' '::' | 'super' '::'
+  private static boolean expr_path_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_path_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = expr_path_1_0_0(builder_, level_ + 1);
+    if (!result_) result_ = expr_path_1_0_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // 'self' '::'
+  private static boolean expr_path_1_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_path_1_0_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokenFast(builder_, KW_SELF);
+    result_ = result_ && consumeToken(builder_, DOUBLE_COLON);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // 'super' '::'
+  private static boolean expr_path_1_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_path_1_0_1")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokenFast(builder_, KW_SUPER);
+    result_ = result_ && consumeToken(builder_, DOUBLE_COLON);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // ('::' IDENTIFIER)*
+  private static boolean expr_path_3(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_path_3")) return false;
+    int pos_ = current_position_(builder_);
+    while (true) {
+      if (!expr_path_3_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "expr_path_3", pos_)) break;
+      pos_ = current_position_(builder_);
+    }
+    return true;
+  }
+
+  // '::' IDENTIFIER
+  private static boolean expr_path_3_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_path_3_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokenFast(builder_, DOUBLE_COLON);
+    result_ = result_ && consumeToken(builder_, IDENTIFIER);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // ['::' generic]
+  private static boolean expr_path_4(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_path_4")) return false;
+    expr_path_4_0(builder_, level_ + 1);
+    return true;
+  }
+
+  // '::' generic
+  private static boolean expr_path_4_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_path_4_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokenFast(builder_, DOUBLE_COLON);
+    result_ = result_ && generic(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // IDENTIFIER
+  public static boolean expr_identifier(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "expr_identifier")) return false;
+    if (!nextTokenIsFast(builder_, IDENTIFIER)) return false;
+    boolean result_ = false;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeTokenFast(builder_, IDENTIFIER);
+    exit_section_(builder_, marker_, EXPR_IDENTIFIER, result_);
+    return result_;
+  }
+
+  // literal
   public static boolean expr_value(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "expr_value")) return false;
     boolean result_ = false;
     Marker marker_ = enter_section_(builder_, level_, _COLLAPSE_, "<expr value>");
-    result_ = consumeTokenFast(builder_, IDENTIFIER);
-    if (!result_) result_ = literal(builder_, level_ + 1);
+    result_ = literal(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, EXPR_VALUE, result_, false, null);
     return result_;
   }

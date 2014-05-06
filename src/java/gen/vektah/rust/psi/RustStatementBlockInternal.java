@@ -23,6 +23,9 @@ public interface RustStatementBlockInternal extends PsiElement {
   List<RustLet> getLetList();
 
   @NotNull
+  List<RustReturnStatement> getReturnStatementList();
+
+  @NotNull
   List<RustStatementBlock> getStatementBlockList();
 
   @NotNull

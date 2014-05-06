@@ -5,9 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustUse extends PsiElement {
+public interface RustExprIf extends RustExpr {
 
   @Nullable
-  RustExprPath getExprPath();
+  RustExpr getExpr();
+
+  @Nullable
+  RustIfTail getIfTail();
+
+  @Nullable
+  RustStatementBlock getStatementBlock();
 
 }

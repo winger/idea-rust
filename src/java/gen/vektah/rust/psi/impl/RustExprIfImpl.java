@@ -8,24 +8,35 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static vektah.rust.psi.RustTokens.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import vektah.rust.psi.*;
 
-public class RustUseImpl extends ASTWrapperPsiElement implements RustUse {
+public class RustExprIfImpl extends RustExprImpl implements RustExprIf {
 
-  public RustUseImpl(ASTNode node) {
+  public RustExprIfImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitUse(this);
+    if (visitor instanceof RustVisitor) ((RustVisitor)visitor).visitExprIf(this);
     else super.accept(visitor);
   }
 
   @Override
   @Nullable
-  public RustExprPath getExprPath() {
-    return findChildByClass(RustExprPath.class);
+  public RustExpr getExpr() {
+    return findChildByClass(RustExpr.class);
+  }
+
+  @Override
+  @Nullable
+  public RustIfTail getIfTail() {
+    return findChildByClass(RustIfTail.class);
+  }
+
+  @Override
+  @Nullable
+  public RustStatementBlock getStatementBlock() {
+    return findChildByClass(RustStatementBlock.class);
   }
 
 }

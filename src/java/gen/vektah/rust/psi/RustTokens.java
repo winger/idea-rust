@@ -11,10 +11,10 @@ public interface RustTokens {
   IElementType ATTRIBUTE = new RustTokenType("ATTRIBUTE");
   IElementType ATTRIBUTE_ARG = new RustTokenType("ATTRIBUTE_ARG");
   IElementType BLOCK_FOR = new RustTokenType("BLOCK_FOR");
-  IElementType BLOCK_IF = new RustTokenType("BLOCK_IF");
   IElementType BLOCK_LOOP = new RustTokenType("BLOCK_LOOP");
   IElementType BLOCK_WHILE = new RustTokenType("BLOCK_WHILE");
   IElementType CALL_PARAMS = new RustTokenType("CALL_PARAMS");
+  IElementType ENUM_MATCH_PATTERN = new RustTokenType("ENUM_MATCH_PATTERN");
   IElementType EXPR = new RustTokenType("EXPR");
   IElementType EXPRESSION = new RustTokenType("EXPRESSION");
   IElementType EXPR_ASSIGN = new RustTokenType("EXPR_ASSIGN");
@@ -33,17 +33,22 @@ public interface RustTokens {
   IElementType EXPR_FIELD = new RustTokenType("EXPR_FIELD");
   IElementType EXPR_GREATER_OR_EQUAL = new RustTokenType("EXPR_GREATER_OR_EQUAL");
   IElementType EXPR_GREATER_THAN = new RustTokenType("EXPR_GREATER_THAN");
+  IElementType EXPR_IDENTIFIER = new RustTokenType("EXPR_IDENTIFIER");
+  IElementType EXPR_IF = new RustTokenType("EXPR_IF");
   IElementType EXPR_LEFT_SHIFT = new RustTokenType("EXPR_LEFT_SHIFT");
   IElementType EXPR_LESS_OR_EQUAL = new RustTokenType("EXPR_LESS_OR_EQUAL");
   IElementType EXPR_LESS_THAN = new RustTokenType("EXPR_LESS_THAN");
   IElementType EXPR_LOGICAL_AND = new RustTokenType("EXPR_LOGICAL_AND");
   IElementType EXPR_LOGICAL_OR = new RustTokenType("EXPR_LOGICAL_OR");
+  IElementType EXPR_MATCH = new RustTokenType("EXPR_MATCH");
   IElementType EXPR_MINUS = new RustTokenType("EXPR_MINUS");
   IElementType EXPR_MULTIPLY = new RustTokenType("EXPR_MULTIPLY");
   IElementType EXPR_NOT_EQUAL_TO = new RustTokenType("EXPR_NOT_EQUAL_TO");
   IElementType EXPR_PAREN = new RustTokenType("EXPR_PAREN");
+  IElementType EXPR_PATH = new RustTokenType("EXPR_PATH");
   IElementType EXPR_PLUS = new RustTokenType("EXPR_PLUS");
   IElementType EXPR_RIGHT_SHIFT = new RustTokenType("EXPR_RIGHT_SHIFT");
+  IElementType EXPR_STRUCT_INITIALIZER = new RustTokenType("EXPR_STRUCT_INITIALIZER");
   IElementType EXPR_TUPLE_BODY = new RustTokenType("EXPR_TUPLE_BODY");
   IElementType EXPR_UNARY_MINUS = new RustTokenType("EXPR_UNARY_MINUS");
   IElementType EXPR_UNARY_NOT = new RustTokenType("EXPR_UNARY_NOT");
@@ -58,11 +63,17 @@ public interface RustTokens {
   IElementType FUNCTION_TYPE = new RustTokenType("FUNCTION_TYPE");
   IElementType GENERIC = new RustTokenType("GENERIC");
   IElementType GENERIC_PARAMS = new RustTokenType("GENERIC_PARAMS");
+  IElementType IF_TAIL = new RustTokenType("IF_TAIL");
   IElementType LET = new RustTokenType("LET");
   IElementType LIFETIME = new RustTokenType("LIFETIME");
-  IElementType PATH = new RustTokenType("PATH");
+  IElementType MATCH_BODY = new RustTokenType("MATCH_BODY");
+  IElementType MATCH_FILTER = new RustTokenType("MATCH_FILTER");
+  IElementType MATCH_IF = new RustTokenType("MATCH_IF");
+  IElementType MATCH_PATTERN = new RustTokenType("MATCH_PATTERN");
+  IElementType MATCH_RULE = new RustTokenType("MATCH_RULE");
   IElementType REF = new RustTokenType("REF");
   IElementType REGION_BOUND = new RustTokenType("REGION_BOUND");
+  IElementType RETURN_STATEMENT = new RustTokenType("RETURN_STATEMENT");
   IElementType SELF_ARG = new RustTokenType("SELF_ARG");
   IElementType STANDARD_ARG = new RustTokenType("STANDARD_ARG");
   IElementType STATEMENT_BLOCK = new RustTokenType("STATEMENT_BLOCK");
@@ -71,6 +82,7 @@ public interface RustTokens {
   IElementType STATIC_EXPRESSION_GROUP = new RustTokenType("STATIC_EXPRESSION_GROUP");
   IElementType STRUCT = new RustTokenType("STRUCT");
   IElementType STRUCT_BODY = new RustTokenType("STRUCT_BODY");
+  IElementType STRUCT_INITIALIZER_LIST = new RustTokenType("STRUCT_INITIALIZER_LIST");
   IElementType STRUCT_PROPERTY = new RustTokenType("STRUCT_PROPERTY");
   IElementType TRAIT = new RustTokenType("TRAIT");
   IElementType TRAIT_BOUNDS = new RustTokenType("TRAIT_BOUNDS");
@@ -84,6 +96,7 @@ public interface RustTokens {
   IElementType TYPE_PROC = new RustTokenType("TYPE_PROC");
   IElementType TYPE_TUPLE = new RustTokenType("TYPE_TUPLE");
   IElementType USE = new RustTokenType("USE");
+  IElementType VECTOR_MATCH_PATTERN = new RustTokenType("VECTOR_MATCH_PATTERN");
 
   IElementType AS = new RustTokenType("AS");
   IElementType ASSIGN = new RustTokenType("=");
@@ -180,9 +193,6 @@ public interface RustTokens {
       else if (type == BLOCK_FOR) {
         return new RustBlockForImpl(node);
       }
-      else if (type == BLOCK_IF) {
-        return new RustBlockIfImpl(node);
-      }
       else if (type == BLOCK_LOOP) {
         return new RustBlockLoopImpl(node);
       }
@@ -191,6 +201,9 @@ public interface RustTokens {
       }
       else if (type == CALL_PARAMS) {
         return new RustCallParamsImpl(node);
+      }
+      else if (type == ENUM_MATCH_PATTERN) {
+        return new RustEnumMatchPatternImpl(node);
       }
       else if (type == EXPR) {
         return new RustExprImpl(node);
@@ -246,6 +259,12 @@ public interface RustTokens {
       else if (type == EXPR_GREATER_THAN) {
         return new RustExprGreaterThanImpl(node);
       }
+      else if (type == EXPR_IDENTIFIER) {
+        return new RustExprIdentifierImpl(node);
+      }
+      else if (type == EXPR_IF) {
+        return new RustExprIfImpl(node);
+      }
       else if (type == EXPR_LEFT_SHIFT) {
         return new RustExprLeftShiftImpl(node);
       }
@@ -261,6 +280,9 @@ public interface RustTokens {
       else if (type == EXPR_LOGICAL_OR) {
         return new RustExprLogicalOrImpl(node);
       }
+      else if (type == EXPR_MATCH) {
+        return new RustExprMatchImpl(node);
+      }
       else if (type == EXPR_MINUS) {
         return new RustExprMinusImpl(node);
       }
@@ -273,11 +295,17 @@ public interface RustTokens {
       else if (type == EXPR_PAREN) {
         return new RustExprParenImpl(node);
       }
+      else if (type == EXPR_PATH) {
+        return new RustExprPathImpl(node);
+      }
       else if (type == EXPR_PLUS) {
         return new RustExprPlusImpl(node);
       }
       else if (type == EXPR_RIGHT_SHIFT) {
         return new RustExprRightShiftImpl(node);
+      }
+      else if (type == EXPR_STRUCT_INITIALIZER) {
+        return new RustExprStructInitializerImpl(node);
       }
       else if (type == EXPR_TUPLE_BODY) {
         return new RustExprTupleBodyImpl(node);
@@ -321,20 +349,38 @@ public interface RustTokens {
       else if (type == GENERIC_PARAMS) {
         return new RustGenericParamsImpl(node);
       }
+      else if (type == IF_TAIL) {
+        return new RustIfTailImpl(node);
+      }
       else if (type == LET) {
         return new RustLetImpl(node);
       }
       else if (type == LIFETIME) {
         return new RustLifetimeImpl(node);
       }
-      else if (type == PATH) {
-        return new RustPathImpl(node);
+      else if (type == MATCH_BODY) {
+        return new RustMatchBodyImpl(node);
+      }
+      else if (type == MATCH_FILTER) {
+        return new RustMatchFilterImpl(node);
+      }
+      else if (type == MATCH_IF) {
+        return new RustMatchIfImpl(node);
+      }
+      else if (type == MATCH_PATTERN) {
+        return new RustMatchPatternImpl(node);
+      }
+      else if (type == MATCH_RULE) {
+        return new RustMatchRuleImpl(node);
       }
       else if (type == REF) {
         return new RustRefImpl(node);
       }
       else if (type == REGION_BOUND) {
         return new RustRegionBoundImpl(node);
+      }
+      else if (type == RETURN_STATEMENT) {
+        return new RustReturnStatementImpl(node);
       }
       else if (type == SELF_ARG) {
         return new RustSelfArgImpl(node);
@@ -359,6 +405,9 @@ public interface RustTokens {
       }
       else if (type == STRUCT_BODY) {
         return new RustStructBodyImpl(node);
+      }
+      else if (type == STRUCT_INITIALIZER_LIST) {
+        return new RustStructInitializerListImpl(node);
       }
       else if (type == STRUCT_PROPERTY) {
         return new RustStructPropertyImpl(node);
@@ -398,6 +447,9 @@ public interface RustTokens {
       }
       else if (type == USE) {
         return new RustUseImpl(node);
+      }
+      else if (type == VECTOR_MATCH_PATTERN) {
+        return new RustVectorMatchPatternImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

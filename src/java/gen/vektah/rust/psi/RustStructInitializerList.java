@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustUse extends PsiElement {
+public interface RustStructInitializerList extends PsiElement {
 
-  @Nullable
-  RustExprPath getExprPath();
+  @NotNull
+  List<RustExpr> getExprList();
 
 }

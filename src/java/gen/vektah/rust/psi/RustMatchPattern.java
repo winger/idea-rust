@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RustUse extends PsiElement {
+public interface RustMatchPattern extends PsiElement {
 
   @Nullable
-  RustExprPath getExprPath();
+  RustEnumMatchPattern getEnumMatchPattern();
+
+  @Nullable
+  RustVectorMatchPattern getVectorMatchPattern();
 
 }
