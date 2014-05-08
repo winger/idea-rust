@@ -107,7 +107,7 @@ simpleFile ::= ( use
 // AGGREGATE TYPES
 private numeric_literal ::= BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT
 private string_literal ::= STRING_LIT | RAW_STRING_LIT | CHAR_LIT
-private literal ::= string_literal | numeric_literal | 'true' | 'false' | 'self'
+private literal ::= string_literal | numeric_literal | 'true' | 'false' | 'self' | '(' ')'
 private binary_operator ::= '/' | '*' | '+' | '-' | '<' '<' | '>' '>'
 
 // Generic recovery predicates
@@ -136,9 +136,11 @@ expr ::= expr_block
 	| expr_bitwise_and
 	| shift_group
 	| add_group
+	| expr_as
 	| mul_group
 	| unary_group
 	| expr_field
+	| closure_group
 	| primary_group
 
 // Private rules to define operators with the same priority
@@ -148,6 +150,7 @@ private add_group ::= expr_plus | expr_minus
 private shift_group ::= expr_left_shift | expr_right_shift
 private comparison_group ::= expr_greater_than | expr_less_than | expr_greater_or_equal | expr_less_or_equal
 private equals_group ::= expr_equal_to | expr_not_equal_to
+private closure_group ::= expr_closure | expr_proc | expr_fn
 private primary_group ::= expr_paren | expr_if | expr_struct_initializer | expr_match | expr_path | expr_identifier | expr_value
 
 expr_assign ::= expr '=' expr {rightAssociative=true}
@@ -162,6 +165,8 @@ expr_borrow ::= '&' expr
 expr_divide ::= expr '/' expr
 expr_multiply ::= expr '*' expr
 
+expr_as ::= expr 'as' type
+
 expr_plus ::= expr '+' expr
 expr_minus ::= expr '-' expr
 
@@ -173,9 +178,9 @@ expr_bitwise_xor ::= expr '^' expr
 expr_bitwise_or ::= expr '|' expr
 
 expr_less_or_equal ::= expr '<=' expr
-expr_less_than ::= expr '<' expr
+expr_less_than ::= expr '<' !'<' expr
 expr_greater_or_equal ::= expr '>=' expr
-expr_greater_than ::= expr '>' expr
+expr_greater_than ::= expr '>'  !'>' expr
 
 expr_not_equal_to ::= expr '!=' expr
 expr_equal_to ::= expr '==' expr
@@ -191,9 +196,9 @@ expr_identifier ::= IDENTIFIER
 expr_struct_initializer ::= expr '{' struct_initializer_list "}"
 struct_initializer_list ::= IDENTIFIER ':' expr (',' IDENTIFIER ':' expr)*
 
-expr_match ::= 'match' expr '{' match_body '}'
-match_body ::= match_arm*
-match_arm ::= match_filter ('|' match_filter)* '=>' (statement_block | statement ','?)
+expr_match ::= 'match' expr '{' match_body '}' {pin=1}
+match_body ::= match_arm* {recoverWhile="not_close_brace"}
+match_arm ::= match_filter ('|' match_filter)* '=>' (statement_block | statement) ','?
 match_filter ::= match_pattern match_if?
 match_if ::= 'if' expr
 match_pattern ::= match_label? enum_match_pattern | vector_match_pattern | scalar_match_pattern
@@ -212,6 +217,14 @@ call_params ::= expr? (',' expr)*
 
 expr_if ::= 'if' expr statement_block if_tail
 if_tail ::= ('else' 'if' expr statement_block)* ['else' statement_block]
+
+expr_closure ::= '|' closure_args '|' closure_body
+expr_proc ::= 'proc' '(' closure_args ')' closure_body
+expr_fn ::= 'fn' '(' closure_args ')' closure_body
+
+closure_args ::= [IDENTIFIER [':' type] (',' IDENTIFIER [':' type])*]
+closure_body ::= ['->' type] (statement | statement_block)
+
 
 // Builtin expressions
 private builtin_expression_group ::= expr_continue | expr_break
@@ -250,8 +263,7 @@ private generic_param ::= lifetime | IDENTIFIER (region_bound | [(':' | '=') typ
 region_bound ::= ':' "'" 'static'
 
 // GENERIC TYPES eg Option<Foo>
-generic ::= generic_internal '>'
-private generic_internal ::= '<' (generic_without_lifetime | generic_with_lifetime)  {pin=1 recoverWhile="generic_recover"}
+generic ::= '<' (generic_without_lifetime | generic_with_lifetime) '>'
 private generic_with_lifetime ::= lifetime (',' lifetime)* (',' type)*
 private generic_without_lifetime ::= type ( ',' type)*
 private generic_recover ::= !('>')
