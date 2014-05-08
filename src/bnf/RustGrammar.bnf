@@ -95,14 +95,15 @@
 	]
 }
 
-simpleFile ::= ( use
+file ::= ( use
 	| function
 	| struct
+	| enum_definition
 	| trait
 	| extern
 	| type_definition
 	| attribute
-	| token
+	| comment
 )*
 
 // AGGREGATE TYPES
@@ -110,6 +111,7 @@ private numeric_literal ::= BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT
 private string_literal ::= STRING_LIT | RAW_STRING_LIT | CHAR_LIT
 private literal ::= string_literal | numeric_literal | 'true' | 'false' | 'self' | '(' ')'
 private binary_operator ::= '/' | '*' | '+' | '-' | '<' '<' | '>' '>'
+private comment ::= (BLOCK_COMMENT|BLOCK_DOC_COMMENT|LINE_COMMENT|LINE_DOC_COMMENT)
 
 // Generic recovery predicates
 private not_close_brace ::= !('}')
@@ -232,9 +234,9 @@ match_filter ::= match_pattern match_if?
 match_if ::= 'if' expr
 match_pattern ::= struct_match_pattern | enum_match_pattern | vector_match_pattern | scalar_match_pattern
 
-enum_match_pattern ::= match_label? type ['(' match_label? enum_match_identifier (',' match_label? enum_match_identifier)* ')']
+enum_match_pattern ::= match_label? type ['(' enum_match_identifier (',' enum_match_identifier)* ')']
 match_label ::= 'ref'? 'mut'? IDENTIFIER '@'
-private enum_match_identifier ::= IDENTIFIER | '.' '.' | enum_match_pattern | literal
+private enum_match_identifier ::= IDENTIFIER !('{' | '@') | '.' '.' | match_pattern | literal
 
 vector_match_pattern ::= '[' [vector_match_identifier (',' vector_match_identifier)* ] ']'
 private vector_match_identifier ::= IDENTIFIER | ('.' '.' IDENTIFIER? )
@@ -322,9 +324,11 @@ private statement ::= statement_block
 	| let
 	| type_definition
 	| struct
+	| enum_definition
 	| attribute
 	| extern
 	| return_statement
+	| comment
 
 return_statement ::= 'return' expr? ';'?
 
@@ -334,12 +338,20 @@ struct_body ::= '{' [struct_property (',' struct_property)* ] ','? {pin=1 recove
 tuple_body ::= '(' type (',' type)* {pin=1 recoverWhile="not_close_parenthesis"}
 struct_property ::= ['priv' | 'pub'] standard_arg
 
+
+// ENUMS
+enum_definition ::= 'pub'? 'enum' IDENTIFIER generic_params? enum_body '}'
+enum_body ::= '{' [ enum_member (',' enum_member)* ] {pin=1 recoverWhile="not_close_brace"}
+enum_member ::= IDENTIFIER ['(' type (',' type)* ')'] ['=' numeric_literal]
+
+
 // TRAITS
 trait ::= trait_internal '}'
 private trait_internal ::= ['priv' | 'pub'] 'trait' IDENTIFIER generic_params? [':' type ('+' type)*] '{' (attribute | trait_function_declaration (';' | statement_block) )* {pin=2 recoverWhile="not_close_brace"}
 trait_function_declaration ::= ['pub'] 'fn' IDENTIFIER generic_params? '(' ( (arg|type) (',' (arg|type))* )? ')' ['->' return_type] {pin=3 recoverWhile="not_semicolon_or_open_brace" }
 
 trait_bounds ::= ':' IDENTIFIER?
+
 
 // EXTERNALS
 extern ::= 'extern' (extern_crate ';' | extern_string '}' | extern_function)
@@ -362,15 +374,3 @@ private attrib_recover ::= !(']' | ';')
 
 // TYPE
 type_definition ::= 'type' IDENTIFIER '=' type ';'
-
-private token ::= (simple_token|literal|comment|symbol|brackets|operators|keyword|IDENTIFIER)
-private keyword ::= (KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_LET|KW_STRUCT|KW_ENUM|KW_FALSE|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_SUPER|KW_TRUE|KW_TYPE|KW_UNSAFE|KW_WHILE)
-private simple_token ::= (UNOP|BINOP)
-private comment ::= (BLOCK_COMMENT|BLOCK_DOC_COMMENT|LINE_COMMENT|LINE_DOC_COMMENT)
-private brackets ::= (OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN|OPEN_BRACE|CLOSE_BRACE)
-private symbol ::= (HASH|COMMA|SEMICOLON|DOUBLE_COLON|THIN_ARROW|FAT_ARROW|DOT|AT|SINGLE_QUOTE|DOLLAR|':')
-private operators ::= (arithmetic_operators|bitwise_operators|comparison_operators|unary_operators|AS|ASSIGN)
-private arithmetic_operators ::= (PLUS|MINUS|MULTIPLY|DIVIDE|REMAINDER)
-private bitwise_operators ::= (BITWISE_AND|BITWISE_OR|BITWISE_XOR)
-private unary_operators ::= (NOT|BOX)
-private comparison_operators ::= (EQUAL|GREATER_THAN|LESS_THAN|NOT_EQUAL|GREATER_THAN_OR_EQUAL|LESS_THAN_OR_EQUAL)
