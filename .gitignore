@@ -1,5 +1,6 @@
 /.idea
 /out
+/src/java/gen
 *.iml
 .settings
 .project
