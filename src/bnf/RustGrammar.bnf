@@ -196,11 +196,16 @@ match_body ::= match_arm*
 match_arm ::= match_filter ('|' match_filter)* '=>' (statement_block | statement ','?)
 match_filter ::= match_pattern match_if?
 match_if ::= 'if' expr
-match_pattern ::= enum_match_pattern | vector_match_pattern
-enum_match_pattern ::= type ['(' enum_match_identifier (',' enum_match_identifier)* ')']
+match_pattern ::= match_label? enum_match_pattern | vector_match_pattern | scalar_match_pattern
+
+enum_match_pattern ::= type ['(' match_label? enum_match_identifier (',' match_label? enum_match_identifier)* ')']
+match_label ::= 'ref'? 'mut'? IDENTIFIER '@'
 private enum_match_identifier ::= IDENTIFIER | '.' '.' | enum_match_pattern | literal
+
 vector_match_pattern ::= '[' [vector_match_identifier (',' vector_match_identifier)* ] ']'
 private vector_match_identifier ::= IDENTIFIER | ('.' '.' IDENTIFIER? )
+
+scalar_match_pattern ::= (literal | IDENTIFIER) ['.' '.' (literal | IDENTIFIER)]
 
 expr_call ::= expr '!'? '(' call_params ')'
 call_params ::= expr? (',' expr)*
@@ -308,10 +313,8 @@ extern_function ::= function
 
 
 // LET
-let ::= 'let' (type_tuple | let_destructuring | var_name) [':' type] ['=' expression] ';'
+let ::= 'let' (type_tuple | let_destructuring | var_name) [':' type] ['=' expr] ';'?
 private let_destructuring ::= type '{' IDENTIFIER [':' IDENTIFIER] (',' IDENTIFIER [':' IDENTIFIER] )* [',' '.' '.'] '}'
-// TODO this is not correct, but close enough for now
-expression ::= expression_wildcard*
 
 // ATTRIBUTES
 attribute ::= attribute_internal ']'
@@ -323,15 +326,6 @@ private attrib_recover ::= !(']' | ';')
 
 // TYPE
 type_definition ::= 'type' IDENTIFIER '=' type ';'
-
-private expression_wildcard ::= statement_block
-	| function
-	| use
-	| let
-	| type_definition
-	| attribute
-	| extern
-	| (simple_token|literal|comment|operators|keyword|IDENTIFIER|OPEN_SQUARE_BRACKET|CLOSE_SQUARE_BRACKET|OPEN_PAREN|CLOSE_PAREN|HASH|COMMA|DOUBLE_COLON|THIN_ARROW|FAT_ARROW|DOT|AT|SINGLE_QUOTE|DOLLAR|':')
 
 private token ::= (simple_token|literal|comment|symbol|brackets|operators|keyword|IDENTIFIER)
 private keyword ::= (KW_AS|KW_BREAK|KW_CRATE|KW_ELSE|KW_LET|KW_STRUCT|KW_ENUM|KW_FALSE|KW_FOR|KW_IF|KW_IMPL|KW_IN|KW_LOOP|KW_MATCH|KW_MOD|KW_MUT|KW_PRIV|KW_PROC|KW_PUB|KW_REF|KW_RETURN|KW_SELF|KW_STATIC|KW_SUPER|KW_TRUE|KW_TYPE|KW_UNSAFE|KW_WHILE)

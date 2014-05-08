@@ -12,7 +12,6 @@ default: grammar lexer
 grammar: src/java/gen/vektah/rust/RustParser.java
 src/java/gen/vektah/rust/RustParser.java: src/bnf/RustGrammar.bnf
 	java -cp '$(GRAMMAR_KIT_JAR):$(IDEA_LIB)/*' org.intellij.grammar.Main src/java/gen src/bnf/RustGrammar.bnf
-	sleep 5
 
 lexer: src/java/gen/vektah/rust/RustLexer.java grammar
 src/java/gen/vektah/rust/RustLexer.java: src/flex/RustLexer.flex
