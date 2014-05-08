@@ -14,6 +14,8 @@
 
 	extends("expr_.*")=expr
 	extends("block_.*")=expr_block
+	extends("struct_body_.*")=struct_body
+	extends("enum_variant_.*")=enum_variant
 	extends(".*_match_pattern")=match_pattern
 	consumeTokenMethod("expr_.*|expr")="consumeTokenFast"
 
@@ -97,7 +99,7 @@
 
 file ::= ( use
 	| function
-	| struct
+	| struct_definition
 	| enum_definition
 	| trait
 	| extern
@@ -323,26 +325,36 @@ private statement ::= statement_block
 	| use
 	| let
 	| type_definition
-	| struct
+	| struct_definition
 	| enum_definition
 	| attribute
 	| extern
 	| return_statement
 	| comment
+	| empty_statement
 
 return_statement ::= 'return' expr? ';'?
+empty_statement ::= ';'
 
 // STRUCTS
-struct ::= 'pub'? 'struct' IDENTIFIER generic_params? (struct_body '}' | tuple_body ')' | ';')
-struct_body ::= '{' [struct_property (',' struct_property)* ] ','? {pin=1 recoverWhile="not_close_brace"}
-tuple_body ::= '(' type (',' type)* {pin=1 recoverWhile="not_close_parenthesis"}
+struct_definition ::= 'pub'? 'struct' IDENTIFIER generic_params? struct_body
+struct_body ::= struct_body_empty | struct_body_standard | struct_body_tuple
+
+struct_body_standard ::= '{' [struct_property (',' struct_property)* ] ','? '}'
 struct_property ::= ['priv' | 'pub'] standard_arg
+
+struct_body_tuple ::= '(' type (',' type)* ')' ';'
+
+struct_body_empty ::= ';'
 
 
 // ENUMS
 enum_definition ::= 'pub'? 'enum' IDENTIFIER generic_params? enum_body '}'
-enum_body ::= '{' [ enum_member (',' enum_member)* ] {pin=1 recoverWhile="not_close_brace"}
-enum_member ::= IDENTIFIER ['(' type (',' type)* ')'] ['=' numeric_literal]
+enum_body ::= '{' [ enum_variant (',' enum_variant)* ] {pin=1 recoverWhile="not_close_brace"}
+enum_variant ::= enum_variant_nullary | enum_variant_tuple | enum_variant_struct
+enum_variant_nullary ::= IDENTIFIER !('(' | '{') ['=' numeric_literal]
+enum_variant_tuple ::= IDENTIFIER '(' type (',' type)* ')'
+enum_variant_struct ::= IDENTIFIER '{' IDENTIFIER ':' type (',' IDENTIFIER ':' type)* '}'
 
 
 // TRAITS
