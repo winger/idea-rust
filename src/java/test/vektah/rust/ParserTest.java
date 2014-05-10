@@ -16,6 +16,8 @@ public class ParserTest extends ParsingTestCase {
 	public void testenum() { doTest(true); }
 	public void testbox() { doTest(true); }
 	public void testmatch() { doTest(true); }
+	public void testfunctions() { doTest(true); }
+	public void testlinked_list() { doTest(true); }
 
 	@Override
 	protected String getTestDataPath() {
