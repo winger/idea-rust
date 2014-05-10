@@ -102,7 +102,8 @@ file ::= ( use
 	| function
 	| struct_definition
 	| enum_definition
-	| trait
+	| trait_definition
+	| impl_definition
 	| extern
 	| type_definition
 	| attribute
@@ -119,7 +120,6 @@ private comment ::= (BLOCK_COMMENT|BLOCK_DOC_COMMENT|LINE_COMMENT|LINE_DOC_COMME
 // Generic recovery predicates
 private not_close_brace ::= !('}')
 private not_semicolon ::= !(';')
-private not_close_parenthesis ::= !(')')
 private not_semicolon_or_open_brace ::= !('{' | ';')
 
 // Cut back expressions usable in static contexts
@@ -360,10 +360,16 @@ enum_variant_tuple ::= IDENTIFIER '(' type (',' type)* ')'
 enum_variant_struct ::= IDENTIFIER '{' IDENTIFIER ':' type (',' IDENTIFIER ':' type)* '}'
 
 
+// IMPL
+impl_definition ::= 'impl' trait_name 'for' type impl_body '}'
+impl_body ::= '{' function* {recoverWhile="not_close_brace"}
+
+
 // TRAITS
-trait ::= trait_internal '}'
-private trait_internal ::= ['priv' | 'pub'] 'trait' IDENTIFIER generic_params? [':' type ('+' type)*] '{' (attribute | trait_function_declaration (';' | statement_block) )* {pin=2 recoverWhile="not_close_brace"}
+trait_definition ::= trait_internal '}'
+private trait_internal ::= ['priv' | 'pub'] 'trait' trait_name [':' type ('+' type)*] '{' (attribute | trait_function_declaration (';' | statement_block) )* {pin=2 recoverWhile="not_close_brace"}
 trait_function_declaration ::= ['pub'] 'fn' IDENTIFIER generic_params? '(' ( (arg|type) (',' (arg|type))* )? ')' ['->' return_type] {pin=3 recoverWhile="not_semicolon_or_open_brace" }
+trait_name ::=  generic_params? IDENTIFIER
 
 trait_bounds ::= ':' IDENTIFIER?
 
