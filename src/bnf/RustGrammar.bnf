@@ -53,6 +53,7 @@
 		KW_USE = "use"
 		KW_WHILE = "while"
 		KW_CONTINUE = "continue"
+		KW_BOX = "box"
 
 		FAT_ARROW = "=>"
 		THIN_ARROW = "->"
@@ -189,7 +190,7 @@ expr_unary_minus ::= '-' expr
 expr_unary_plus ::= '+' expr
 expr_unary_not ::= '!' expr
 expr_deref ::= '*' expr
-expr_box ::= '~' expr
+expr_box ::= 'box' expr
 expr_borrow ::= '&' expr
 
 private add_group ::= expr_plus | expr_minus
@@ -236,14 +237,14 @@ match_filter ::= match_pattern match_if?
 match_if ::= 'if' expr
 match_pattern ::= struct_match_pattern | enum_match_pattern | vector_match_pattern | scalar_match_pattern
 
-enum_match_pattern ::= match_label? type ['(' enum_match_identifier (',' enum_match_identifier)* ')']
+enum_match_pattern ::=  match_label? 'box'? type ['(' enum_match_identifier (',' enum_match_identifier)* ')']
 match_label ::= 'ref'? 'mut'? IDENTIFIER '@'
-private enum_match_identifier ::= IDENTIFIER !('{' | '@') | '.' '.' | match_pattern | literal
+private enum_match_identifier ::= 'box'? IDENTIFIER !('{' | '(' | '@') | '.' '.' | match_pattern | literal
 
-vector_match_pattern ::= '[' [vector_match_identifier (',' vector_match_identifier)* ] ']'
+vector_match_pattern ::= 'box'? '[' [vector_match_identifier (',' vector_match_identifier)* ] ']'
 private vector_match_identifier ::= IDENTIFIER | ('.' '.' IDENTIFIER? )
 
-struct_match_pattern ::= type '{' struct_match_pattern_argument (',' struct_match_pattern_argument)* [',' '.' '.'] '}'
+struct_match_pattern ::= 'box'?  type '{' struct_match_pattern_argument (',' struct_match_pattern_argument)* [',' '.' '.'] '}'
 private struct_match_pattern_argument ::= IDENTIFIER [':' (IDENTIFIER | literal)]
 
 scalar_match_pattern ::= (literal | IDENTIFIER) ['.' '.' (literal | IDENTIFIER)]
@@ -271,7 +272,7 @@ block_loop ::= [lifetime ':'] 'loop' statement_block
 expr_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* ['::' generic]
 private type ::= type_basic | type_tuple | type_closure | function_type | type_proc | type_none
 
-type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* ('~' | '@' | '$')? ( type_path | '[' type [',' '.' '.' static_expression] ']' )
+type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* ('@' | '$')? ( type_path | '[' type [',' '.' '.' static_expression] ']' )
 
 type_tuple ::= '(' type (',' type)* ')'
 function_type ::= ['extern' STRING_LIT] 'unsafe'? 'fn' trait_bounds? '(' type_closure_args ')' ['->' return_type]
