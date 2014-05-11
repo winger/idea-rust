@@ -230,7 +230,7 @@ private primary_group ::= expr_block | expr_paren | expr_vector | expr_struct_in
 
 // These constructs don't need a trailing semicolon unless found as part of an expression
 expr_block ::= statement_block | block_for | block_if | block_while | block_loop | block_unsafe | block_match
-block_for ::= 'for' expr 'in' expr statement_block
+block_for ::= 'for' 'mut'? expr 'in' expr statement_block
 block_while ::= 'while' expr statement_block
 block_loop ::= [lifetime ':'] 'loop' statement_block
 block_unsafe ::= 'unsafe' statement_block
@@ -265,8 +265,8 @@ private enum_match_identifier ::= 'box'? 'ref'? 'mut'? IDENTIFIER !('{' | '(' | 
 vector_match_pattern ::= 'box'? 'ref'? '[' [vector_match_identifier (',' vector_match_identifier)* ] ']'
 private vector_match_identifier ::= IDENTIFIER | literal | ('..' IDENTIFIER? )
 
-struct_match_pattern ::= 'box'?  '&'? type '{' struct_match_pattern_argument (',' struct_match_pattern_argument)* [',' '..'] '}'
-private struct_match_pattern_argument ::= IDENTIFIER [':' (IDENTIFIER | literal)]
+struct_match_pattern ::= 'box'?  '&'? type '{' (struct_match_pattern_argument (',' struct_match_pattern_argument)* [',' '..'] | '..') '}'
+private struct_match_pattern_argument ::= IDENTIFIER [':' ('box'? 'ref'? 'mut'? IDENTIFIER | literal)]
 
 scalar_match_pattern ::= match_label? (literal | IDENTIFIER) ['..' (literal | IDENTIFIER)]
 
@@ -305,10 +305,10 @@ private type ::= type_basic | type_tuple | type_closure | function_type | type_p
 
 type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* '@'? ('~' | '$')? 'box'? ( type_path | '[' type [',' '..' expr] ']' )
 
-type_tuple ::= ref? '(' type (',' type)* ')'
+type_tuple ::= ref? '(' 'ref'? type (',' 'ref'? type)* ')'
 function_type ::= ref? ['extern' STRING_LIT?] 'unsafe'? 'fn' trait_bounds? '(' closure_args ')' ['->' return_type]
 type_closure ::= lifetime? '|' closure_args '|' [':' lifetime] ['->' return_type]
-type_proc ::= 'proc' trait_bounds? '(' closure_args ')' ['->' return_type]
+type_proc ::= 'proc' trait_bounds? '(' closure_args ')' trait_bounds? ['->' return_type]
 type_unit ::= ref? '*'? '(' ')'
 
 private type_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* generic? trait_bounds?
@@ -416,9 +416,9 @@ extern_function ::= fn_item
 
 
 // LET
-let ::= 'let' (tuple_destructuring | struct_destructuring | var_name) [':' type] ['=' (expr | statement_block)] ';'?
-tuple_destructuring ::= '&'? '(' 'ref'? type (',' 'ref'? type)* ')'
-struct_destructuring ::= type '{' IDENTIFIER [':' IDENTIFIER] (',' IDENTIFIER [':' IDENTIFIER] )* [',' '..'] '}'
+let ::= 'let' (tuple_destructuring | struct_destructuring | 'ref'? var_name) [':' type] ['=' (expr | statement_block)] ';'?
+tuple_destructuring ::= ref* '(' 'ref'? type (',' 'ref'? type)* ','? ')'
+struct_destructuring ::= type '{' IDENTIFIER [':' IDENTIFIER] (',' IDENTIFIER [':' IDENTIFIER] )* [',' '..'] ','? '}'
 
 
 // ATTRIBUTES
@@ -441,7 +441,7 @@ private mod_contents ::= ( use
 
 
 // STATIC
-static_item ::= (comment | attribute)* ['pub' | 'priv'] 'static' IDENTIFIER ':' type '=' expr ';' {pin=3}
+static_item ::= (comment | attribute)* ['pub' | 'priv'] 'static' 'mut'? IDENTIFIER ':' type '=' expr ';' {pin=3}
 
 
 // TYPE

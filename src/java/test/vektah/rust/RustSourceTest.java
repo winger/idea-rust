@@ -30,6 +30,12 @@ public class RustSourceTest extends ParsingTestCase {
 	public void testLibCollections() { doAllTests("libcollections"); }
 	public void testLibRegex() { doAllTests("libregex"); }
 	public void testLibCore() { doAllTests("libcore"); }
+	public void testLibFlate() { doAllTests("libflate"); }
+	public void testLibFourcc() { doAllTests("libfourcc"); }
+	public void testLibGetOpts() { doAllTests("libgetopts"); }
+	public void testLibGlob() { doAllTests("libglob"); }
+	public void testLibGraphviz() { doAllTests("libgraphviz"); }
+	public void testLibGreen() { doAllTests("libgreen"); }
 
 
 	protected void doAllTests(String dir) {
