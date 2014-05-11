@@ -1,5 +1,5 @@
 Rust File
-  RustFunctionImpl(FUNCTION)
+  RustFnItemImpl(FN_ITEM)
     RustFunctionDeclarationImpl(FUNCTION_DECLARATION)
       PsiElement(pub)('pub')
       PsiElement(fn)('fn')

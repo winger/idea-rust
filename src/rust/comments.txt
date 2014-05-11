@@ -1,5 +1,5 @@
 Rust File
-  RustFunctionImpl(FUNCTION)
+  RustFnItemImpl(FN_ITEM)
     PsiElement(BLOCK_DOC_COMMENT)('/**\n stuff\n /**\n  * Nested stuff\n  */\n more stuff\n*/')
     PsiElement(BLOCK_DOC_COMMENT)('/** block */')
     PsiComment(LINE_COMMENT)('// line')

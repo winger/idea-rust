@@ -1,9 +1,12 @@
 package vektah.rust;
 
 import com.intellij.openapi.fileEditor.impl.LoadTextUtil;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.testFramework.ParsingTestCase;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -24,13 +27,36 @@ public class RustSourceTest extends ParsingTestCase {
 	 * seem to extend TestCase. Woe is me.
 	 */
 	public void testRegex() {
-		doTest("libregex/re");
+		doAllTests("libregex/compile.rs");
+		doAllTests("libregex/lib.rs");
+		doAllTests("libregex/parse.rs");
+		doAllTests("libregex/re.rs");
+		doAllTests("libregex/unicode.rs");
+		doAllTests("libregex/vm.rs");
 	}
 
-	public void doTest(String name) {
+	protected void doAllTests(String dir) {
+		doAllTests(new File(getTestDataPath() + dir));
+	}
+
+	protected void doAllTests(File dir)
+	{
+		if (!dir.isDirectory()) {
+			doTest(dir);
+		}
+
+		File[] files = dir.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				doAllTests(file);
+			}
+		}
+	}
+
+	public void doTest(File file) {
 		try {
-			String text = loadFile(name + "." + myFileExt);
-			myFile = createPsiFile(name, text);
+			String text = FileUtil.loadFile(file, CharsetToolkit.UTF8, true).trim();
+			myFile = createFile(file.getName(), text);
 			ensureParsed(myFile);
 			assertEquals("light virtual file text mismatch", text, ((LightVirtualFile)myFile.getVirtualFile()).getContent().toString());
 			assertEquals("virtual file text mismatch", text, LoadTextUtil.loadText(myFile.getVirtualFile()));
@@ -38,8 +64,8 @@ public class RustSourceTest extends ParsingTestCase {
 			assertEquals("psi text mismatch", text, myFile.getText());
 
 			String parseTree = toParseTreeText(myFile, skipSpaces(), includeRanges());
-			assertFalse("rust source tree file " + name + " contains errors!", parseTree.contains("PsiErrorElement"));
-			assertFalse("rust source tree file " + name + " contains dummyblocks!", parseTree.contains("DummyBlock"));
+			assertFalse("rust source tree file " + file.getName() + " contains errors!", parseTree.contains("PsiErrorElement"));
+			assertFalse("rust source tree file " + file.getName() + " contains dummyblocks!", parseTree.contains("DummyBlock"));
 
 		}
 		catch (IOException e) {

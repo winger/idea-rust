@@ -13,6 +13,7 @@ pub fn main() {
     let mut a: int = 0;
     let b: bool = true;
     let c: bool = false;
+    let _numbers = [1, 2, 3];
 
     // As a naked if
     if b || c {
@@ -42,4 +43,9 @@ pub fn main() {
     (0,);
     (0.0, 4.5);
     ("a", 4u, true);
+
+    // Tuple destructuring let with a statement block!
+    let (_cap, _cap_name, _oldflags) = {
+        (1, 2, 3)
+    };
 }
