@@ -2,6 +2,7 @@ pub fn main() {
     'c';
     '\'';
 
+
     "asdf";
     "asdf \" ffff";
     "aa\t\n";

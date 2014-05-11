@@ -28,7 +28,7 @@ HEX_DIGIT = [a-fA-F0-9]
 DOUBLE_QUOTE = \x22
 SINGLE_QUOTE = \x27
 COMMON_ESCAPE = ( [nrt0\n\r\\] | "x" {HEX_DIGIT} {2} | "u" {HEX_DIGIT} {4} | "U" {HEX_DIGIT} {8} )
-CHAR = {SINGLE_QUOTE} ( [^'\\] | "\\" ( {SINGLE_QUOTE} | {COMMON_ESCAPE}) ) {SINGLE_QUOTE}
+CHAR = {SINGLE_QUOTE} (( [^'\\] | "\\" ( {SINGLE_QUOTE} | {COMMON_ESCAPE}) ) | [^\x20-\x7E]{1,2}) {SINGLE_QUOTE}
 STRING = {DOUBLE_QUOTE} ( [^\"\\] | "\\" ( {DOUBLE_QUOTE} | {COMMON_ESCAPE}) )* {DOUBLE_QUOTE}
 NUM_SUFFIX = {INT_SUFFIX} | {FLOAT_SUFFIX}
 INT_SUFFIX = [ui] ( "8" | "16" | "32" | "64" )?
@@ -101,8 +101,9 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 	{XID_START}{XID_CONTINUE}*                      { yybegin(YYINITIAL); return RustTokens.IDENTIFIER; }
 
 
-	">>="                                            { yybegin(YYINITIAL); return RustTokens.ASSIGN_RIGHT_SHIFT; }
-	"<<="                                            { yybegin(YYINITIAL); return RustTokens.ASSIGN_LEFT_SHIFT; }
+	".."                                            { yybegin(YYINITIAL); return RustTokens.DOUBLE_DOT; }
+	">>="                                           { yybegin(YYINITIAL); return RustTokens.ASSIGN_RIGHT_SHIFT; }
+	"<<="                                           { yybegin(YYINITIAL); return RustTokens.ASSIGN_LEFT_SHIFT; }
 	"=>"                                            { yybegin(YYINITIAL); return RustTokens.FAT_ARROW; }
 	"->"                                            { yybegin(YYINITIAL); return RustTokens.THIN_ARROW; }
 	"."                                             { yybegin(YYINITIAL); return RustTokens.DOT; }

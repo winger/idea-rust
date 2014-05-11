@@ -65,6 +65,7 @@
 		BITWISE_OR = "|"
 		BITWISE_XOR = "^"
 
+		DOUBLE_DOT = ".."
 		DOUBLE_COLON = "::"
 		COLON = ":"
 
@@ -107,7 +108,7 @@ file ::= mod_contents
 item ::= mod_item | fn_item | type_item | struct_item | enum_item | static_item | trait_item | impl_item | extern_item
 
 // AGGREGATE TYPES
-private numeric_literal ::= BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT
+private numeric_literal ::= '-'? (BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT)
 private string_literal ::= STRING_LIT | RAW_STRING_LIT | CHAR_LIT
 private literal ::= string_literal | numeric_literal | 'true' | 'false' | 'self' | unit
 private unit ::= ref? '(' ')'
@@ -122,7 +123,6 @@ private not_semicolon_or_open_brace ::= !('{' | ';')
 // EXPRESSIONS! - this is based heavily https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md
 // These are in increasing order of precedence  (opposite of rust manual)
 expr ::= expr_macro
-	| expr_block
 	| expr_borrow
 	| expr_call
 	| builtin_expression_group
@@ -187,7 +187,7 @@ expr_multiply ::= expr '*' expr
 expr_modulo ::= expr '%' expr
 
 // Private rules to define operators with the same priority
-private unary_group ::= expr_unary_plus | expr_unary_minus | expr_unary_not | expr_deref | expr_box | expr_old_box | expr_managed_box | expr_unsafe_block
+private unary_group ::= expr_unary_plus | expr_unary_minus | expr_unary_not | expr_deref | expr_box | expr_old_box | expr_managed_box
 expr_unary_minus ::= '-' expr
 expr_unary_plus ::= '+' expr
 expr_unary_not ::= '!' expr
@@ -195,7 +195,6 @@ expr_deref ::= '*' expr
 expr_box ::= 'box' expr
 expr_old_box ::= '~' expr
 expr_managed_box ::= '@' expr
-expr_unsafe_block ::= 'unsafe' statement_block
 
 private add_group ::= expr_plus | expr_minus
 expr_plus ::= expr '+' expr
@@ -223,51 +222,58 @@ expr_closure ::= '|' closure_args '|' closure_body
 expr_proc ::= 'proc' '(' closure_args ')' closure_body
 
 closure_args ::=  [ closure_arg ( ',' closure_arg)* ]
-closure_arg ::= var_name ':' type | tuple_destructuring | struct_destructuring | type_basic
+closure_arg ::= var_name ':' type | tuple_destructuring | struct_destructuring | type_basic | type_unit
 
-closure_body ::= ['->' type] (statement | statement_block)
+closure_body ::= ['->' type] (statement | expr | statement_block)
 
-private primary_group ::= expr_paren | expr_vector | expr_if | expr_struct_initializer | expr_match | expr_path | expr_identifier | expr_value
+private primary_group ::= expr_block | expr_paren | expr_vector | expr_struct_initializer | expr_path | expr_identifier | expr_value
+
+// These constructs don't need a trailing semicolon unless found as part of an expression
+expr_block ::= statement_block | block_for | block_if | block_while | block_loop | block_unsafe | block_match
+block_for ::= 'for' expr 'in' expr statement_block
+block_while ::= 'while' expr statement_block
+block_loop ::= [lifetime ':'] 'loop' statement_block
+block_unsafe ::= 'unsafe' statement_block
+block_if ::= 'if' expr statement_block if_tail
+if_tail ::= ('else' 'if' expr statement_block)* ['else' statement_block]
+
 expr_paren ::= '(' expr expr_tuple_body? ')'
 expr_tuple_body ::= ',' [expr (',' expr)*]
 expr_value ::= literal
 expr_identifier ::= IDENTIFIER
 expr_struct_initializer ::= expr '{' struct_initializer_list [',' struct_default?] "}"
-struct_default ::= '.' '.' expr
+struct_default ::= '..' expr
 struct_initializer_list ::= IDENTIFIER ':' expr (',' IDENTIFIER ':' expr)*
 
-expr_vector ::= '~'? '[' [(comment | attribute)* expr (',' (comment | attribute)* expr)*] (comment | attribute)* [',' '.' '.' expr] ','?(comment | attribute)*']'
+expr_vector ::= '~'? '[' [(comment | attribute)* expr (',' (comment | attribute)* expr)*] (comment | attribute)* [',' '..' expr] ','?(comment | attribute)*']'
 
-expr_match ::= 'match' expr '{' match_body '}' {pin=1}
+
+// MATCH
+block_match ::= 'match' expr '{' match_body '}' {pin=1}
 match_body ::= match_arm* {recoverWhile="not_close_brace"}
-match_arm ::= match_filter ('|' match_filter)* '=>' (statement_block | statement) ','?
+match_arm ::= match_filter ('|' match_filter)* '=>' (statement_block | statement | expr) ','?
 match_filter ::= match_pattern match_if?
 match_if ::= 'if' expr
 match_pattern ::= tuple_match_pattern | struct_match_pattern | enum_match_pattern | vector_match_pattern | scalar_match_pattern
 
-tuple_match_pattern ::= '(' match_pattern (',' match_pattern)* ')'
+tuple_match_pattern ::= match_label? '(' match_pattern (',' match_pattern)* ')'
 
 enum_match_pattern ::=  match_label? 'box'? '&'? type ['(' enum_match_identifier (',' enum_match_identifier)* ')']
 match_label ::= 'ref'? 'mut'? IDENTIFIER '@'
-private enum_match_identifier ::= 'box'? 'ref'? 'mut'? IDENTIFIER !('{' | '(' | '@') | '.' '.' | match_pattern | literal
+private enum_match_identifier ::= 'box'? 'ref'? 'mut'? IDENTIFIER !('{' | '(' | '@') | '..' | match_pattern | '&' lifetime? literal
 
 vector_match_pattern ::= 'box'? 'ref'? '[' [vector_match_identifier (',' vector_match_identifier)* ] ']'
-private vector_match_identifier ::= IDENTIFIER | ('.' '.' IDENTIFIER? )
+private vector_match_identifier ::= IDENTIFIER | literal | ('..' IDENTIFIER? )
 
-struct_match_pattern ::= 'box'?  '&'? type '{' struct_match_pattern_argument (',' struct_match_pattern_argument)* [',' '.' '.'] '}'
+struct_match_pattern ::= 'box'?  '&'? type '{' struct_match_pattern_argument (',' struct_match_pattern_argument)* [',' '..'] '}'
 private struct_match_pattern_argument ::= IDENTIFIER [':' (IDENTIFIER | literal)]
 
-scalar_match_pattern ::= (literal | IDENTIFIER) ['.' '.' (literal | IDENTIFIER)]
+scalar_match_pattern ::= match_label? (literal | IDENTIFIER) ['..' (literal | IDENTIFIER)]
 
+
+// CALL
 expr_call ::= expr '(' call_params ')'
 call_params ::= expr? (',' expr)*
-
-
-//private macro_group ::= expr_macro_paren | expr_macro_brace | expr_macro_bracket
-//expr_macro_paren ::= IDENTIFIER '!' !('[' | '{') '(' macro_body ')' {pin=4}
-//expr_macro_brace ::= IDENTIFIER '!' !('[' | '(') '{' macro_body '}' {pin=4}
-//expr_macro_bracket ::= IDENTIFIER '!' !('(' | '{') '[' macro_body ']' {pin=4}
-//macro_body ::= ('(' macro_body ')' | '[' macro_body ']' | '{' macro_body '}' | macro_wildcard)*
 
 expr_macro ::= IDENTIFIER '!' (macro_paren | macro_brace | macro_bracket)
 private macro_paren ::= '(' macro_body ')'
@@ -284,10 +290,7 @@ private macro_wildcard ::= KW_AS | KW_BREAK | KW_CRATE | KW_ELSE | KW_ENUM | KW_
 	| BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT | IDENTIFIER | FAT_ARROW | THIN_ARROW | DOT | BITWISE_AND | BITWISE_OR
 	| BITWISE_XOR | DOUBLE_COLON | COLON | PLUS | MINUS | MULTIPLY | DIVIDE | REMAINDER | EQUAL | ASSIGN | NOT_EQUAL
 	| LESS_THAN_OR_EQUAL | LESS_THAN | GREATER_THAN_OR_EQUAL | GREATER_THAN | NOT | BOX | AT | SINGLE_QUOTE | DOLLAR
-	| HASH | COMMA | BAD_CHARACTER | RAW_STRING_LIT | ASSIGN_RIGHT_SHIFT | ASSIGN_LEFT_SHIFT
-
-expr_if ::= 'if' expr statement_block if_tail
-if_tail ::= ('else' 'if' expr statement_block)* ['else' statement_block]
+	| HASH | COMMA | BAD_CHARACTER | RAW_STRING_LIT | ASSIGN_RIGHT_SHIFT | ASSIGN_LEFT_SHIFT | DOUBLE_DOT
 
 
 // Builtin expressions
@@ -295,21 +298,15 @@ private builtin_expression_group ::= expr_continue | expr_break
 expr_continue ::= 'continue' lifetime?
 expr_break ::= 'break' lifetime?
 
-// These constructs don't need a trailing semicolon unless found as part of an expression
-expr_block ::= block_for | block_while | block_loop
-block_for ::= 'for' expr 'in' expr statement_block
-block_while ::= 'while' expr statement_block
-block_loop ::= [lifetime ':'] 'loop' statement_block
-
 
 // TYPES
 expr_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* ['::' generic]
 private type ::= type_basic | type_tuple | type_closure | function_type | type_proc | type_unit
 
-type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* ('~' | '@' | '$')? 'box'? ( type_path | '[' type [',' '.' '.' expr] ']' )
+type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* '@'? ('~' | '$')? 'box'? ( type_path | '[' type [',' '..' expr] ']' )
 
-type_tuple ::= '(' type (',' type)* ')'
-function_type ::= ['extern' STRING_LIT] 'unsafe'? 'fn' trait_bounds? '(' closure_args ')' ['->' return_type]
+type_tuple ::= ref? '(' type (',' type)* ')'
+function_type ::= ref? ['extern' STRING_LIT?] 'unsafe'? 'fn' trait_bounds? '(' closure_args ')' ['->' return_type]
 type_closure ::= lifetime? '|' closure_args '|' [':' lifetime] ['->' return_type]
 type_proc ::= 'proc' trait_bounds? '(' closure_args ')' ['->' return_type]
 type_unit ::= ref? '*'? '(' ')'
@@ -321,8 +318,8 @@ lifetime ::= "'" (IDENTIFIER | 'static')
 
 // GENERIC PARAM LIST eg function<A>(...)
 generic_params ::= '<' generic_param (',' generic_param)* '>'
-private generic_param ::= lifetime | IDENTIFIER (region_bound | [(':' | '=') type ('+' type)* ])
-region_bound ::= ':' "'" 'static'
+private generic_param ::= lifetime | IDENTIFIER  [(':' | '=') (type | region_bound) ('+' (type | region_bound))* ]
+region_bound ::= "'" 'static'
 
 // GENERIC TYPES eg Option<Foo>
 generic ::= '<' (generic_without_lifetime | generic_with_lifetime) '>'
@@ -339,7 +336,7 @@ private use_part ::= (IDENTIFIER | 'super' | 'self')
 
 // FUNCTIONS
 fn_item ::= (comment | attribute)* function_declaration statement_block
-function_declaration ::= 'unsafe'? ['pub' | 'priv'] 'fn' IDENTIFIER generic_params? '(' ( arg (',' arg)* )? ')' ['->' return_type] {pin=3 recoverWhile="function_recover" }
+function_declaration ::= ['pub' | 'priv'] 'unsafe'? 'fn' IDENTIFIER generic_params? '(' [ arg (',' arg)* ] ')' ['->' return_type] {pin=3 recoverWhile="function_recover" }
 private return_type ::= type | '!'
 private function_recover ::= !('{'|';')
 
@@ -348,11 +345,13 @@ standard_arg ::= var_name [':' type ]
 self_arg ::= ref? 'mut'? '~'? 'self'
 private var_name ::= 'static'? ref? 'mut'? IDENTIFIER
 
-statement_block ::= statement_block_internal '}'
-statement_block_internal ::= '{' statement* {pin=1 recoverWhile="not_close_brace"}
-private statement ::= statement_block
-	| expr_block
-	| expr ';'?
+statement_block ::= '{' statement_block_internal '}' {pin=1}
+private statement_block_internal ::= (statement)* expr? {recoverWhile="not_close_brace"}
+
+// Does not include expression!
+private statement ::= expr_block
+	| expr_macro ';'?
+	| expr ';'
 	| fn_item
 	| use
 	| let
@@ -361,6 +360,9 @@ private statement ::= statement_block
 	| enum_item
 	| extern_item
 	| static_item
+	| trait_item
+	| impl_item
+	| macro_rules
 	| return_statement
 	| empty_statement
 	| comment
@@ -401,7 +403,7 @@ impl_body ::= fn_item* {recoverWhile="not_close_brace"}
 // TRAITS
 trait_item ::= ['priv' | 'pub'] 'trait' generic_params? IDENTIFIER generic_params? trait_implements? '{' (trait_function_declaration (';' | statement_block) )* (comment|attribute)* '}' {pin=2}
 trait_implements ::= ':' type ('+' type)* {recoverWhile="not_open_brace"}
-trait_function_declaration ::= (comment | attribute)* ['pub'] 'fn' IDENTIFIER generic_params? '(' ( (arg|type) (',' (arg|type))* )? ')' ['->' return_type] {pin=3 recoverWhile="not_semicolon_or_open_brace" }
+trait_function_declaration ::= (comment | attribute)* ['pub'] 'unsafe'? 'fn' IDENTIFIER generic_params? '(' [ (arg|type) (',' (arg|type))* ','? ] ')' ['->' return_type] {pin=4 recoverWhile="not_semicolon_or_open_brace" }
 
 trait_bounds ::= ':' IDENTIFIER?
 
@@ -416,7 +418,7 @@ extern_function ::= fn_item
 // LET
 let ::= 'let' (tuple_destructuring | struct_destructuring | var_name) [':' type] ['=' (expr | statement_block)] ';'?
 tuple_destructuring ::= '&'? '(' 'ref'? type (',' 'ref'? type)* ')'
-struct_destructuring ::= type '{' IDENTIFIER [':' IDENTIFIER] (',' IDENTIFIER [':' IDENTIFIER] )* [',' '.' '.'] '}'
+struct_destructuring ::= type '{' IDENTIFIER [':' IDENTIFIER] (',' IDENTIFIER [':' IDENTIFIER] )* [',' '..'] '}'
 
 
 // ATTRIBUTES
@@ -435,7 +437,7 @@ private mod_contents ::= ( use
     | comment
     | expr_macro
     | macro_rules
- )*
+)* {recoverWhile="not_close_brace"}
 
 
 // STATIC

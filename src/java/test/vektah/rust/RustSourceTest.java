@@ -29,6 +29,7 @@ public class RustSourceTest extends ParsingTestCase {
 	public void testLibArena() { doAllTests("libarena"); }
 	public void testLibCollections() { doAllTests("libcollections"); }
 	public void testLibRegex() { doAllTests("libregex"); }
+	public void testLibCore() { doAllTests("libcore"); }
 
 
 	protected void doAllTests(String dir) {

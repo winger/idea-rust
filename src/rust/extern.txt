@@ -84,6 +84,5 @@ Rust File
       PsiElement(()('(')
       PsiElement())(')')
     RustStatementBlockImpl(STATEMENT_BLOCK)
-      RustStatementBlockInternalImpl(STATEMENT_BLOCK_INTERNAL)
-        PsiElement({)('{')
+      PsiElement({)('{')
       PsiElement(})('}')
