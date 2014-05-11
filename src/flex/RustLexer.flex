@@ -100,6 +100,9 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 	{DEC_LIT}                                       { yybegin(YYINITIAL); return RustTokens.DEC_LIT; }
 	{XID_START}{XID_CONTINUE}*                      { yybegin(YYINITIAL); return RustTokens.IDENTIFIER; }
 
+
+	">>="                                            { yybegin(YYINITIAL); return RustTokens.ASSIGN_RIGHT_SHIFT; }
+	"<<="                                            { yybegin(YYINITIAL); return RustTokens.ASSIGN_LEFT_SHIFT; }
 	"=>"                                            { yybegin(YYINITIAL); return RustTokens.FAT_ARROW; }
 	"->"                                            { yybegin(YYINITIAL); return RustTokens.THIN_ARROW; }
 	"."                                             { yybegin(YYINITIAL); return RustTokens.DOT; }

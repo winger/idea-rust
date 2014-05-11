@@ -1,4 +1,0 @@
-script ::= block*
-block ::= '{' stuff '}' {pin=1}
-stuff ::= '!' {recoverWhile="recover"}
-recover ::= !('}')

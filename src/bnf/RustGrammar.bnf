@@ -74,6 +74,8 @@
 		DIVIDE = "/"
 		REMAINDER = "%"
 
+		ASSIGN_LEFT_SHIFT = "<<="
+		ASSIGN_RIGHT_SHIFT = ">>="
 		EQUAL = "=="
 		ASSIGN = "="
 		NOT_EQUAL = "!="
@@ -100,13 +102,7 @@
 	]
 }
 
-file ::= ( use
-	| item
-	| attribute
-	| comment
-	| expr_macro
-	| macro_rules
-)*
+file ::= mod_contents
 
 item ::= mod_item | fn_item | type_item | struct_item | enum_item | static_item | trait_item | impl_item | extern_item
 
@@ -114,7 +110,7 @@ item ::= mod_item | fn_item | type_item | struct_item | enum_item | static_item 
 private numeric_literal ::= BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT
 private string_literal ::= STRING_LIT | RAW_STRING_LIT | CHAR_LIT
 private literal ::= string_literal | numeric_literal | 'true' | 'false' | 'self' | unit
-private unit ::= '(' ')'
+private unit ::= ref? '(' ')'
 private comment ::= (BLOCK_COMMENT|BLOCK_DOC_COMMENT|LINE_COMMENT|LINE_DOC_COMMENT)
 
 // Generic recovery predicates
@@ -143,9 +139,9 @@ expr ::= expr_macro
 	| expr_as
 	| mul_group
 	| unary_group
-	| expr_field
 	| closure_group
 	| expr_index
+	| expr_field
 	| primary_group
 
 expr_as ::= expr 'as' type
@@ -154,9 +150,12 @@ expr_bitwise_and ::= expr '&' expr
 expr_bitwise_xor ::= expr '^' expr
 expr_bitwise_or ::= expr '|' expr
 
-expr_index ::= expr '[' (literal | IDENTIFIER) ']'
+// Need to break out of this expression parser before recursing here, otherwise the priorities will be off
+expr_index ::= expr '[' index_expr ']'
+index_expr ::= expr
+expr_field ::= expr '.' expr
 
-expr_borrow ::= '&' 'mut'? expr
+expr_borrow ::= '&' lifetime? 'mut'? expr
 
 private assign_group ::= expr_assign
 	| expr_assign_increment
@@ -179,8 +178,8 @@ expr_assign_modulo ::= expr '%' '=' expr {rightAssociative=true}
 expr_assign_and ::= expr '&' '=' expr {rightAssociative=true}
 expr_assign_or ::= expr '|' '=' expr {rightAssociative=true}
 expr_assign_not ::= expr '^' '=' expr {rightAssociative=true}
-expr_assign_left_shift ::= expr '<' '<' '=' expr {rightAssociative=true}
-expr_assign_right_shift ::= expr '>' '>' '=' expr {rightAssociative=true}
+expr_assign_left_shift ::= expr '<<=' expr {rightAssociative=true}
+expr_assign_right_shift ::= expr '>>=' expr {rightAssociative=true}
 
 private mul_group ::= expr_multiply | expr_divide | expr_modulo
 expr_divide ::= expr '/' expr
@@ -188,13 +187,15 @@ expr_multiply ::= expr '*' expr
 expr_modulo ::= expr '%' expr
 
 // Private rules to define operators with the same priority
-private unary_group ::= expr_unary_plus | expr_unary_minus | expr_unary_not | expr_deref | expr_box | expr_old_box
+private unary_group ::= expr_unary_plus | expr_unary_minus | expr_unary_not | expr_deref | expr_box | expr_old_box | expr_managed_box | expr_unsafe_block
 expr_unary_minus ::= '-' expr
 expr_unary_plus ::= '+' expr
 expr_unary_not ::= '!' expr
 expr_deref ::= '*' expr
 expr_box ::= 'box' expr
 expr_old_box ::= '~' expr
+expr_managed_box ::= '@' expr
+expr_unsafe_block ::= 'unsafe' statement_block
 
 private add_group ::= expr_plus | expr_minus
 expr_plus ::= expr '+' expr
@@ -222,21 +223,20 @@ expr_closure ::= '|' closure_args '|' closure_body
 expr_proc ::= 'proc' '(' closure_args ')' closure_body
 
 closure_args ::=  [ closure_arg ( ',' closure_arg)* ]
-closure_arg ::= var_name ':' type | type_basic | tuple_destructuring
+closure_arg ::= var_name ':' type | tuple_destructuring | struct_destructuring | type_basic
 
 closure_body ::= ['->' type] (statement | statement_block)
 
 private primary_group ::= expr_paren | expr_vector | expr_if | expr_struct_initializer | expr_match | expr_path | expr_identifier | expr_value
 expr_paren ::= '(' expr expr_tuple_body? ')'
 expr_tuple_body ::= ',' [expr (',' expr)*]
-expr_field ::= expr '.' expr
 expr_value ::= literal
 expr_identifier ::= IDENTIFIER
 expr_struct_initializer ::= expr '{' struct_initializer_list [',' struct_default?] "}"
 struct_default ::= '.' '.' expr
 struct_initializer_list ::= IDENTIFIER ':' expr (',' IDENTIFIER ':' expr)*
 
-expr_vector ::= '~'? '[' [(comment | attribute)* expr (',' (comment | attribute)* expr)*] ','? (comment | attribute)* ']'
+expr_vector ::= '~'? '[' [(comment | attribute)* expr (',' (comment | attribute)* expr)*] (comment | attribute)* [',' '.' '.' expr] ','?(comment | attribute)*']'
 
 expr_match ::= 'match' expr '{' match_body '}' {pin=1}
 match_body ::= match_arm* {recoverWhile="not_close_brace"}
@@ -284,7 +284,7 @@ private macro_wildcard ::= KW_AS | KW_BREAK | KW_CRATE | KW_ELSE | KW_ENUM | KW_
 	| BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT | IDENTIFIER | FAT_ARROW | THIN_ARROW | DOT | BITWISE_AND | BITWISE_OR
 	| BITWISE_XOR | DOUBLE_COLON | COLON | PLUS | MINUS | MULTIPLY | DIVIDE | REMAINDER | EQUAL | ASSIGN | NOT_EQUAL
 	| LESS_THAN_OR_EQUAL | LESS_THAN | GREATER_THAN_OR_EQUAL | GREATER_THAN | NOT | BOX | AT | SINGLE_QUOTE | DOLLAR
-	| HASH | COMMA | BAD_CHARACTER | RAW_STRING_LIT
+	| HASH | COMMA | BAD_CHARACTER | RAW_STRING_LIT | ASSIGN_RIGHT_SHIFT | ASSIGN_LEFT_SHIFT
 
 expr_if ::= 'if' expr statement_block if_tail
 if_tail ::= ('else' 'if' expr statement_block)* ['else' statement_block]
@@ -304,15 +304,15 @@ block_loop ::= [lifetime ':'] 'loop' statement_block
 
 // TYPES
 expr_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* ['::' generic]
-private type ::= type_basic | type_tuple | type_closure | function_type | type_proc | type_none
+private type ::= type_basic | type_tuple | type_closure | function_type | type_proc | type_unit
 
-type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* ('~' | '@' | '$')? ( type_path | '[' type [',' '.' '.' expr] ']' )
+type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* ('~' | '@' | '$')? 'box'? ( type_path | '[' type [',' '.' '.' expr] ']' )
 
 type_tuple ::= '(' type (',' type)* ')'
 function_type ::= ['extern' STRING_LIT] 'unsafe'? 'fn' trait_bounds? '(' closure_args ')' ['->' return_type]
 type_closure ::= lifetime? '|' closure_args '|' [':' lifetime] ['->' return_type]
 type_proc ::= 'proc' trait_bounds? '(' closure_args ')' ['->' return_type]
-type_none ::= '*'? '(' ')'
+type_unit ::= ref? '*'? '(' ')'
 
 private type_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* generic? trait_bounds?
 ref ::= '&'+ lifetime?
@@ -339,7 +339,7 @@ private use_part ::= (IDENTIFIER | 'super' | 'self')
 
 // FUNCTIONS
 fn_item ::= (comment | attribute)* function_declaration statement_block
-function_declaration ::= ['pub'] 'fn' IDENTIFIER generic_params? '(' ( arg (',' arg)* )? ')' ['->' return_type] {pin=2 recoverWhile="function_recover" }
+function_declaration ::= 'unsafe'? ['pub' | 'priv'] 'fn' IDENTIFIER generic_params? '(' ( arg (',' arg)* )? ')' ['->' return_type] {pin=3 recoverWhile="function_recover" }
 private return_type ::= type | '!'
 private function_recover ::= !('{'|';')
 
@@ -399,7 +399,7 @@ impl_body ::= fn_item* {recoverWhile="not_close_brace"}
 
 
 // TRAITS
-trait_item ::= ['priv' | 'pub'] 'trait' generic_params? IDENTIFIER trait_implements? '{' (trait_function_declaration (';' | statement_block) )* (comment|attribute)* '}' {pin=2}
+trait_item ::= ['priv' | 'pub'] 'trait' generic_params? IDENTIFIER generic_params? trait_implements? '{' (trait_function_declaration (';' | statement_block) )* (comment|attribute)* '}' {pin=2}
 trait_implements ::= ':' type ('+' type)* {recoverWhile="not_open_brace"}
 trait_function_declaration ::= (comment | attribute)* ['pub'] 'fn' IDENTIFIER generic_params? '(' ( (arg|type) (',' (arg|type))* )? ')' ['->' return_type] {pin=3 recoverWhile="not_semicolon_or_open_brace" }
 
@@ -428,7 +428,14 @@ private attrib_recover ::= !(']' | ';')
 
 
 // MOD
-mod_item ::= (comment | attribute)* ['pub' | 'priv'] 'mod' type_path (';' | statement_block);
+mod_item ::= (comment | attribute)* ['pub' | 'priv'] 'mod' type_path (';' | '{' mod_contents '}') {pin=3}
+private mod_contents ::= ( use
+    | item
+    | attribute
+    | comment
+    | expr_macro
+    | macro_rules
+ )*
 
 
 // STATIC
@@ -436,7 +443,7 @@ static_item ::= (comment | attribute)* ['pub' | 'priv'] 'static' IDENTIFIER ':' 
 
 
 // TYPE
-type_item ::= (comment | attribute)* ['pub' | 'priv'] 'type' IDENTIFIER '=' type ';' {pin=3}
+type_item ::= (comment | attribute)* ['pub' | 'priv'] 'type' IDENTIFIER generic_params? '=' type ';' {pin=3}
 
 
 // MACRO

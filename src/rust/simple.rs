@@ -23,6 +23,8 @@ pub fn main() {
     a << 32 > a << 16;
     a >> 32 < a >> 16;
 
+    a >>= 1;
+
     println!("{}", a);
 
     compile_test_(config, props, testfile)
