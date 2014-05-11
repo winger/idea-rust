@@ -113,13 +113,15 @@ file ::= ( use
 // AGGREGATE TYPES
 private numeric_literal ::= BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT
 private string_literal ::= STRING_LIT | RAW_STRING_LIT | CHAR_LIT
-private literal ::= string_literal | numeric_literal | 'true' | 'false' | 'self' | '(' ')'
+private literal ::= string_literal | numeric_literal | 'true' | 'false' | 'self' | unit
+private unit ::= '(' ')'
 private binary_operator ::= '/' | '*' | '+' | '-' | '<' '<' | '>' '>'
 private comment ::= (BLOCK_COMMENT|BLOCK_DOC_COMMENT|LINE_COMMENT|LINE_DOC_COMMENT)
 
 // Generic recovery predicates
-private not_close_brace ::= !('}')
-private not_semicolon ::= !(';')
+private not_open_brace ::= !'{'
+private not_close_brace ::= !'}'
+private not_semicolon ::= !';'
 private not_semicolon_or_open_brace ::= !('{' | ';')
 
 // Cut back expressions usable in static contexts
@@ -185,12 +187,13 @@ expr_multiply ::= expr '*' expr
 expr_modulo ::= expr '%' expr
 
 // Private rules to define operators with the same priority
-private unary_group ::= expr_unary_plus | expr_unary_minus | expr_unary_not | expr_deref | expr_box | expr_borrow
+private unary_group ::= expr_unary_plus | expr_unary_minus | expr_unary_not | expr_deref | expr_box | expr_old_box | expr_borrow
 expr_unary_minus ::= '-' expr
 expr_unary_plus ::= '+' expr
 expr_unary_not ::= '!' expr
 expr_deref ::= '*' expr
 expr_box ::= 'box' expr
+expr_old_box ::= '~' expr
 expr_borrow ::= '&' expr
 
 private add_group ::= expr_plus | expr_minus
@@ -227,7 +230,7 @@ expr_tuple_body ::= ',' [expr (',' expr)*]
 expr_field ::= expr '.' IDENTIFIER
 expr_value ::= literal
 expr_identifier ::= IDENTIFIER
-expr_struct_initializer ::= expr '{' struct_initializer_list "}"
+expr_struct_initializer ::= expr '{' struct_initializer_list ','? "}"
 struct_initializer_list ::= IDENTIFIER ':' expr (',' IDENTIFIER ':' expr)*
 
 expr_match ::= 'match' expr '{' match_body '}' {pin=1}
@@ -274,11 +277,11 @@ block_loop ::= [lifetime ':'] 'loop' statement_block
 expr_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* ['::' generic]
 private type ::= type_basic | type_tuple | type_closure | function_type | type_proc | type_none
 
-type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* ('@' | '$')? ( type_path | '[' type [',' '.' '.' static_expression] ']' )
+type_basic ::= ( ref 'mut'? | lifetime | '*' | 'mut' | '*' 'mut')* ('~' | '@' | '$')? ( type_path | '[' type [',' '.' '.' static_expression] ']' )
 
 type_tuple ::= '(' type (',' type)* ')'
 function_type ::= ['extern' STRING_LIT] 'unsafe'? 'fn' trait_bounds? '(' type_closure_args ')' ['->' return_type]
-type_closure ::= lifetime? '|' type_closure_args '|' ['->' return_type]
+type_closure ::= lifetime? '|' type_closure_args '|' [':' lifetime] ['->' return_type]
 type_proc ::= 'proc' trait_bounds? '(' type_closure_args ')' ['->' return_type]
 type_none ::= '*'? '(' ')'
 private type_closure_args ::=  [ type_closure_arg ( ',' type_closure_arg)* ]
@@ -308,7 +311,7 @@ private use_part ::= (IDENTIFIER | 'super' | 'self')
 
 
 // FUNCTIONS
-function ::= function_declaration statement_block
+function ::= (comment | attribute)* function_declaration statement_block
 function_declaration ::= ['pub'] 'fn' IDENTIFIER generic_params? '(' ( arg (',' arg)* )? ')' ['->' return_type] {pin=2 recoverWhile="function_recover" }
 private return_type ::= type | '!'
 private function_recover ::= !('{'|';')
@@ -341,35 +344,37 @@ empty_statement ::= ';'
 
 // STRUCTS
 struct_definition ::= 'pub'? 'struct' IDENTIFIER generic_params? struct_body
-struct_body ::= struct_body_empty | struct_body_standard | struct_body_tuple
+struct_body ::= struct_body_empty | struct_body_block | struct_body_tuple
 
-struct_body_standard ::= '{' [struct_property (',' struct_property)* ] ','? '}'
-struct_property ::= ['priv' | 'pub'] standard_arg
+struct_body_block ::= '{' [struct_property (',' struct_property)* ','? (comment | attribute)*] '}' {pin=1}
+struct_property ::= (comment | attribute)* ['priv' | 'pub'] standard_arg {recoverWhile="struct_recover"}
+struct_recover ::= !('}' | ',')
 
-struct_body_tuple ::= '(' type (',' type)* ')' ';'
+struct_body_tuple ::= '(' struct_tuple_property (',' struct_tuple_property)* ')' ';'
+struct_tuple_property ::= ['pub' | 'priv'] type;
 
 struct_body_empty ::= ';'
 
 
 // ENUMS
-enum_definition ::= 'pub'? 'enum' IDENTIFIER generic_params? enum_body '}'
-enum_body ::= '{' [ enum_variant (',' enum_variant)* ] {pin=1 recoverWhile="not_close_brace"}
+enum_definition ::= 'pub'? 'enum' IDENTIFIER generic_params? '{' enum_body '}' {pin=2}
+enum_body ::= [ enum_variant (',' enum_variant)* ','? (comment | attribute)* ]
 enum_variant ::= enum_variant_nullary | enum_variant_tuple | enum_variant_struct
-enum_variant_nullary ::= IDENTIFIER !('(' | '{') ['=' numeric_literal]
-enum_variant_tuple ::= IDENTIFIER '(' type (',' type)* ')'
-enum_variant_struct ::= IDENTIFIER '{' IDENTIFIER ':' type (',' IDENTIFIER ':' type)* '}'
+enum_variant_nullary ::= (comment | attribute)* IDENTIFIER !('(' | '{') ['=' numeric_literal]
+enum_variant_tuple ::= (comment | attribute)* IDENTIFIER '(' type (',' type)* ')'
+enum_variant_struct ::= (comment | attribute)* IDENTIFIER '{' IDENTIFIER ':' type (',' IDENTIFIER ':' type)* '}'
 
 
 // IMPL
-impl_definition ::= 'impl' trait_name 'for' type impl_body '}'
-impl_body ::= '{' function* {recoverWhile="not_close_brace"}
+impl_definition ::= 'impl' generic_params? type impl_for? '{' impl_body '}' {pin=1}
+impl_for ::= 'for' type
+impl_body ::= function* {recoverWhile="not_close_brace"}
 
 
 // TRAITS
-trait_definition ::= trait_internal '}'
-private trait_internal ::= ['priv' | 'pub'] 'trait' trait_name [':' type ('+' type)*] '{' (attribute | trait_function_declaration (';' | statement_block) )* {pin=2 recoverWhile="not_close_brace"}
-trait_function_declaration ::= ['pub'] 'fn' IDENTIFIER generic_params? '(' ( (arg|type) (',' (arg|type))* )? ')' ['->' return_type] {pin=3 recoverWhile="not_semicolon_or_open_brace" }
-trait_name ::=  generic_params? IDENTIFIER
+trait_definition ::= ['priv' | 'pub'] 'trait' generic_params? IDENTIFIER trait_implements? '{' (trait_function_declaration (';' | statement_block) )* (comment|attribute)* '}' {pin=2}
+trait_implements ::= ':' type ('+' type)* {recoverWhile="not_open_brace"}
+trait_function_declaration ::= (comment | attribute)* ['pub'] 'fn' IDENTIFIER generic_params? '(' ( (arg|type) (',' (arg|type))* )? ')' ['->' return_type] {pin=3 recoverWhile="not_semicolon_or_open_brace" }
 
 trait_bounds ::= ':' IDENTIFIER?
 

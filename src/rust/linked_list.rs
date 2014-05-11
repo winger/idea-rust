@@ -9,6 +9,7 @@ fn prepend<T>(xs: List<T>, value: T) -> List<T> {
 }
 
 impl<T: Eq> Eq for List<T> {
+    /// Compare two lists
     fn eq(&self, ys: &List<T>) -> bool {
         // Match on the next node in both lists.
         match (self, ys) {
