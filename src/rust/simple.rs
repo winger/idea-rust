@@ -25,6 +25,8 @@ pub fn main() {
 
     println!("{}", a);
 
+    compile_test_(config, props, testfile)
+
     // As an expression
     a = if !c {
         10

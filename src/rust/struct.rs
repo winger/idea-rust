@@ -23,6 +23,7 @@ pub enum State {
 
 pub fn main() {
     let mut mypoint = Point { x: 1.0, y: 1.0 };
+    let mut _defaults = Point { y: 2.0, ..mypoint};
     mypoint.y += 1.0; // `mypoint` is mutable, and its fields as well
 
     // With trailing comma is ok!

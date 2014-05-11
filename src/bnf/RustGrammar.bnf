@@ -229,13 +229,14 @@ closure_body ::= ['->' type] (statement | statement_block)
 private primary_group ::= expr_paren | expr_vector | expr_if | expr_struct_initializer | expr_match | expr_path | expr_identifier | expr_value
 expr_paren ::= '(' expr expr_tuple_body? ')'
 expr_tuple_body ::= ',' [expr (',' expr)*]
-expr_field ::= expr '.' IDENTIFIER
+expr_field ::= expr '.' expr
 expr_value ::= literal
 expr_identifier ::= IDENTIFIER
-expr_struct_initializer ::= expr '{' struct_initializer_list ','? "}"
+expr_struct_initializer ::= expr '{' struct_initializer_list [',' struct_default?] "}"
+struct_default ::= '.' '.' expr
 struct_initializer_list ::= IDENTIFIER ':' expr (',' IDENTIFIER ':' expr)*
 
-expr_vector ::= '~'? '[' (comment | attribute)* expr (',' (comment | attribute)* expr)* ','? (comment | attribute)* ']'
+expr_vector ::= '~'? '[' [(comment | attribute)* expr (',' (comment | attribute)* expr)*] ','? (comment | attribute)* ']'
 
 expr_match ::= 'match' expr '{' match_body '}' {pin=1}
 match_body ::= match_arm* {recoverWhile="not_close_brace"}
@@ -248,7 +249,7 @@ tuple_match_pattern ::= '(' match_pattern (',' match_pattern)* ')'
 
 enum_match_pattern ::=  match_label? 'box'? '&'? type ['(' enum_match_identifier (',' enum_match_identifier)* ')']
 match_label ::= 'ref'? 'mut'? IDENTIFIER '@'
-private enum_match_identifier ::= 'box'? 'ref'? IDENTIFIER !('{' | '(' | '@') | '.' '.' | match_pattern | literal
+private enum_match_identifier ::= 'box'? 'ref'? 'mut'? IDENTIFIER !('{' | '(' | '@') | '.' '.' | match_pattern | literal
 
 vector_match_pattern ::= 'box'? 'ref'? '[' [vector_match_identifier (',' vector_match_identifier)* ] ']'
 private vector_match_identifier ::= IDENTIFIER | ('.' '.' IDENTIFIER? )
@@ -258,8 +259,7 @@ private struct_match_pattern_argument ::= IDENTIFIER [':' (IDENTIFIER | literal)
 
 scalar_match_pattern ::= (literal | IDENTIFIER) ['.' '.' (literal | IDENTIFIER)]
 
-expr_call ::= expr !'!' call_body
-call_body ::= '(' call_params ')'
+expr_call ::= expr '(' call_params ')'
 call_params ::= expr? (',' expr)*
 
 
@@ -343,9 +343,8 @@ function_declaration ::= ['pub'] 'fn' IDENTIFIER generic_params? '(' ( arg (',' 
 private return_type ::= type | '!'
 private function_recover ::= !('{'|';')
 
-private arg ::= self_arg | standard_arg | tuple_arg
+private arg ::= self_arg | tuple_destructuring [':' type] | struct_destructuring [':' type] | standard_arg
 standard_arg ::= var_name [':' type ]
-tuple_arg ::= '(' var_name (',' var_name)* ')' [':' type ]
 self_arg ::= ref? 'mut'? '~'? 'self'
 private var_name ::= 'static'? ref? 'mut'? IDENTIFIER
 
@@ -361,6 +360,7 @@ private statement ::= statement_block
 	| struct_item
 	| enum_item
 	| extern_item
+	| static_item
 	| return_statement
 	| empty_statement
 	| comment
@@ -415,7 +415,7 @@ extern_function ::= fn_item
 
 // LET
 let ::= 'let' (tuple_destructuring | struct_destructuring | var_name) [':' type] ['=' (expr | statement_block)] ';'?
-tuple_destructuring ::= '&'? '(' type (',' type)* ')'
+tuple_destructuring ::= '&'? '(' 'ref'? type (',' 'ref'? type)* ')'
 struct_destructuring ::= type '{' IDENTIFIER [':' IDENTIFIER] (',' IDENTIFIER [':' IDENTIFIER] )* [',' '.' '.'] '}'
 
 

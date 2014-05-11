@@ -11,6 +11,9 @@ import java.io.IOException;
 
 /**
  * Tests that cover parts of the rust compiler source tree. Will be expanded for complete coverage over time.
+ *
+ * There doesn't appear to be an easy way to do parametrized tests with junit 3 and the intellij test suites all
+ * seem to extend TestCase. Woe is me.
  */
 public class RustSourceTest extends ParsingTestCase {
 	public RustSourceTest() {
@@ -22,13 +25,8 @@ public class RustSourceTest extends ParsingTestCase {
 		return "/home/adam/projects/rust/src/";
 	}
 
-	/**
-	 * There doesn't appear to be an easy way to do parametrized tests with junit 3 and the intellij test suites all
-	 * seem to extend TestCase. Woe is me.
-	 */
-	public void testRegex() {
-		doAllTests("libregex");
-	}
+	public void testCompileTest() { doAllTests("compiletest"); }
+	public void testRegex() { doAllTests("libregex"); }
 
 	protected void doAllTests(String dir) {
 		doAllTests(new File(getTestDataPath() + dir));
