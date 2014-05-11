@@ -21,6 +21,7 @@ public class ParserTest extends ParsingTestCase {
 	public void testextern() { doTest(true); }
 	public void testimpl() { doTest(true); }
 	public void teststatic() { doTest(true); }
+	public void testmacro_call() { doTest(true); }
 
 	@Override
 	protected String getTestDataPath() {

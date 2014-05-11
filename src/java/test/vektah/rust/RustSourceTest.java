@@ -27,25 +27,24 @@ public class RustSourceTest extends ParsingTestCase {
 	 * seem to extend TestCase. Woe is me.
 	 */
 	public void testRegex() {
-		doAllTests("libregex/compile.rs");
-		doAllTests("libregex/lib.rs");
-		doAllTests("libregex/parse.rs");
-		doAllTests("libregex/re.rs");
-		doAllTests("libregex/unicode.rs");
-		doAllTests("libregex/vm.rs");
+		doAllTests("libregex");
 	}
 
 	protected void doAllTests(String dir) {
 		doAllTests(new File(getTestDataPath() + dir));
 	}
 
-	protected void doAllTests(File dir)
+	protected void doAllTests(File dir_or_filename)
 	{
-		if (!dir.isDirectory()) {
-			doTest(dir);
+		if (dir_or_filename.isFile() && !dir_or_filename.getName().endsWith(".rs")) {
+			return;
 		}
 
-		File[] files = dir.listFiles();
+		if (!dir_or_filename.isDirectory()) {
+			doTest(dir_or_filename);
+		}
+
+		File[] files = dir_or_filename.listFiles();
 		if (files != null) {
 			for (File file : files) {
 				doAllTests(file);

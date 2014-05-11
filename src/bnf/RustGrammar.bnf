@@ -55,6 +55,7 @@
 		KW_WHILE = "while"
 		KW_CONTINUE = "continue"
 		KW_BOX = "box"
+		KW_MACRO_RULES = "macro_rules!"
 
 		FAT_ARROW = "=>"
 		THIN_ARROW = "->"
@@ -103,6 +104,8 @@ file ::= ( use
 	| item
 	| attribute
 	| comment
+	| expr_macro
+	| macro_rules
 )*
 
 item ::= mod_item | fn_item | type_item | struct_item | enum_item | static_item | trait_item | impl_item | extern_item
@@ -122,10 +125,10 @@ private not_semicolon_or_open_brace ::= !('{' | ';')
 
 // EXPRESSIONS! - this is based heavily https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md
 // These are in increasing order of precedence  (opposite of rust manual)
-expr ::= expr_block
+expr ::= expr_macro
+	| expr_block
 	| expr_borrow
 	| expr_call
-	| expr_macro_call
 	| builtin_expression_group
 	| assign_group
 	| expr_logical_or
@@ -259,9 +262,29 @@ expr_call ::= expr !'!' call_body
 call_body ::= '(' call_params ')'
 call_params ::= expr? (',' expr)*
 
-// TODO Macro blocks!
-expr_macro_call ::= expr "!" (call_body | vector_body)
-vector_body ::= expr_vector
+
+//private macro_group ::= expr_macro_paren | expr_macro_brace | expr_macro_bracket
+//expr_macro_paren ::= IDENTIFIER '!' !('[' | '{') '(' macro_body ')' {pin=4}
+//expr_macro_brace ::= IDENTIFIER '!' !('[' | '(') '{' macro_body '}' {pin=4}
+//expr_macro_bracket ::= IDENTIFIER '!' !('(' | '{') '[' macro_body ']' {pin=4}
+//macro_body ::= ('(' macro_body ')' | '[' macro_body ']' | '{' macro_body '}' | macro_wildcard)*
+
+expr_macro ::= IDENTIFIER '!' (macro_paren | macro_brace | macro_bracket)
+private macro_paren ::= '(' macro_body ')'
+private macro_brace ::= '{' macro_body '}'
+private macro_bracket ::= '[' macro_body ']'
+macro_body ::= macro_body_internal
+private macro_body_internal ::= (macro_paren | macro_brace | macro_bracket | macro_wildcard)*
+
+// All tokens except [] () and {}
+private macro_wildcard ::= KW_AS | KW_BREAK | KW_CRATE | KW_ELSE | KW_ENUM | KW_EXTERN | KW_FALSE | KW_FN | KW_FOR
+	| KW_IF | KW_IMPL | KW_IN | KW_LET | KW_LOOP | KW_MATCH | KW_MOD | KW_MUT | KW_PRIV | KW_PROC | KW_PUB | KW_REF
+	| KW_RETURN | KW_SELF | KW_STATIC | KW_STRUCT | KW_SUPER | KW_TRUE | KW_TRAIT | KW_TYPE | KW_UNSAFE | KW_USE
+	| KW_WHILE | KW_CONTINUE | KW_BOX | LINE_DOC_COMMENT | LINE_COMMENT | CHAR_LIT | STRING_LIT | SEMICOLON
+	| BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT | IDENTIFIER | FAT_ARROW | THIN_ARROW | DOT | BITWISE_AND | BITWISE_OR
+	| BITWISE_XOR | DOUBLE_COLON | COLON | PLUS | MINUS | MULTIPLY | DIVIDE | REMAINDER | EQUAL | ASSIGN | NOT_EQUAL
+	| LESS_THAN_OR_EQUAL | LESS_THAN | GREATER_THAN_OR_EQUAL | GREATER_THAN | NOT | BOX | AT | SINGLE_QUOTE | DOLLAR
+	| HASH | COMMA | BAD_CHARACTER | RAW_STRING_LIT
 
 expr_if ::= 'if' expr statement_block if_tail
 if_tail ::= ('else' 'if' expr statement_block)* ['else' statement_block]
@@ -414,3 +437,7 @@ static_item ::= (comment | attribute)* ['pub' | 'priv'] 'static' IDENTIFIER ':' 
 
 // TYPE
 type_item ::= (comment | attribute)* ['pub' | 'priv'] 'type' IDENTIFIER '=' type ';' {pin=3}
+
+
+// MACRO
+macro_rules ::= 'macro_rules!' IDENTIFIER (macro_paren | macro_bracket | macro_brace)
