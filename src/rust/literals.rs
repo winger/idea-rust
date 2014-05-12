@@ -31,4 +31,9 @@ pub fn main() {
     0.1;                               // type f64
     0.1f32;                            // type f32
     12E+99_f64;                        // type f64
+
+    0.;                                 // Uugh
+
+    1e20;                               // Okay...
+    1e20f64;                            // Totally valid, barely resembles a number
 }

@@ -1,10 +1,13 @@
 Rust File
   RustFnItemImpl(FN_ITEM)
-    RustFunctionDeclarationImpl(FUNCTION_DECLARATION)
-      PsiElement(pub)('pub')
+    RustFnDeclarationImpl(FN_DECLARATION)
+      RustVisibilityImpl(VISIBILITY)
+        PsiElement(pub)('pub')
       PsiElement(fn)('fn')
       PsiElement(IDENTIFIER)('main')
       PsiElement(()('(')
+      RustLetArgsImpl(LET_ARGS)
+        <empty list>
       PsiElement())(')')
     RustStatementBlockImpl(STATEMENT_BLOCK)
       PsiElement({)('{')

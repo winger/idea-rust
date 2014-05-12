@@ -29,11 +29,11 @@ DOUBLE_QUOTE = \x22
 SINGLE_QUOTE = \x27
 COMMON_ESCAPE = ( [nrt0\n\r\\] | "x" {HEX_DIGIT} {2} | "u" {HEX_DIGIT} {4} | "U" {HEX_DIGIT} {8} )
 CHAR = {SINGLE_QUOTE} (( [^'\\] | "\\" ( {SINGLE_QUOTE} | {COMMON_ESCAPE}) ) | [^\x20-\x7E]{1,2}) {SINGLE_QUOTE}
-STRING = {DOUBLE_QUOTE} ( [^\"\\] | "\\" ( {DOUBLE_QUOTE} | {COMMON_ESCAPE}) )* {DOUBLE_QUOTE}
+STRING = {DOUBLE_QUOTE} ( [^\"\\] | "\\" ( {DOUBLE_QUOTE} | {SINGLE_QUOTE} | {COMMON_ESCAPE}) )* {DOUBLE_QUOTE}
 NUM_SUFFIX = {INT_SUFFIX} | {FLOAT_SUFFIX}
 INT_SUFFIX = [ui] ( "8" | "16" | "32" | "64" )?
-EXPONENT = [eE] [-+] ([0-9] | "_" )+
-FLOAT_SUFFIX = ( {EXPONENT} | "." [0-9_]+ {EXPONENT}? )? ("f" ("32" | "64")?)?
+EXPONENT = [eE] [-+]? ([0-9] | "_" )+
+FLOAT_SUFFIX = ( {EXPONENT} | "." [0-9_]+ {EXPONENT}?)? ("f" ("32" | "64")?)?
 DEC_LIT = [0-9] [0-9_]* {NUM_SUFFIX}?
 BIN_LIT = "0b" [01_]+ {INT_SUFFIX}?
 OCT_LIT = "0o" [0-7_]+ {INT_SUFFIX}?
@@ -97,10 +97,14 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 	{BIN_LIT}                                       { yybegin(YYINITIAL); return RustTokens.BIN_LIT; }
 	{OCT_LIT}                                       { yybegin(YYINITIAL); return RustTokens.OCT_LIT; }
 	{HEX_LIT}                                       { yybegin(YYINITIAL); return RustTokens.HEX_LIT; }
+	// The 0. syntax can get ambiguious with range matches
+	// ie 0..9 could be tokenized as 0. . 9, which would be bad.
+	[0-9] [0-9_]* "." /[^\.0-9e]                         { yybegin(YYINITIAL); return RustTokens.DEC_LIT; }
 	{DEC_LIT}                                       { yybegin(YYINITIAL); return RustTokens.DEC_LIT; }
 	{XID_START}{XID_CONTINUE}*                      { yybegin(YYINITIAL); return RustTokens.IDENTIFIER; }
 
 
+	"..."                                            { yybegin(YYINITIAL); return RustTokens.TRIPLE_DOT; }
 	".."                                            { yybegin(YYINITIAL); return RustTokens.DOUBLE_DOT; }
 	">>="                                           { yybegin(YYINITIAL); return RustTokens.ASSIGN_RIGHT_SHIFT; }
 	"<<="                                           { yybegin(YYINITIAL); return RustTokens.ASSIGN_LEFT_SHIFT; }

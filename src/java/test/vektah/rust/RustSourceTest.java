@@ -28,7 +28,6 @@ public class RustSourceTest extends ParsingTestCase {
 	public void testCompileTest() { doAllTests("compiletest"); }
 	public void testLibArena() { doAllTests("libarena"); }
 	public void testLibCollections() { doAllTests("libcollections"); }
-	public void testLibRegex() { doAllTests("libregex"); }
 	public void testLibCore() { doAllTests("libcore"); }
 	public void testLibFlate() { doAllTests("libflate"); }
 	public void testLibFourcc() { doAllTests("libfourcc"); }
@@ -36,16 +35,58 @@ public class RustSourceTest extends ParsingTestCase {
 	public void testLibGlob() { doAllTests("libglob"); }
 	public void testLibGraphviz() { doAllTests("libgraphviz"); }
 	public void testLibGreen() { doAllTests("libgreen"); }
+	public void testLibHexFloat() { doAllTests("libhexfloat"); }
+	public void testLibC() { doAllTests("liblibc"); }
+	public void testLibLog() { doAllTests("liblog"); }
+	public void testLibNative() { doAllTests("libnative"); }
+	public void testLibNum() { doAllTests("libnum"); }
+	public void testLibRand() { doAllTests("librand"); }
+	public void testLibRegex() { doAllTests("libregex"); }
+	public void testLibRegexMacros() { doAllTests("libregex_macros"); }
+	public void testLibRustDoc() { doAllTests("librustdoc"); }
+	public void testLibRustUV() { doAllTests("librustuv"); }
+	public void testLibsemver() { doAllTests("libsemver"); }
 
+	public void testLibSerialize() { doAllTests("libserialize"); }
+	public void testLibSync() { doAllTests("libsync"); }
+	public void testLibSyntax() { doAllTests("libsyntax"); }
+	public void testLibTerm() { doAllTests("libterm"); }
+	public void testLibTest() { doAllTests("libtest"); }
+	public void testLibTime() { doAllTests("libtime"); }
+	public void testLibUrl() { doAllTests("liburl"); }
+	public void testLibUuid() { doAllTests("libuuid"); }
+	public void testLibUV() { doAllTests("libuv"); }
+	public void testLibWorkCache() { doAllTests("libworkcache"); }
 
-	protected void doAllTests(String dir) {
-		doAllTests(new File(getTestDataPath() + dir));
+	public void testLibRustC() {
+		doAllTests("librustc", new String[] {
+			"middle/typeck/infer/test.rs", // Not valid rust as of 574cbe5b07042c448c198af371803f977977b74f
+		});
 	}
 
-	protected void doAllTests(File dir_or_filename)
-	{
+	public void testLibStd() {
+		doAllTests("libstd", new String[] {
+			"vec.rs" // TODO: Unusual syntax 'let mut count_x @ mut count_y = 0;'
+		});
+	}
+
+	protected void doAllTests(String dir) {
+		doAllTests(dir, new String[] {});
+	}
+
+	protected void doAllTests(String dir, String[] ignore) {
+		doAllTests(new File(getTestDataPath() + dir), ignore);
+	}
+
+	protected void doAllTests(File dir_or_filename, String[] ignore) {
 		if (dir_or_filename.isFile() && !dir_or_filename.getName().endsWith(".rs")) {
 			return;
+		}
+
+		for (String ignore_file: ignore) {
+			if (dir_or_filename.getAbsolutePath().endsWith(ignore_file)) {
+				return;
+			}
 		}
 
 		if (!dir_or_filename.isDirectory()) {
@@ -55,7 +96,7 @@ public class RustSourceTest extends ParsingTestCase {
 		File[] files = dir_or_filename.listFiles();
 		if (files != null) {
 			for (File file : files) {
-				doAllTests(file);
+				doAllTests(file, ignore);
 			}
 		}
 	}
