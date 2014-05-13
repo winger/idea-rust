@@ -28,6 +28,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
       <fileTypeFactory implementation="vektah.rust.RustFileTypeFactory"/>
+      <fileTypeIndentOptionsProvider implementation="vektah.rust.RustIndentOptionsProvider"/>
       <lang.parserDefinition language="Rust" implementationClass="vektah.rust.RustParserDefinition"/>
       <lang.syntaxHighlighterFactory key="Rust" implementationClass="vektah.rust.RustSyntaxHighlighterFactory"/>
       <annotator language="Rust" implementationClass="vektah.rust.RustAnnotator"/>
