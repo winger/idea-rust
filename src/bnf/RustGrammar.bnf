@@ -310,7 +310,7 @@ private type_modifiers ::= ( ref | lifetime | '*' | 'mut' | '*' 'mut' | '@' | '~
 type_basic ::= type_modifiers type_path
 type_vector ::= type_modifiers '[' type [',' '..' expr] ']'
 type_tuple ::= ref? '(' 'ref'? type (',' 'ref'? type)* ','? ')'
-function_type ::= ref? ['extern' STRING_LIT?] 'unsafe'? 'fn' trait_bounds? '(' prototype_args ')' ['->' return_type]
+function_type ::= ref? 'unsafe'? ['extern' STRING_LIT?] 'fn' trait_bounds? '(' prototype_args ')' ['->' return_type]
 type_closure ::= ['<'lifetime'>'] '|' prototype_args '|' [':' lifetime] ['->' return_type]
 type_proc ::= 'proc' trait_bounds? '(' prototype_args ')' trait_bounds? ['->' return_type]
 type_unit ::= ref? '*'? 'mut'? '@'? '(' ')'
@@ -399,7 +399,7 @@ trait_bounds ::= ':' (IDENTIFIER | region_bound)?
 
 
 // EXTERNALS
-extern_item ::= visibility? 'extern' (extern_crate ';' | extern_string '}' | extern_function)
+extern_item ::= visibility? 'unsafe'? 'extern' (extern_crate ';' | extern_string '}' | extern_function)
 extern_string ::= STRING_LIT? '{' (attribute | extern_variable ';' | trait_function_declaration ';')* {pin=2 recoverWhile="not_close_brace"}
 extern_variable ::= visibility? 'static'? 'ref'? ref? 'mut'? IDENTIFIER [':' type]
 extern_crate ::= 'crate' IDENTIFIER ['=' STRING_LIT] {pin=1 recoverWhile="not_semicolon"}
