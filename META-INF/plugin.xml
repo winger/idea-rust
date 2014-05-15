@@ -12,6 +12,7 @@
 
   <change-notes><![CDATA[
     <ul>
+        <li><b>0.0.4</b>: Basic smart indenting support.
         <li><b>0.0.3</b>: Added expression support, disabled wildcards. Grammar should now be more or less complete</li>
         <li><b>0.0.2</b>: Added grammar support for functions, structs, use, traits, externals, lets, types, struct tuples and static vars</li>
         <li><b>0.0.1</b>: Initial plugin</li>
@@ -28,6 +29,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
       <fileTypeFactory implementation="vektah.rust.RustFileTypeFactory"/>
+      <lang.formatter language="Rust" implementationClass="vektah.rust.formatter.RustFormattingModelBuilder"/>
       <fileTypeIndentOptionsProvider implementation="vektah.rust.RustIndentOptionsProvider"/>
       <lang.parserDefinition language="Rust" implementationClass="vektah.rust.RustParserDefinition"/>
       <lang.syntaxHighlighterFactory key="Rust" implementationClass="vektah.rust.RustSyntaxHighlighterFactory"/>

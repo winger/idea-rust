@@ -108,7 +108,15 @@
 
 file ::= mod_contents
 
-item ::= mod_item | fn_item | type_item | struct_item | enum_item | static_item | trait_item | impl_item | extern_item
+item ::= mod_item
+	| fn_item
+	| type_item
+	| struct_item
+	| enum_item
+	| static_item
+	| trait_item
+	| impl_item
+	| extern_item
 
 // AGGREGATE TYPES
 private numeric_literal ::= '-'? (BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT)
@@ -223,8 +231,9 @@ expr_logical_and ::= expr '&' '&' expr
 expr_logical_or ::= expr '|' '|' expr
 
 private closure_group ::= expr_closure | expr_proc
-expr_closure ::= '|' let_args '|' closure_body
-expr_proc ::= 'proc' '(' let_args ')' closure_body
+expr_closure ::= closure_expr_args closure_body
+closure_expr_args ::= '|' let_args '|'
+expr_proc ::= 'proc' fn_args closure_body
 
 closure_body ::= ['->' type] (statement | expr | statement_block)
 
@@ -279,9 +288,9 @@ expr_call ::= expr '(' call_params ')'
 call_params ::= expr? (',' expr)* ','?
 
 expr_macro ::= IDENTIFIER '!' (macro_paren | macro_brace | macro_bracket)
-private macro_paren ::= '(' macro_body ')'
-private macro_brace ::= '{' macro_body '}'
-private macro_bracket ::= '[' macro_body ']'
+macro_paren ::= '(' macro_body ')'
+macro_brace ::= '{' macro_body '}'
+macro_bracket ::= '[' macro_body ']'
 macro_body ::= macro_body_internal
 private macro_body_internal ::= (macro_paren | macro_brace | macro_bracket | macro_wildcard)*
 
@@ -310,9 +319,11 @@ private type_modifiers ::= ( ref | lifetime | '*' | 'mut' | '*' 'mut' | '@' | '~
 type_basic ::= type_modifiers type_path
 type_vector ::= type_modifiers '[' type [',' '..' expr] ']'
 type_tuple ::= ref? '(' 'ref'? type (',' 'ref'? type)* ','? ')'
-function_type ::= ref? 'unsafe'? ['extern' STRING_LIT?] 'fn' trait_bounds? '(' prototype_args ')' ['->' return_type]
-type_closure ::= ['<'lifetime'>'] '|' prototype_args '|' [':' lifetime] ['->' return_type]
-type_proc ::= 'proc' trait_bounds? '(' prototype_args ')' trait_bounds? ['->' return_type]
+function_type ::= ref? 'unsafe'? ['extern' STRING_LIT?] 'fn' trait_bounds? fn_prototype_args ['->' return_type]
+fn_prototype_args ::= '(' prototype_args ')'
+type_closure ::= ['<'lifetime'>'] closure_prototype_args [':' lifetime] ['->' return_type]
+closure_prototype_args ::= '|' prototype_args '|'
+type_proc ::= 'proc' trait_bounds? fn_prototype_args trait_bounds? ['->' return_type]
 type_unit ::= ref? '*'? 'mut'? '@'? '(' ')'
 
 private type_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* '::'? generic? trait_bounds?
@@ -340,7 +351,8 @@ private use_part ::= (IDENTIFIER | 'super' | 'self')
 
 // FUNCTIONS
 fn_item ::= (comment | attribute)* fn_declaration statement_block
-fn_declaration ::= visibility? 'unsafe'? 'fn' IDENTIFIER generic_params? '(' let_args ')' ['->' return_type] {pin=3 recoverWhile="function_recover" }
+fn_declaration ::= visibility? 'unsafe'? 'fn' IDENTIFIER generic_params? fn_args ['->' return_type] {pin=3 recoverWhile="function_recover" }
+fn_args ::= '(' let_args ')'
 private return_type ::= type | '!'
 private function_recover ::= !('{'|';')
 
@@ -385,7 +397,8 @@ enum_variant_struct_member ::= visibility? IDENTIFIER ':' type
 
 
 // IMPL
-impl_item ::= 'impl' generic_params? type impl_for? '{' impl_body '}' {pin=1}
+impl_item ::= 'impl' generic_params? type impl_for? impl_block {pin=1}
+impl_block ::= '{' impl_body '}'
 impl_for ::= 'for' type
 impl_body ::= fn_item* {recoverWhile="not_close_brace"}
 
@@ -399,8 +412,8 @@ trait_bounds ::= ':' (IDENTIFIER | region_bound)?
 
 
 // EXTERNALS
-extern_item ::= visibility? 'unsafe'? 'extern' (extern_crate ';' | extern_string '}' | extern_function)
-extern_string ::= STRING_LIT? '{' (attribute | extern_variable ';' | trait_function_declaration ';')* {pin=2 recoverWhile="not_close_brace"}
+extern_item ::= visibility? 'unsafe'? 'extern' (extern_crate ';' | extern_block '}' | extern_function)
+extern_block ::= STRING_LIT? '{' (attribute | extern_variable ';' | trait_function_declaration ';')* {pin=2 recoverWhile="not_close_brace"}
 extern_variable ::= visibility? 'static'? 'ref'? ref? 'mut'? IDENTIFIER [':' type]
 extern_crate ::= 'crate' IDENTIFIER ['=' STRING_LIT] {pin=1 recoverWhile="not_semicolon"}
 extern_function ::= STRING_LIT? fn_item
