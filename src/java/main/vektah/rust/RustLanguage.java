@@ -11,6 +11,11 @@ public class RustLanguage extends Language {
 	}
 
 	@Override
+	public boolean isCaseSensitive() {
+		return true;
+	}
+
+	@Override
 	public String getDisplayName() {
 		return RustBundle.message("language.name.rust");
 	}
