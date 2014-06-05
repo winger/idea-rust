@@ -7,6 +7,11 @@ public class RustLanguage extends Language {
 	public static final RustLanguage INSTANCE = new RustLanguage();
 
 	private RustLanguage() {
-		super(RustBundle.message("language.name.rust"));
+		super("Rust", "text/rust", "text/x-rust", "application/x-rust");
+	}
+
+	@Override
+	public String getDisplayName() {
+		return RustBundle.message("language.name.rust");
 	}
 }
