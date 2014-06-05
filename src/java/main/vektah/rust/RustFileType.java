@@ -34,6 +34,6 @@ public class RustFileType extends LanguageFileType {
 	@Nullable
 	@Override
 	public Icon getIcon() {
-		return RustIcons.FILE;
+		return RustIcons.ICON_RUST_16;
 	}
 }
