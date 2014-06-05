@@ -34,6 +34,8 @@
       <lang.parserDefinition language="Rust" implementationClass="vektah.rust.RustParserDefinition"/>
       <lang.syntaxHighlighterFactory key="Rust" implementationClass="vektah.rust.RustSyntaxHighlighterFactory"/>
       <annotator language="Rust" implementationClass="vektah.rust.RustAnnotator"/>
+
+      <lang.commenter language="Rust" implementationClass="vektah.rust.highlight.RustCommenter"/>
   </extensions>
 
   <application-components>
