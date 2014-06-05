@@ -6,6 +6,7 @@ import com.intellij.psi.FileViewProvider;
 import org.jetbrains.annotations.NotNull;
 import vektah.rust.RustFileType;
 import vektah.rust.RustLanguage;
+import vektah.rust.i18n.RustBundle;
 
 import javax.swing.*;
 
@@ -22,7 +23,7 @@ public class RustFile extends PsiFileBase {
 
 	@Override
 	public String toString() {
-		return "Rust File";
+		return RustBundle.message("file.name.rust");
 	}
 
 	@Override

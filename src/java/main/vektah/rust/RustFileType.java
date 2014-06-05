@@ -3,6 +3,7 @@ package vektah.rust;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import vektah.rust.i18n.RustBundle;
 
 import javax.swing.*;
 
@@ -16,13 +17,13 @@ public class RustFileType extends LanguageFileType {
 	@NotNull
 	@Override
 	public String getName() {
-		return "Rust Source";
+		return RustBundle.message("file.type.name.rust");
 	}
 
 	@NotNull
 	@Override
 	public String getDescription() {
-		return "Rust language source code";
+		return RustBundle.message("file.type.description.rust");
 	}
 
 	@NotNull
