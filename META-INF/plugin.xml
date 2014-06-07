@@ -36,6 +36,7 @@
       <annotator language="Rust" implementationClass="vektah.rust.RustAnnotator"/>
 
       <lang.commenter language="Rust" implementationClass="vektah.rust.highlight.RustCommenter"/>
+      <lang.braceMatcher language="Rust" implementationClass="vektah.rust.highlight.RustBraceMatcher"/>
   </extensions>
 
   <application-components>
