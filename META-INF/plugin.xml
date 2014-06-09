@@ -39,6 +39,7 @@
 
       <codeStyleSettingsProvider implementation="vektah.rust.ide.RustCodeStyleSettingsProvider"/>
       <langCodeStyleSettingsProvider implementation="vektah.rust.ide.RustLanguageCodeStyleSettingsProvider"/>
+      <colorSettingsPage implementation="vektah.rust.ide.RustColorSettingsPage"/>
   </extensions>
 
   <application-components>
