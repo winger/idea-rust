@@ -260,7 +260,8 @@ expr_vector ::= '~'? '[' [(comment | attribute)* expr (',' (comment | attribute)
 
 
 // MATCH
-block_match ::= 'match' expr '{' match_body '}' {pin=1}
+block_match ::= 'match' expr match_block {pin=1}
+match_block ::= '{' match_body '}'
 match_body ::= match_arm* {recoverWhile="not_close_brace"}
 match_arm ::= match_filter ('|' match_filter)* '=>' (statement_block | statement | expr) ','?
 match_filter ::= match_pattern match_if?
