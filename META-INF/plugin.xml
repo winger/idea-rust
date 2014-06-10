@@ -30,12 +30,16 @@
   <extensions defaultExtensionNs="com.intellij">
       <fileTypeFactory implementation="vektah.rust.RustFileTypeFactory"/>
       <lang.formatter language="Rust" implementationClass="vektah.rust.formatter.RustFormattingModelBuilder"/>
-      <fileTypeIndentOptionsProvider implementation="vektah.rust.RustIndentOptionsProvider"/>
       <lang.parserDefinition language="Rust" implementationClass="vektah.rust.RustParserDefinition"/>
       <lang.syntaxHighlighterFactory key="Rust" implementationClass="vektah.rust.RustSyntaxHighlighterFactory"/>
       <annotator language="Rust" implementationClass="vektah.rust.RustAnnotator"/>
 
       <lang.commenter language="Rust" implementationClass="vektah.rust.highlight.RustCommenter"/>
+      <lang.braceMatcher language="Rust" implementationClass="vektah.rust.highlight.RustBraceMatcher"/>
+
+      <codeStyleSettingsProvider implementation="vektah.rust.ide.RustCodeStyleSettingsProvider"/>
+      <langCodeStyleSettingsProvider implementation="vektah.rust.ide.RustLanguageCodeStyleSettingsProvider"/>
+      <colorSettingsPage implementation="vektah.rust.ide.RustColorSettingsPage"/>
   </extensions>
 
   <application-components>

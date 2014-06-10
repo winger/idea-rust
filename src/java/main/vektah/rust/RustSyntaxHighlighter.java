@@ -125,7 +125,21 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 		if (type == OPEN_SQUARE_BRACKET || type == CLOSE_SQUARE_BRACKET) {
 			return BRACKET_KEYS;
 		}
-		if (type == GREATER_THAN || type == LESS_THAN) {
+		// FIXME: I think there are missing operators here... (and some might not be operators as well)
+		if (
+				type == GREATER_THAN ||
+				type == GREATER_THAN_OR_EQUAL ||
+				type == LESS_THAN ||
+				type == LESS_THAN_OR_EQUAL ||
+				type == PLUS ||
+				type == MINUS ||
+				type == ASSIGN ||
+				type == ASSIGN_LEFT_SHIFT ||
+				type == ASSIGN_RIGHT_SHIFT ||
+				type == MULTIPLY ||
+				type == DIVIDE ||
+				type == REMAINDER
+		) {
 			return OPERATOR_KEYS;
 		}
 		if (type == RustTokens.COMMA) {
