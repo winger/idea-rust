@@ -42,6 +42,8 @@
       <colorSettingsPage implementation="vektah.rust.ide.RustColorSettingsPage"/>
 
       <sdkType implementation="vektah.rust.ide.sdk.RustSdkType"/>
+      <moduleType id="RUST_MODULE" implementationClass="vektah.rust.ide.module.RustModuleType"/>
+      <moduleConfigurationEditorProvider implementation="vektah.rust.ide.module.RustModuleEditorsProvider"/>
   </extensions>
 
   <application-components>
