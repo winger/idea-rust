@@ -8,10 +8,13 @@ import org.jetbrains.annotations.Nullable;
 import vektah.rust.i18n.RustBundle;
 
 public class RustSdkData implements SdkAdditionalData, PersistentStateComponent<RustSdkData> {
-	private final String pathRustc;
+	public String pathRustc;
 	public String pathLibs;
 	public String version;
 	public String hostTriple;
+
+	// For serialization / deserialization
+	private RustSdkData() {}
 
 	public RustSdkData(String pathRustc) {
 		this.pathRustc = pathRustc;

@@ -44,6 +44,11 @@
       <sdkType implementation="vektah.rust.ide.sdk.RustSdkType"/>
       <moduleType id="RUST_MODULE" implementationClass="vektah.rust.ide.module.RustModuleType"/>
       <moduleConfigurationEditorProvider implementation="vektah.rust.ide.module.RustModuleEditorsProvider"/>
+
+      <programRunner implementation="vektah.rust.ide.runner.RustRunner"/>
+      <configurationType implementation="vektah.rust.ide.runner.RustConfigurationType"/>
+
+      <toolWindow id="Rust" anchor="bottom" icon="/vektah/rust/icons/logo16.png" factoryClass="vektah.rust.ide.ui.RustToolWindowFactory" />
   </extensions>
 
   <application-components>
@@ -51,7 +56,9 @@
   </application-components>
 
   <project-components>
-    <!-- Add your project components here -->
+      <component>
+          <implementation-class>vektah.rust.ide.runner.RustToolWindow</implementation-class>
+      </component>
   </project-components>
 
   <actions>

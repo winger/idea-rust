@@ -4,7 +4,9 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.CapturingProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 
 import java.io.File;
@@ -83,5 +85,24 @@ public class RustSdkUtil {
 
 		assert homeDirectory != null;
 		return homeDirectory.findFileByRelativePath("../lib/rustlib/" + sdkData.hostTriple + "/lib");
+	}
+
+	public static Sdk getSdk(Project project) {
+		Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
+
+		if (sdk != null && sdk.getSdkType() == RustSdkType.getInstance()) {
+			return sdk;
+		}
+
+		return null;
+	}
+
+	public static String[] computeBuildCommand(RustSdkData sdkData, String buildArgs, String execName, String scriptName) {
+		return new String[] {
+				sdkData.pathRustc,
+				scriptName,
+				"-o",
+				execName
+		};
 	}
 }
