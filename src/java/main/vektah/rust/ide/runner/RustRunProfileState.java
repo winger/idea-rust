@@ -62,8 +62,6 @@ public class RustRunProfileState extends CommandLineState {
 			execName = execName.concat(".exe");
 		}
 
-		buildProject(sdkData, execName, projectDir);
-
 		// Now run the build
 		GeneralCommandLine commandLine = new GeneralCommandLine();
 
@@ -75,35 +73,5 @@ public class RustRunProfileState extends CommandLineState {
 		commandLine.setWorkDirectory("/tmp");
 
 		return RustProcessHandler.runCommandLine(commandLine);
-	}
-
-
-	private void buildProject(RustSdkData sdkData, String execName, String projectDir) throws CantRunException {
-		RustToolWindow toolWindow = RustToolWindow.getInstance(project);
-		toolWindow.setTitle(RustBundle.message("rust.ui.title.build"));
-
-		try {
-//			String[] goEnv = GoSdkUtil.convertEnvMapToArray(sysEnv);
-
-//			String[] command = RustSdkUtil.computeBuildCommand(sdkData, rustConfiguration.runBuilderArguments, execName, rustConfiguration.scriptName);
-			String[] command = RustSdkUtil.computeBuildCommand(sdkData, "", execName, "src/main.rs");
-
-			Runtime rt = Runtime.getRuntime();
-			Process proc = rt.exec(command, new String[]{}, new File(projectDir));
-			OSProcessHandler handler = new OSProcessHandler(proc, null);
-			toolWindow.attachConsoleViewToProcess(handler);
-			toolWindow.printNormalMessage(String.format("%s%n", StringUtil.join(command, " ")));
-			handler.startNotify();
-
-			if (proc.waitFor() == 0) {
-				VirtualFileManager.getInstance().syncRefresh();
-				toolWindow.printNormalMessage(String.format("%nFinished building project %s%n", execName));
-			} else {
-				toolWindow.printErrorMessage(String.format("%nCould't build project %s%n", execName));
-				throw new CantRunException(String.format("Error while processing build command."));
-			}
-		} catch (Exception e) {
-			throw new CantRunException(String.format("Error while processing build command."));
-		}
 	}
 }

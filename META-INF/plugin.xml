@@ -48,17 +48,16 @@
       <programRunner implementation="vektah.rust.ide.runner.RustRunner"/>
       <configurationType implementation="vektah.rust.ide.runner.RustConfigurationType"/>
 
-      <toolWindow id="Rust" anchor="bottom" icon="/vektah/rust/icons/logo16.png" factoryClass="vektah.rust.ide.ui.RustToolWindowFactory" />
+      <projectService serviceInterface="com.intellij.openapi.compiler.CompilerManager" serviceImplementation="vektah.rust.ide.builder.RustCompilerManager" overrides="true"/>
   </extensions>
 
   <application-components>
-    <!-- Add your application components here -->
+      <component>
+          <implementation-class>vektah.rust.ide.builder.RustBuildManager</implementation-class>
+      </component>
   </application-components>
 
   <project-components>
-      <component>
-          <implementation-class>vektah.rust.ide.runner.RustToolWindow</implementation-class>
-      </component>
   </project-components>
 
   <actions>

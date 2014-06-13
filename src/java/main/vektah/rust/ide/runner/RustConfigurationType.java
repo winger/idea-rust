@@ -1,12 +1,12 @@
 package vektah.rust.ide.runner;
 
-import com.intellij.execution.BeforeRunTask;
+import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationType;
+import com.intellij.execution.configurations.ModuleBasedConfiguration;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
 import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import vektah.rust.RustIcons;
@@ -52,7 +52,7 @@ public class RustConfigurationType implements ConfigurationType {
 		return ContainerUtil.findInstance(Extensions.getExtensions(CONFIGURATION_TYPE_EP), RustConfigurationType.class);
 	}
 
-	private class RustConfigurationFactory extends ConfigurationFactory {
+	private class RustConfigurationFactory extends ConfigurationFactoryEx {
 		public RustConfigurationFactory(RustConfigurationType rustConfigurationType) {
 			super(rustConfigurationType);
 		}
@@ -63,8 +63,8 @@ public class RustConfigurationType implements ConfigurationType {
 		}
 
 		@Override
-		public void configureBeforeRunTaskDefaults(Key<? extends BeforeRunTask> providerID, BeforeRunTask task) {
-			task.setEnabled(false);
+		public void onNewConfigurationCreated(@NotNull RunConfiguration configuration) {
+			((ModuleBasedConfiguration)configuration).onNewConfigurationCreated();
 		}
 	}
 }
