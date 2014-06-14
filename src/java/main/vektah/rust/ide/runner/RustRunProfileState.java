@@ -4,21 +4,17 @@ import com.intellij.execution.CantRunException;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.OSProcessHandler;
+import com.intellij.execution.configurations.SimpleProgramParameters;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.execution.util.ProgramParametersUtil;
+import com.intellij.openapi.compiler.CompilerPaths;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.SystemInfo;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFileManager;
 import org.jetbrains.annotations.NotNull;
-import vektah.rust.i18n.RustBundle;
 import vektah.rust.ide.sdk.RustSdkData;
 import vektah.rust.ide.sdk.RustSdkUtil;
-
-import java.io.File;
-import java.util.Map;
 
 public class RustRunProfileState extends CommandLineState {
 	private final Project project;
@@ -50,9 +46,16 @@ public class RustRunProfileState extends CommandLineState {
 			throw new CantRunException("Could not retrieve the project directory");
 		}
 
+		final SimpleProgramParameters params = new SimpleProgramParameters();
+		ProgramParametersUtil.configureConfiguration(params, rustConfiguration);
+
+		String outputPath = CompilerPaths.getModuleOutputPath(rustConfiguration.getModules()[0], false);
+		if (outputPath == null) {
+			throw new CantRunException("Could not retrieve the output directory");
+		}
+
 		// Build and run
-//		String execName = rustConfiguration.outputDir.concat("/").concat(rustConfiguration.getName());
-		String execName = "/tmp".concat("/").concat(rustConfiguration.getName());
+		String execName = outputPath.concat("/").concat(rustConfiguration.getName());
 
 		if (execName.endsWith(".rs")) {
 			execName = execName.substring(0, execName.length() - 3);
@@ -66,11 +69,9 @@ public class RustRunProfileState extends CommandLineState {
 		GeneralCommandLine commandLine = new GeneralCommandLine();
 
 		commandLine.setExePath(execName);
-//		commandLine.setWorkDirectory(rustConfiguration.workingDir);
-//		if (rustConfiguration.scriptArguments != null && rustConfiguration.scriptArguments.trim().length() > 0) {
-//			commandLine.getParametersList().addParametersString(rustConfiguration.scriptArguments);
-//		}
-		commandLine.setWorkDirectory("/tmp");
+		commandLine.addParameters(params.getProgramParametersList().getParameters());
+		commandLine.getEnvironment().putAll(params.getEnv());
+		commandLine.setWorkDirectory(params.getWorkingDirectory());
 
 		return RustProcessHandler.runCommandLine(commandLine);
 	}

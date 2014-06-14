@@ -440,7 +440,11 @@ public class RustBuildManager implements com.intellij.openapi.components.Applica
 		if (compilerModuleExtension == null) {
 			throw new ExecutionException("Cannot find compiler module extension from module");
 		}
-		final String outputPathUrl = compilerModuleExtension.getCompilerOutputUrl();
+		final VirtualFile compilerOutputPath = compilerModuleExtension.getCompilerOutputPath();
+		if (compilerOutputPath == null) {
+			throw new ExecutionException("Cannot find compiler output path");
+		}
+		final String outputPathUrl = compilerOutputPath.getPath();
 		File outputPathFile = new File(outputPathUrl);
 		if (!outputPathFile.exists()) {
 			if (!outputPathFile.mkdirs()) {
@@ -451,7 +455,7 @@ public class RustBuildManager implements com.intellij.openapi.components.Applica
 		cmdLine.setWorkDirectory(new File(project.getBasePath()));
 		cmdLine.setExePath(rustSdkData.pathRustc);
 		cmdLine.addParameter(rustConfiguration.mainFile);
-		cmdLine.addParameters("-o", outputPathUrl);
+		cmdLine.addParameters("-o", outputPathUrl.concat("/").concat(rustConfiguration.getName()));
 
 		final Process process = cmdLine.createProcess();
 
