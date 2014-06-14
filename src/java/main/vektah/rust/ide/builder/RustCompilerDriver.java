@@ -4,7 +4,6 @@ import com.intellij.compiler.CompilerConfiguration;
 import com.intellij.compiler.ProblemsView;
 import com.intellij.compiler.impl.*;
 import com.intellij.compiler.progress.CompilerTask;
-import com.intellij.compiler.server.BuildManager;
 import com.intellij.compiler.server.CustomBuilderMessageHandler;
 import com.intellij.compiler.server.DefaultMessageHandler;
 import com.intellij.openapi.application.ApplicationManager;
@@ -208,6 +207,7 @@ public class RustCompilerDriver {
 			throws Exception {
 		final CompileScope scope = compileContext.getCompileScope();
 		final Collection<String> paths = CompileScopeUtil.fetchFiles(compileContext);
+		// FIXME: For now, `scopes` aren't used
 		List<CmdlineRemoteProto.Message.ControllerMessage.ParametersMessage.TargetTypeBuildScope> scopes = new ArrayList<CmdlineRemoteProto.Message.ControllerMessage.ParametersMessage.TargetTypeBuildScope>();
 		final boolean forceBuild = !compileContext.isMake();
 		List<CmdlineRemoteProto.Message.ControllerMessage.ParametersMessage.TargetTypeBuildScope> explicitScopes = CompileScopeUtil.getBaseScopeForExternalBuild(scope);
@@ -250,7 +250,7 @@ public class RustCompilerDriver {
 		final MultiMap<String, Artifact> outputToArtifact = ArtifactCompilerUtil.containsArtifacts(scopes) ? ArtifactCompilerUtil.createOutputToArtifactMap(myProject) : null;
 		final RustBuildManager buildManager = RustBuildManager.getInstance();
 		buildManager.cancelAutoMakeTasks(myProject);
-		return buildManager.scheduleBuild(myProject, compileContext.isRebuild(), compileContext.isMake(), onlyCheckUpToDate, scopes, paths, builderParams, new DefaultMessageHandler(myProject) {
+		return buildManager.scheduleBuild(myProject, compileContext.isRebuild(), compileContext.isMake(), onlyCheckUpToDate, scope, paths, builderParams, new DefaultMessageHandler(myProject) {
 			@Override
 			public void buildStarted(UUID sessionId) {
 			}
@@ -266,7 +266,11 @@ public class RustCompilerDriver {
 
 			@Override
 			public void handleFailure(UUID sessionId, CmdlineRemoteProto.Message.Failure failure) {
-				parseErrors(failure.getDescription());
+				if (failure.hasStacktrace()) {
+					compileContext.addMessage(CompilerMessageCategory.ERROR, failure.getDescription(), null, -1, -1);
+				} else {
+					parseErrors(failure.getDescription());
+				}
 				compileContext.putUserData(COMPILE_SERVER_BUILD_STATUS, ExitStatus.ERRORS);
 			}
 

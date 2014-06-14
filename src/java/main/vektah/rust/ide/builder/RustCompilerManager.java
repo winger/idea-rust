@@ -2,6 +2,7 @@ package vektah.rust.ide.builder;
 
 import com.intellij.compiler.CompilerConfigurationImpl;
 import com.intellij.compiler.CompilerManagerImpl;
+import com.intellij.compiler.impl.CompileDriver;
 import com.intellij.openapi.compiler.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.MessageBus;
@@ -17,6 +18,11 @@ public class RustCompilerManager extends CompilerManagerImpl {
 
 		this.project = project;
 		this.myEventPublisher = messageBus.syncPublisher(CompilerTopics.COMPILATION_STATUS);
+	}
+
+	@Override
+	public void make(CompileStatusNotification callback) {
+		new RustCompilerDriver(project).make(createProjectCompileScope(project), new ListenerNotificator(callback));
 	}
 
 	@Override

@@ -1,11 +1,13 @@
 package vektah.rust.ide.builder;
 
+import com.intellij.compiler.options.CompileStepBeforeRun;
 import com.intellij.compiler.server.BuildManagerListener;
 import com.intellij.compiler.server.BuilderMessageHandler;
 import com.intellij.compiler.server.DefaultMessageHandler;
 import com.intellij.compiler.server.impl.BuildProcessClasspathManager;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessAdapter;
 import com.intellij.execution.process.ProcessEvent;
@@ -16,6 +18,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
+import com.intellij.openapi.compiler.CompileScope;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentAdapter;
@@ -24,6 +27,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectCoreUtil;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Key;
@@ -47,6 +51,7 @@ import org.jetbrains.io.ChannelRegistrar;
 import org.jetbrains.jps.api.CmdlineProtoUtil;
 import org.jetbrains.jps.api.CmdlineRemoteProto;
 import org.jetbrains.jps.api.RequestFuture;
+import vektah.rust.ide.runner.RustConfiguration;
 import vektah.rust.ide.sdk.RustSdkData;
 import vektah.rust.ide.sdk.RustSdkType;
 
@@ -57,7 +62,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.List;
 
-public class RustBuildManager {
+public class RustBuildManager implements com.intellij.openapi.components.ApplicationComponent {
 	private static final Logger LOG = Logger.getInstance(RustBuildManager.class);
 
 	private final ProjectManager myProjectManager;
@@ -240,11 +245,12 @@ public class RustBuildManager {
 	@Nullable
 	public RequestFuture scheduleBuild(
 			final Project project, final boolean isRebuild, final boolean isMake,
-			final boolean onlyCheckUpToDate, final List<CmdlineRemoteProto.Message.ControllerMessage.ParametersMessage.TargetTypeBuildScope> scopes,
+			final boolean onlyCheckUpToDate, final CompileScope scope,
 			final Collection<String> paths,
 			final Map<String, String> userData, final DefaultMessageHandler messageHandler) {
 
 		final String projectPath = getProjectPath(project);
+		final String runConfigurationName = userData.get(CompileStepBeforeRun.RUN_CONFIGURATION.toString());
 		final UUID sessionId = UUID.randomUUID();
 //		final boolean isAutomake = messageHandler instanceof AutoMakeMessageHandler;
 		final boolean isAutomake = false;   // FIXME
@@ -336,7 +342,7 @@ public class RustBuildManager {
 										return;
 									}
 									myBuildsInProgress.put(projectPath, future);
-									final OSProcessHandler processHandler = launchBuildProcess(project, sessionId);
+									final OSProcessHandler processHandler = launchBuildProcess(project, sessionId, scope);
 									final StringBuilder stdErrOutput = new StringBuilder();
 									processHandler.addProcessListener(new ProcessAdapter() {
 										@Override
@@ -414,7 +420,7 @@ public class RustBuildManager {
 		myRequestsProcessor.submit(command);
 	}
 
-	private OSProcessHandler launchBuildProcess(Project project, UUID sessionId) throws ExecutionException {
+	private OSProcessHandler launchBuildProcess(Project project, UUID sessionId, CompileScope scope) throws ExecutionException {
 		final Sdk defaultSdk = ProjectRootManager.getInstance(project).getProjectSdk();
 		if (defaultSdk == null) {
 			throw new ExecutionException("No SDK configured for this project.");
@@ -424,9 +430,28 @@ public class RustBuildManager {
 		}
 		final RustSdkData rustSdkData = (RustSdkData) defaultSdk.getSdkAdditionalData();
 		final GeneralCommandLine cmdLine = new GeneralCommandLine();
+
+		final RunConfiguration runConfig = scope.getUserData(CompileStepBeforeRun.RUN_CONFIGURATION);
+		if (runConfig == null) {
+			throw new ExecutionException("'Run Configuration' not found. If you're trying to compile without running, that's not yet supported");
+		}
+		final RustConfiguration rustConfiguration = (RustConfiguration) runConfig;
+		final CompilerModuleExtension compilerModuleExtension = CompilerModuleExtension.getInstance(rustConfiguration.getModules()[0]);
+		if (compilerModuleExtension == null) {
+			throw new ExecutionException("Cannot find compiler module extension from module");
+		}
+		final String outputPathUrl = compilerModuleExtension.getCompilerOutputUrl();
+		File outputPathFile = new File(outputPathUrl);
+		if (!outputPathFile.exists()) {
+			if (!outputPathFile.mkdirs()) {
+				throw new ExecutionException("Cannot create output path '" + outputPathUrl + "'");
+			}
+		}
+
 		cmdLine.setWorkDirectory(new File(project.getBasePath()));
 		cmdLine.setExePath(rustSdkData.pathRustc);
-		cmdLine.addParameter("src/main.rs");
+		cmdLine.addParameter(rustConfiguration.mainFile);
+		cmdLine.addParameters("-o", outputPathUrl);
 
 		final Process process = cmdLine.createProcess();
 
@@ -436,6 +461,22 @@ public class RustBuildManager {
 				return true;
 			}
 		};
+	}
+
+	@Override
+	public void initComponent() {
+
+	}
+
+	@Override
+	public void disposeComponent() {
+		stopListening();
+	}
+
+	@NotNull
+	@Override
+	public String getComponentName() {
+		return RustBuildManager.class.getName();
 	}
 
 	private class MessageHandlerWrapper implements BuilderMessageHandler {
