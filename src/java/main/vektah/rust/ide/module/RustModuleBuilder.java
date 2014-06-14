@@ -43,9 +43,7 @@ public class RustModuleBuilder extends JavaModuleBuilder implements SourcePathsB
 			@Override
 			public void run() {
 				try {
-					baseDir.createSubdirectory("bin");
 					baseDir.createSubdirectory("lib");
-					baseDir.createSubdirectory("build");
 				} catch (Exception e) {
 					LOG.error(e.getMessage());
 				}
