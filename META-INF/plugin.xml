@@ -40,14 +40,24 @@
       <codeStyleSettingsProvider implementation="vektah.rust.ide.RustCodeStyleSettingsProvider"/>
       <langCodeStyleSettingsProvider implementation="vektah.rust.ide.RustLanguageCodeStyleSettingsProvider"/>
       <colorSettingsPage implementation="vektah.rust.ide.RustColorSettingsPage"/>
+
+      <sdkType implementation="vektah.rust.ide.sdk.RustSdkType"/>
+      <moduleType id="RUST_MODULE" implementationClass="vektah.rust.ide.module.RustModuleType" classpathProvider="true"/>
+      <moduleConfigurationEditorProvider implementation="vektah.rust.ide.module.RustModuleEditorsProvider"/>
+
+      <programRunner implementation="vektah.rust.ide.runner.RustRunner"/>
+      <configurationType implementation="vektah.rust.ide.runner.RustConfigurationType"/>
+
+      <projectService serviceInterface="com.intellij.openapi.compiler.CompilerManager" serviceImplementation="vektah.rust.ide.builder.RustCompilerManager" overrides="true"/>
   </extensions>
 
   <application-components>
-    <!-- Add your application components here -->
+      <component>
+          <implementation-class>vektah.rust.ide.builder.RustBuildManager</implementation-class>
+      </component>
   </application-components>
 
   <project-components>
-    <!-- Add your project components here -->
   </project-components>
 
   <actions>
