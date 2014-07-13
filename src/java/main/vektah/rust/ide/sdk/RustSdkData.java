@@ -8,9 +8,7 @@ import vektah.rust.i18n.RustBundle;
 
 public class RustSdkData implements SdkAdditionalData, PersistentStateComponent<RustSdkData> {
 	public String pathRustc;
-	public String pathLibs;
 	public String version;
-	public String hostTriple;
 
 	// For serialization / deserialization
 	private RustSdkData() {}
