@@ -3,7 +3,6 @@ package vektah.rust.ide.sdk;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.projectRoots.SdkAdditionalData;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import com.sun.tools.javac.resources.version;
 import org.jetbrains.annotations.Nullable;
 import vektah.rust.i18n.RustBundle;
 
