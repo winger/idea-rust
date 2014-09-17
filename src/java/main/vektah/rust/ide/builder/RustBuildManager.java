@@ -19,6 +19,7 @@ import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.compiler.CompileScope;
+import com.intellij.openapi.compiler.CompilerPaths;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentAdapter;
@@ -28,6 +29,7 @@ import com.intellij.openapi.project.ProjectCoreUtil;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.CompilerModuleExtension;
+import com.intellij.openapi.roots.CompilerProjectExtension;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Key;
@@ -54,6 +56,7 @@ import org.jetbrains.jps.api.RequestFuture;
 import vektah.rust.ide.runner.RustConfiguration;
 import vektah.rust.ide.sdk.RustSdkData;
 import vektah.rust.ide.sdk.RustSdkType;
+import vektah.rust.ide.sdk.RustSdkUtil;
 
 import java.awt.*;
 import java.io.File;
@@ -428,7 +431,6 @@ public class RustBuildManager implements com.intellij.openapi.components.Applica
 		if (!(defaultSdk.getSdkType() instanceof RustSdkType)) {
 			throw new ExecutionException("This project doesn't have a Rust SDK configured.");
 		}
-		final RustSdkData rustSdkData = (RustSdkData) defaultSdk.getSdkAdditionalData();
 		final GeneralCommandLine cmdLine = new GeneralCommandLine();
 
 		final RunConfiguration runConfig = scope.getUserData(CompileStepBeforeRun.RUN_CONFIGURATION);
@@ -440,11 +442,9 @@ public class RustBuildManager implements com.intellij.openapi.components.Applica
 		if (compilerModuleExtension == null) {
 			throw new ExecutionException("Cannot find compiler module extension from module");
 		}
-		final VirtualFile compilerOutputPath = compilerModuleExtension.getCompilerOutputPath();
-		if (compilerOutputPath == null) {
-			throw new ExecutionException("Cannot find compiler output path");
-		}
-		final String outputPathUrl = compilerOutputPath.getPath();
+
+        final String outputPathUrl = CompilerPaths.getModuleOutputPath(rustConfiguration.getModules()[0], false);
+
 		File outputPathFile = new File(outputPathUrl);
 		if (!outputPathFile.exists()) {
 			if (!outputPathFile.mkdirs()) {
@@ -453,7 +453,7 @@ public class RustBuildManager implements com.intellij.openapi.components.Applica
 		}
 
 		cmdLine.setWorkDirectory(new File(project.getBasePath()));
-		cmdLine.setExePath(rustSdkData.pathRustc);
+		cmdLine.setExePath(RustSdkUtil.testRustSdk(defaultSdk.getHomePath()).pathRustc);
 		cmdLine.addParameter(rustConfiguration.mainFile);
 		cmdLine.addParameters("-o", outputPathUrl.concat("/").concat(rustConfiguration.getName()));
 

@@ -40,7 +40,13 @@ public class RustSdkType extends SdkType {
 		return sdkData != null;
 	}
 
-	@Override
+    @Nullable
+    @Override
+    public String getVersionString(String sdkHome) {
+        return RustSdkUtil.testRustSdk(sdkHome).version;
+    }
+
+    @Override
 	public void setupSdkPaths(@NotNull Sdk sdk) {
 	}
 
