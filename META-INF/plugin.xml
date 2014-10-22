@@ -34,6 +34,8 @@
       <lang.syntaxHighlighterFactory key="Rust" implementationClass="vektah.rust.RustSyntaxHighlighterFactory"/>
       <annotator language="Rust" implementationClass="vektah.rust.RustAnnotator"/>
 
+      <lang.psiStructureViewFactory implementationClass="vektah.rust.ide.structure.RustStructureViewFactory" language="Rust"/>
+
       <lang.commenter language="Rust" implementationClass="vektah.rust.highlight.RustCommenter"/>
       <lang.braceMatcher language="Rust" implementationClass="vektah.rust.highlight.RustBraceMatcher"/>
 

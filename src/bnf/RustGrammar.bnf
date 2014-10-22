@@ -15,6 +15,7 @@
 	extends(".*_item")=item
 	extends("expr_.*")=expr
 	extends("block_.*")=expr_block
+	extends("type_.*")=type
 	extends("struct_body_.*")=struct_body
 	extends("enum_variant_.*")=enum_variant
 	extends(".*_match_pattern")=match_pattern
@@ -117,6 +118,8 @@ item ::= mod_item
 	| trait_item
 	| impl_item
 	| extern_item
+
+itemName ::= IDENTIFIER
 
 // AGGREGATE TYPES
 private numeric_literal ::= '-'? (BIN_LIT | OCT_LIT | HEX_LIT | DEC_LIT)
@@ -314,13 +317,13 @@ expr_break ::= 'break' lifetime?
 
 // TYPES
 expr_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' (IDENTIFIER | generic))*
-private type ::= type_basic | type_vector | type_tuple | type_closure | function_type | type_proc | type_unit
+type ::= type_basic | type_vector | type_tuple | type_closure | type_function | type_proc | type_unit
 
 private type_modifiers ::= ( ref | lifetime | '*' | 'mut' | '*' 'mut' | '@' | '~' | '$' | 'box')*
 type_basic ::= type_modifiers type_path
 type_vector ::= type_modifiers '[' type [',' '..' expr] ']'
 type_tuple ::= ref? '(' 'ref'? type (',' 'ref'? type)* ','? ')'
-function_type ::= ref? 'unsafe'? ['extern' STRING_LIT?] 'fn' trait_bounds? fn_prototype_args ['->' return_type]
+type_function ::= ref? 'unsafe'? ['extern' STRING_LIT?] 'fn' trait_bounds? fn_prototype_args ['->' return_type]
 fn_prototype_args ::= '(' prototype_args ')'
 type_closure ::= ['<'lifetime'>'] closure_prototype_args [':' lifetime] ['->' return_type]
 closure_prototype_args ::= '|' prototype_args '|'
@@ -351,8 +354,8 @@ private use_part ::= (IDENTIFIER | 'super' | 'self')
 
 
 // FUNCTIONS
-fn_item ::= (comment | attribute)* fn_declaration statement_block
-fn_declaration ::= visibility? 'unsafe'? 'fn' IDENTIFIER generic_params? fn_args ['->' return_type] {pin=3 recoverWhile="function_recover" }
+fn_item ::= (comment | attribute)* fn_declaration statement_block {mixin="vektah.rust.psi.mixin.item.RustFnItemMixin"}
+fn_declaration ::= visibility? 'unsafe'? 'fn' itemName generic_params? fn_args ['->' return_type] {pin=3 recoverWhile="function_recover" }
 fn_args ::= '(' let_args ')'
 private return_type ::= type | '!'
 private function_recover ::= !('{'|';')
@@ -374,11 +377,11 @@ return_statement ::= 'return' expr? ';'?
 empty_statement ::= ';'
 
 // STRUCTS
-struct_item ::= visibility? 'struct' IDENTIFIER generic_params? struct_body
+struct_item ::= visibility? 'struct' itemName generic_params? struct_body {mixin="vektah.rust.psi.mixin.item.RustStructItemMixin"}
 struct_body ::= struct_body_empty | struct_body_block | struct_body_tuple
 
 struct_body_block ::= '{' [struct_property (',' struct_property)* ','? (comment | attribute)*] '}' {pin=1}
-struct_property ::= (comment | attribute)* visibility? let_variable_bind {recoverWhile="struct_recover"}
+struct_property ::= (comment | attribute)* visibility? let_variable_bind {recoverWhile="struct_recover" extends="vektah.rust.psi.mixin.struct.RustStructPropertyMixin"}
 struct_recover ::= !('}' | ',')
 
 struct_body_tuple ::= '(' struct_tuple_property (',' struct_tuple_property)* ')' ';'
@@ -388,7 +391,7 @@ struct_body_empty ::= ';'
 
 
 // ENUMS
-enum_item ::= visibility? 'enum' IDENTIFIER generic_params? '{' enum_body '}' {pin=2}
+enum_item ::= visibility? 'enum' itemName generic_params? '{' enum_body '}' {pin=2 mixin="vektah.rust.psi.mixin.item.RustEnumItemMixin"}
 enum_body ::= [ enum_variant (',' enum_variant)* ','? (comment | attribute)* ]
 enum_variant ::= enum_variant_nullary | enum_variant_tuple | enum_variant_struct
 enum_variant_nullary ::= (comment | attribute)* IDENTIFIER !('(' | '{') ['=' expr]
@@ -398,14 +401,14 @@ enum_variant_struct_member ::= visibility? IDENTIFIER ':' type
 
 
 // IMPL
-impl_item ::= 'impl' generic_params? type impl_for? impl_block {pin=1}
+impl_item ::= 'impl' generic_params? type impl_for? impl_block {pin=1 mixin="vektah.rust.psi.mixin.item.RustImplItemMixin"}
 impl_block ::= '{' impl_body '}'
 impl_for ::= 'for' type
 impl_body ::= fn_item* {recoverWhile="not_close_brace"}
 
 
 // TRAITS
-trait_item ::= visibility? 'trait' generic_params? IDENTIFIER generic_params? trait_implements? '{' (trait_function_declaration (';' | statement_block) )* (comment|attribute)* '}' {pin=2}
+trait_item ::= visibility? 'trait' generic_params? itemName generic_params? trait_implements? '{' (trait_function_declaration (';' | statement_block) )* (comment|attribute)* '}' {pin=2}
 trait_implements ::= ':' type ('+' type)* {recoverWhile="not_open_brace"}
 trait_function_declaration ::= (comment | attribute)* visibility? 'unsafe'? 'fn' IDENTIFIER generic_params? '(' prototype_args ','? '...'? ')' ['->' return_type] {pin=4 recoverWhile="not_semicolon_or_open_brace" }
 
@@ -442,7 +445,7 @@ prototype_struct_arg ::= type '{' struct_bind_member (',' struct_bind_member )* 
 prototype_self_arg ::= ref? 'mut'? '~'? 'self'
 
 private struct_bind_member ::= IDENTIFIER ':' variable_signature | variable_signature
-private variable_signature ::= 'ref'? ref? 'mut'? IDENTIFIER
+private variable_signature ::= 'ref'? ref? 'mut'? itemName
 
 
 // ATTRIBUTES
@@ -454,7 +457,7 @@ private attrib_recover ::= !(']' | ';')
 
 
 // MOD
-mod_item ::= (comment | attribute)* visibility? 'mod' type_path (';' | '{' mod_contents '}') {pin=3}
+mod_item ::= (comment | attribute)* visibility? 'mod' type_path (';' | '{' mod_contents '}') {pin=3 mixin="vektah.rust.psi.mixin.item.RustModItemMixin"}
 private mod_contents ::= ( use
     | item
     | attribute
@@ -465,11 +468,11 @@ private mod_contents ::= ( use
 
 
 // STATIC
-static_item ::= (comment | attribute)* visibility? 'static' 'mut'? IDENTIFIER ':' type '=' expr ';' {pin=3}
+static_item ::= (comment | attribute)* visibility? 'static' 'mut'? itemName ':' type '=' expr ';' {pin=3 mixin="vektah.rust.psi.mixin.item.RustStaticItemMixin"}
 
 
 // TYPE
-type_item ::= (comment | attribute)* visibility? 'type' IDENTIFIER generic_params? '=' type ';' {pin=3}
+type_item ::= (comment | attribute)* visibility? 'type' itemName generic_params? '=' type ';' {pin=3 mixin="vektah.rust.psi.mixin.item.RustTypeItemMixin"}
 
 
 // MACRO
