@@ -43,6 +43,4 @@ public abstract class RustStructPropertyMixin extends RustItemImpl implements Ru
     public PsiElement getNameIdentifier() {
         return getLetVariableBind().getItemName();
     }
-
-    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() { return Collections.emptyList();}
 }

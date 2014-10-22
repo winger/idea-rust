@@ -117,7 +117,7 @@ item ::= mod_item
 	| static_item
 	| trait_item
 	| impl_item
-	| extern_item {implements="vektah.rust.psi.mixin.item.RustItemImplements" extends="vektah.rust.psi.mixin.item.RustItemMixin"}
+	| extern_item {extends="vektah.rust.psi.mixin.item.RustItemMixin" implements="com.intellij.psi.PsiNamedElement"}
 
 itemName ::= IDENTIFIER
 
@@ -381,7 +381,7 @@ struct_item ::= visibility? 'struct' itemName generic_params? struct_body {mixin
 struct_body ::= struct_body_empty | struct_body_block | struct_body_tuple
 
 struct_body_block ::= '{' [struct_property (',' struct_property)* ','? (comment | attribute)*] '}' {pin=1}
-struct_property ::= (comment | attribute)* visibility? let_variable_bind {recoverWhile="struct_recover" extends="vektah.rust.psi.mixin.struct.RustStructPropertyMixin"}
+struct_property ::= (comment | attribute)* visibility? let_variable_bind {recoverWhile="struct_recover" extends="vektah.rust.psi.mixin.struct.RustStructPropertyMixin" implements="com.intellij.psi.PsiNamedElement"}
 struct_recover ::= !('}' | ',')
 
 struct_body_tuple ::= '(' struct_tuple_property (',' struct_tuple_property)* ')' ';'

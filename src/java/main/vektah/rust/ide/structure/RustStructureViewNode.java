@@ -32,8 +32,8 @@ class RustStructureViewNode extends PsiTreeElementBase<PsiNamedElement> {
     public Collection<StructureViewTreeElement> getChildrenBase() {
         ImmutableList.Builder<StructureViewTreeElement> listBuilder = ImmutableList.builder();
 
-        if (psiElement instanceof RustItem) {
-            for (PsiNamedElement child : ((RustItem) psiElement).getChildrenItems()) {
+        if (psiElement instanceof HasStructureViewChildren) {
+            for (PsiNamedElement child : ((HasStructureViewChildren) psiElement).getChildrenItems()) {
                     listBuilder.add(new RustStructureViewNode(child));
             }
         }
@@ -52,4 +52,6 @@ class RustStructureViewNode extends PsiTreeElementBase<PsiNamedElement> {
     public String getPresentableText() {
         return psiElement.getName();
     }
+
+
 }

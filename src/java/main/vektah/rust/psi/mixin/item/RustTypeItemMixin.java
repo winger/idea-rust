@@ -26,11 +26,6 @@ public abstract class RustTypeItemMixin extends RustItemImpl implements RustType
         return null;
     }
 
-    @Override
-    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() {
-        return Collections.emptyList();
-    }
-
     @Nullable
     @Override
     public String getName() {

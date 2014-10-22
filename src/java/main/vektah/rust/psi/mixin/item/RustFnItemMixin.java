@@ -22,11 +22,6 @@ public abstract class RustFnItemMixin extends RustItemImpl implements RustFnItem
     }
 
     @Override
-    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() {
-        return Collections.emptyList();
-    }
-
-    @Override
     public PsiElement setName(@NonNls @NotNull String s) throws IncorrectOperationException {
         return null;
     }

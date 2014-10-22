@@ -9,11 +9,12 @@ import org.jetbrains.annotations.NotNull;
 import vektah.rust.RustFileType;
 import vektah.rust.RustLanguage;
 import vektah.rust.i18n.RustBundle;
+import vektah.rust.ide.structure.HasStructureViewChildren;
 
 import javax.swing.*;
 import java.util.List;
 
-public class RustFile extends PsiFileBase implements RustItem {
+public class RustFile extends PsiFileBase implements HasStructureViewChildren {
 	public RustFile(@NotNull FileViewProvider fileViewProvider) {
 		super(fileViewProvider, RustLanguage.INSTANCE);
 	}

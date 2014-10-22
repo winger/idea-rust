@@ -43,9 +43,4 @@ public abstract class RustEnumItemMixin extends RustItemImpl implements RustEnum
     public PsiElement setName(@NonNls @NotNull String s) throws IncorrectOperationException {
         return null;
     }
-
-    @Override
-    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() {
-        return Collections.emptyList();
-    }
 }

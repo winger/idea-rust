@@ -6,6 +6,7 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import vektah.rust.ide.structure.HasStructureViewChildren;
 import vektah.rust.psi.RustImplItem;
 import vektah.rust.psi.RustType;
 import vektah.rust.psi.impl.RustItemImpl;
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  * (C) Atlassian 2014
  */
-public abstract class RustImplItemMixin extends RustItemImpl implements RustImplItem, PsiNamedElement {
+public abstract class RustImplItemMixin extends RustItemImpl implements RustImplItem, PsiNamedElement, HasStructureViewChildren {
     public RustImplItemMixin(ASTNode node) {
         super(node);
     }

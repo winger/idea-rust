@@ -7,6 +7,9 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import vektah.rust.ide.structure.HasStructureViewChildren;
+import vektah.rust.psi.RustStructBody;
+import vektah.rust.psi.RustStructBodyBlock;
 import vektah.rust.psi.RustStructItem;
 import vektah.rust.psi.impl.RustItemImpl;
 
@@ -16,7 +19,7 @@ import java.util.List;
 /**
  * (C) Atlassian 2014
  */
-public abstract class RustStructItemMixin extends RustItemImpl implements RustStructItem, PsiNameIdentifierOwner {
+public abstract class RustStructItemMixin extends RustItemImpl implements RustStructItem, PsiNameIdentifierOwner, HasStructureViewChildren {
     public RustStructItemMixin(ASTNode node) {
         super(node);
     }
@@ -44,5 +47,12 @@ public abstract class RustStructItemMixin extends RustItemImpl implements RustSt
         return getItemName();
     }
 
-    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() { return Collections.emptyList();}
+    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() {
+        RustStructBody structBody = getStructBody();
+        if (structBody instanceof RustStructBodyBlock) {
+            return ((RustStructBodyBlock) structBody).getStructPropertyList();
+        }
+
+        return Collections.emptyList();
+    }
 }

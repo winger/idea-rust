@@ -43,9 +43,4 @@ public abstract class RustStaticItemMixin extends RustItemImpl implements RustSt
     public PsiElement getNameIdentifier() {
         return getItemName();
     }
-
-    @Override
-    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() {
-        return Collections.emptyList();
-    }
 }

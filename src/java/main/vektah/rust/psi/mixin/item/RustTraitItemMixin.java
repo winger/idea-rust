@@ -35,9 +35,4 @@ public abstract class RustTraitItemMixin extends RustItemImpl implements RustTra
     public PsiElement getNameIdentifier() {
         return getItemName();
     }
-
-    @Override
-    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() {
-        return Collections.emptyList();
-    }
 }
