@@ -47,4 +47,9 @@ public abstract class RustModItemMixin extends RustItemImpl implements RustModIt
 
         return children.get(children.size()-1);
     }
+
+    @Override
+    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() {
+        return getItemList();
+    }
 }

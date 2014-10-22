@@ -10,6 +10,9 @@ import vektah.rust.psi.RustImplItem;
 import vektah.rust.psi.RustType;
 import vektah.rust.psi.impl.RustItemImpl;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * (C) Atlassian 2014
  */
@@ -32,5 +35,14 @@ public abstract class RustImplItemMixin extends RustItemImpl implements RustImpl
         }
 
         return null;
+    }
+
+    @Override
+    public List<? extends PsiNamedElement> getChildrenItems() {
+        if (getImplBlock() == null) {
+            return Collections.emptyList();
+        }
+
+        return getImplBlock().getImplBody().getFnItemList();
     }
 }

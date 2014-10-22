@@ -1,14 +1,14 @@
 package vektah.rust.psi.mixin.item;
 
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiNamedElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import vektah.rust.psi.RustStaticItem;
-import vektah.rust.psi.impl.RustItemImpl;
+import vektah.rust.psi.RustItem;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,8 +16,8 @@ import java.util.List;
 /**
  * (C) Atlassian 2014
  */
-public abstract class RustStaticItemMixin extends RustItemImpl implements RustStaticItem, PsiNameIdentifierOwner {
-    public RustStaticItemMixin(ASTNode node) {
+public abstract class RustItemMixin extends ASTWrapperPsiElement implements RustItem, PsiNamedElement {
+    public RustItemMixin(ASTNode node) {
         super(node);
     }
 
@@ -29,23 +29,11 @@ public abstract class RustStaticItemMixin extends RustItemImpl implements RustSt
     @Nullable
     @Override
     public String getName() {
-        PsiElement nameIdentifier = getNameIdentifier();
-
-        if (nameIdentifier != null) {
-            return nameIdentifier.getText();
-        }
-
         return null;
     }
 
-    @Nullable
     @Override
-    public PsiElement getNameIdentifier() {
-        return getItemName();
-    }
-
-    @Override
-    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() {
+    public List<? extends PsiNamedElement> getChildrenItems() {
         return Collections.emptyList();
     }
 }

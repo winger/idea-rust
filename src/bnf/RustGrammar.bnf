@@ -117,7 +117,7 @@ item ::= mod_item
 	| static_item
 	| trait_item
 	| impl_item
-	| extern_item
+	| extern_item {implements="vektah.rust.psi.mixin.item.RustItemImplements" extends="vektah.rust.psi.mixin.item.RustItemMixin"}
 
 itemName ::= IDENTIFIER
 

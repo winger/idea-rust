@@ -30,44 +30,11 @@ class RustStructureViewNode extends PsiTreeElementBase<PsiNamedElement> {
     @NotNull
     @Override
     public Collection<StructureViewTreeElement> getChildrenBase() {
-        final PsiElement[] children;
-
-        if (psiElement instanceof RustFile) {
-            children = psiElement.getChildren();
-        } else if (psiElement instanceof RustStructItem) {
-            children = ((RustStructItem) psiElement).getStructBody().getChildren();
-        } else if (psiElement instanceof RustImplItem) {
-            RustImplBlock implBlock = ((RustImplItem) psiElement).getImplBlock();
-
-            if (implBlock == null) {
-                return Collections.emptyList();
-            }
-
-            children = implBlock.getImplBody().getChildren();
-        } else if (psiElement instanceof RustModItem) {
-            List<RustItem> itemList = ((RustModItem) psiElement).getItemList();
-
-            children = itemList.toArray(new RustItem[itemList.size()]);
-        } else {
-            return Collections.emptyList();
-        }
-
-        if (children.length == 0) {
-            return Collections.emptyList();
-        }
-
         ImmutableList.Builder<StructureViewTreeElement> listBuilder = ImmutableList.builder();
 
-        for (PsiElement child : children) {
-            if (child instanceof RustStructItem
-                    || child instanceof RustImplItem
-                    || child instanceof RustModItem
-                    || child instanceof RustStaticItem
-                    || child instanceof RustFnItem
-                    || child instanceof RustStructProperty
-                    || child instanceof RustEnumItem
-                    || child instanceof RustTraitItem) {
-                listBuilder.add(new RustStructureViewNode((PsiNamedElement) child));
+        if (psiElement instanceof RustItem) {
+            for (PsiNamedElement child : ((RustItem) psiElement).getChildrenItems()) {
+                    listBuilder.add(new RustStructureViewNode(child));
             }
         }
 

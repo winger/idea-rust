@@ -8,8 +8,10 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import vektah.rust.psi.RustStructProperty;
-import vektah.rust.psi.RustTypeItem;
 import vektah.rust.psi.impl.RustItemImpl;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * (C) Atlassian 2014
@@ -41,4 +43,6 @@ public abstract class RustStructPropertyMixin extends RustItemImpl implements Ru
     public PsiElement getNameIdentifier() {
         return getLetVariableBind().getItemName();
     }
+
+    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() { return Collections.emptyList();}
 }

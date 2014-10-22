@@ -10,6 +10,9 @@ import org.jetbrains.annotations.Nullable;
 import vektah.rust.psi.RustStructItem;
 import vektah.rust.psi.impl.RustItemImpl;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * (C) Atlassian 2014
  */
@@ -40,4 +43,6 @@ public abstract class RustStructItemMixin extends RustItemImpl implements RustSt
     public PsiElement getNameIdentifier() {
         return getItemName();
     }
+
+    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() { return Collections.emptyList();}
 }

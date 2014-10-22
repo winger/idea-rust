@@ -10,12 +10,20 @@ import org.jetbrains.annotations.Nullable;
 import vektah.rust.psi.RustFnItem;
 import vektah.rust.psi.impl.RustItemImpl;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * (C) Atlassian 2014
  */
 public abstract class RustFnItemMixin extends RustItemImpl implements RustFnItem, PsiNameIdentifierOwner{
     public RustFnItemMixin(ASTNode node) {
         super(node);
+    }
+
+    @Override
+    public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() {
+        return Collections.emptyList();
     }
 
     @Override
