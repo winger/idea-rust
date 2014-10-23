@@ -1,7 +1,9 @@
-/.idea
+/.idea/workspace.xml
+/.idea/tasks.xml
 /out
 /src/java/gen
-*.iml
 .settings
 .project
-gen/
+/gen/
+/src/flex/vektah/rust/*.java
+/src/flex/vektah/rust/*.java~

@@ -40,38 +40,14 @@ public class RustSdkType extends SdkType {
 		return sdkData != null;
 	}
 
-	@Override
+    @Nullable
+    @Override
+    public String getVersionString(String sdkHome) {
+        return RustSdkUtil.testRustSdk(sdkHome).version;
+    }
+
+    @Override
 	public void setupSdkPaths(@NotNull Sdk sdk) {
-		VirtualFile homeDirectory = sdk.getHomeDirectory();
-
-		if (sdk.getSdkType() != this || homeDirectory == null) {
-			return;
-		}
-
-		String path = homeDirectory.getPath();
-
-		RustSdkData sdkData = RustSdkUtil.testRustSdk(path);
-
-		if ( sdkData == null )
-			return;
-
-		final VirtualFile sdkLibRoot = RustSdkUtil.getSdkLibRoot(sdk, sdkData);
-
-		if (sdkLibRoot != null) {
-			sdkLibRoot.refresh(false, false);
-		}
-
-		final SdkModificator sdkModificator = sdk.getSdkModificator();
-
-		ApplicationManager.getApplication().runWriteAction(new Runnable() {
-			public void run() {
-				sdkModificator.addRoot(sdkLibRoot, OrderRootType.CLASSES);
-			}
-		});
-
-		sdkModificator.setVersionString(sdkData.version);
-		sdkModificator.setSdkAdditionalData(sdkData);
-		sdkModificator.commitChanges();
 	}
 
 	@Override

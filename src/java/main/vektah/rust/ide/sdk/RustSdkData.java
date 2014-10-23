@@ -3,19 +3,18 @@ package vektah.rust.ide.sdk;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.projectRoots.SdkAdditionalData;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import vektah.rust.i18n.RustBundle;
 
 public class RustSdkData implements SdkAdditionalData, PersistentStateComponent<RustSdkData> {
 	public String pathRustc;
-	public String pathLibs;
 	public String version;
-	public String hostTriple;
 
 	// For serialization / deserialization
 	private RustSdkData() {}
 
-	public RustSdkData(String pathRustc) {
+	public RustSdkData(@NotNull String pathRustc) {
 		this.pathRustc = pathRustc;
 	}
 
