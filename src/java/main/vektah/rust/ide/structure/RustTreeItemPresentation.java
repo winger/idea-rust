@@ -5,9 +5,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-/**
-* (C) Atlassian 2014
-*/
 class RustTreeItemPresentation implements ItemPresentation {
     public final String name;
     public final Icon icon;

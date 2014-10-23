@@ -10,12 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import vektah.rust.psi.RustItem;
 
-import java.util.Collections;
-import java.util.List;
-
-/**
- * (C) Atlassian 2014
- */
 public abstract class RustItemMixin extends ASTWrapperPsiElement implements RustItem, PsiNamedElement {
     public RustItemMixin(ASTNode node) {
         super(node);

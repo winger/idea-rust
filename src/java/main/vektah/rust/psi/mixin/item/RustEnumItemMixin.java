@@ -10,12 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import vektah.rust.psi.RustEnumItem;
 import vektah.rust.psi.impl.RustItemImpl;
 
-import java.util.Collections;
-import java.util.List;
-
-/**
- * (C) Atlassian 2014
- */
 public abstract class RustEnumItemMixin extends RustItemImpl implements RustEnumItem, PsiNameIdentifierOwner {
     public RustEnumItemMixin(ASTNode node) {
         super(node);

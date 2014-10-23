@@ -10,12 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import vektah.rust.psi.RustStaticItem;
 import vektah.rust.psi.impl.RustItemImpl;
 
-import java.util.Collections;
-import java.util.List;
-
-/**
- * (C) Atlassian 2014
- */
 public abstract class RustStaticItemMixin extends RustItemImpl implements RustStaticItem, PsiNameIdentifierOwner {
     public RustStaticItemMixin(ASTNode node) {
         super(node);

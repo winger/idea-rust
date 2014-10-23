@@ -7,12 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import vektah.rust.psi.RustTraitItem;
 import vektah.rust.psi.impl.RustItemImpl;
 
-import java.util.Collections;
-import java.util.List;
-
-/**
- * (C) Atlassian 2014
- */
 public abstract class RustTraitItemMixin extends RustItemImpl implements RustTraitItem, PsiNameIdentifierOwner{
     public RustTraitItemMixin(ASTNode node) {
         super(node);

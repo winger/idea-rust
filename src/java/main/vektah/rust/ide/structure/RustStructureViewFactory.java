@@ -9,9 +9,6 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * (C) Atlassian 2014
- */
 public class RustStructureViewFactory implements PsiStructureViewFactory {
     @Nullable
     @Override

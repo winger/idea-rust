@@ -14,9 +14,6 @@ import vektah.rust.psi.impl.RustItemImpl;
 
 import java.util.List;
 
-/**
- * (C) Atlassian 2014
- */
 public abstract class RustModItemMixin extends RustItemImpl implements RustModItem, PsiNameIdentifierOwner, HasStructureViewChildren{
     public RustModItemMixin(ASTNode node) {
         super(node);
