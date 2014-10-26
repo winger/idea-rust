@@ -32,7 +32,7 @@ public class RustIcons {
         } else if (psiElement instanceof RustStructItem) {
             return ICON_STRUCT;
         } else if (psiElement instanceof RustFnItem
-                && psiElement.getParent() instanceof RustImplBlock) {
+                && psiElement.getParent() instanceof RustImplBody) {
             return ICON_METHOD;
         } else if (psiElement instanceof RustFnItem) {
             return ICON_FUNCTION;
