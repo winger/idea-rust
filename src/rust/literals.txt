@@ -4,11 +4,13 @@ Rust File
       RustVisibilityImpl(VISIBILITY)
         PsiElement(pub)('pub')
       PsiElement(fn)('fn')
-      PsiElement(IDENTIFIER)('main')
-      PsiElement(()('(')
-      RustLetArgsImpl(LET_ARGS)
-        <empty list>
-      PsiElement())(')')
+      RustItemNameImpl(ITEM_NAME)
+        PsiElement(IDENTIFIER)('main')
+      RustFnArgsImpl(FN_ARGS)
+        PsiElement(()('(')
+        RustLetArgsImpl(LET_ARGS)
+          <empty list>
+        PsiElement())(')')
     RustStatementBlockImpl(STATEMENT_BLOCK)
       PsiElement({)('{')
       RustExprValueImpl(EXPR_VALUE)
