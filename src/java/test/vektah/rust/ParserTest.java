@@ -25,7 +25,7 @@ public class ParserTest extends ParsingTestCase {
 
 	@Override
 	protected String getTestDataPath() {
-		return "/home/adam/projects/idea-rust/src/rust/";
+		return "./src/rust";
 	}
 
 	@Override
