@@ -5,6 +5,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.testFramework.ParsingTestCase;
+import org.junit.Ignore;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.io.IOException;
  * There doesn't appear to be an easy way to do parametrized tests with junit 3 and the intellij test suites all
  * seem to extend TestCase. Woe is me.
  */
+@Ignore
 public class RustSourceTest extends ParsingTestCase {
 	public RustSourceTest() {
 		super("", "rs", new RustParserDefinition());
@@ -22,7 +24,7 @@ public class RustSourceTest extends ParsingTestCase {
 
 	@Override
 	protected String getTestDataPath() {
-		return "/home/adam/projects/rust/src/";
+		return System.getProperty("rust.source");
 	}
 
 	public void testCompileTest() { doAllTests("compiletest"); }
