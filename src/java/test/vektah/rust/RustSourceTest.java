@@ -15,6 +15,8 @@ import java.io.IOException;
  *
  * There doesn't appear to be an easy way to do parametrized tests with junit 3 and the intellij test suites all
  * seem to extend TestCase. Woe is me.
+ *
+ * TODO: These test cases need to be fixed at some point - these are highlighting some syntax issues
  */
 @Ignore
 public class RustSourceTest extends ParsingTestCase {
