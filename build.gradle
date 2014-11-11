@@ -6,24 +6,23 @@ targetCompatibility = 1.6
 def intellij_libs = fileTree(dir: libraries_intellij + "lib/", include: '*.jar')
 
 dependencies {
-	println 'Compiling classes, using intelliJ at ' + intellij_libs
-        compile files('src/flex/JFlex.jar')
-	compile intellij_libs
+    println 'Compiling classes, using intelliJ at ' + intellij_libs
+    compile intellij_libs
 }
 
 sourceSets {
-	main {
-		java {
-			srcDir 'src/java/main'
-			srcDir 'gen'
-			srcDir 'src/flex'
-		}
-		resources {
-			srcDir 'src/java/main/'
-			include '**/*.properties'
-			include '**/*.png'
-		}
-	}
+    main {
+        java {
+            srcDir 'src/java/main'
+            srcDir 'gen'
+            srcDir 'src/flex'
+        }
+        resources {
+            srcDir 'src/java/main/'
+            include '**/*.properties'
+            include '**/*.png'
+        }
+    }
     test {
         java {
             srcDir 'src/java/test'
@@ -39,13 +38,14 @@ sourceSets {
 // Build Lexer
 task generateLexer(type: JavaExec) {
     main = "JFlex.Main"
-    classpath = intellij_libs.plus(files(file("src/flex/JFlex.jar")))
+    classpath = files(file("src/flex/JFlex.jar"))
     args = ["-sliceandcharat", "--skel", "src/flex/idea-flex.skeleton", "src/flex/vektah/rust/RustLexer.flex"]
 }
 
 // Build grammar
-task grammar(type: JavaExec, dependsOn:generateLexer) {
+task grammar(type: JavaExec, dependsOn: generateLexer) {
     main = "org.intellij.grammar.Main"
+    intellij_libs.each { println(it) }
     classpath = intellij_libs.plus(files(file("grammar-kit.jar")))
     args = ["gen", "src${File.separator}bnf${File.separator}RustGrammar.bnf"]
 }
@@ -60,7 +60,9 @@ tasks.withType(Test) {
 
 jar {
     def buildNumber = System.env.BUILD_NUMBER?.toInteger()
-	from ("META-INF") { include 'plugin.xml' into "META-INF" filter {String line -> buildNumber != null ? line.replaceAll("<version>(.+)</version>","<version>\$1-${String.format("%08d",buildNumber)}</version>") : line} }
+    from("META-INF") {
+        include 'plugin.xml' into "META-INF" filter { String line -> buildNumber != null ? line.replaceAll("<version>(.+)</version>", "<version>\$1-${String.format("%08d", buildNumber)}</version>") : line }
+    }
 }
 
 task copyIntoIdea(dependsOn: build, type: Copy) {
@@ -69,38 +71,38 @@ task copyIntoIdea(dependsOn: build, type: Copy) {
 }
 
 task runIdea(dependsOn: copyIntoIdea) << {
-    ant.java(classname:"com.intellij.idea.Main", fork:true, spawn:true, classpath:intellij_libs.plus(files("$System.env.JAVA_HOME/lib/tools.jar")).asPath) {
-        sysproperty(key:"idea.config.path",value:"build/run/config")
-        sysproperty(key:"idea.system.path",value:"build/run/system")
-        sysproperty(key:"idea.plugins.path",value:"build/run/plugins")
-        sysproperty(key:"idea.platform.prefix",value:"Idea")
-        sysproperty(key:"idea.launcher.port",value:"8998")
-        sysproperty(key:"idea.launcher.bin.path",value:libraries_intellij + "bin/")
+    ant.java(classname: "com.intellij.idea.Main", fork: true, spawn: true, classpath: intellij_libs.plus(files("$System.env.JAVA_HOME/lib/tools.jar")).asPath) {
+        sysproperty(key: "idea.config.path", value: "build/run/config")
+        sysproperty(key: "idea.system.path", value: "build/run/system")
+        sysproperty(key: "idea.plugins.path", value: "build/run/plugins")
+        sysproperty(key: "idea.platform.prefix", value: "Idea")
+        sysproperty(key: "idea.launcher.port", value: "8998")
+        sysproperty(key: "idea.launcher.bin.path", value: libraries_intellij + "bin/")
     }
 }
 
 task debugIdea(dependsOn: copyIntoIdea) << {
-    ant.java(classname:"com.intellij.idea.Main", fork:true, spawn: true, classpath:intellij_libs.plus(files("$System.env.JAVA_HOME/lib/tools.jar")).asPath) {
-        sysproperty(key:"idea.config.path",value:"build/run/config")
-        sysproperty(key:"idea.system.path",value:"build/run/system")
-        sysproperty(key:"idea.plugins.path",value:"build/run/plugins")
-        sysproperty(key:"idea.platform.prefix",value:"Idea")
-        sysproperty(key:"idea.launcher.port",value:"8998")
-        sysproperty(key:"idea.launcher.bin.path",value:libraries_intellij + "bin/")
-        jvmarg(value:'-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005')
+    ant.java(classname: "com.intellij.idea.Main", fork: true, spawn: true, classpath: intellij_libs.plus(files("$System.env.JAVA_HOME/lib/tools.jar")).asPath) {
+        sysproperty(key: "idea.config.path", value: "build/run/config")
+        sysproperty(key: "idea.system.path", value: "build/run/system")
+        sysproperty(key: "idea.plugins.path", value: "build/run/plugins")
+        sysproperty(key: "idea.platform.prefix", value: "Idea")
+        sysproperty(key: "idea.launcher.port", value: "8998")
+        sysproperty(key: "idea.launcher.bin.path", value: libraries_intellij + "bin/")
+        jvmarg(value: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005')
     }
 }
 
 //For CI / publishing
-task copyPluginVersion(type:Copy) {
+task copyPluginVersion(type: Copy) {
     def buildNumber = System.env.BUILD_NUMBER?.toInteger()
-    into ("/var/www/html")
-    from ("META-INF/plugin.xml")
-    filter {String line -> buildNumber != null ? line.replaceAll("<version>(.+)</version>","<version>\$1-${String.format("%08d",buildNumber)}</version>") : line}
+    into("/var/www/html")
+    from("META-INF/plugin.xml")
+    filter { String line -> buildNumber != null ? line.replaceAll("<version>(.+)</version>", "<version>\$1-${String.format("%08d", buildNumber)}</version>") : line }
 }
 
-task copyArtifact(type:Copy, dependsOn: build) {
-    into ("/var/www/html")
+task copyArtifact(type: Copy, dependsOn: build) {
+    into("/var/www/html")
     from jar.archivePath
 }
 
