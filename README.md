@@ -22,9 +22,15 @@ If you want to live on the bleeding edge (or help out!) you will need:
  - Gradle
 
 ### Building
- * Add a properties.gradle file to the root directory of the project, with the following properties
+ * Add a gradle.properties file to the root directory of the project, with the following properties
     * libraries_intellij : the root directory of your intelliJ installation
     * rust_source : the root directory of the rust project (required to run tests)
+    
+    For example
+    ```
+    libraries_intellij=C:\\dev\\bin\\intellij-13.1.5\\
+    rust_source=C:\\dev\\projects\\rust\\src\\
+    ```
  * Run ```gradle grammar``` to generate the grammar and lexer. 
  * Run ```gradle runIdea``` or ```gradle debugIdea``` to start the plugin.
  
