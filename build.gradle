@@ -45,7 +45,6 @@ task generateLexer(type: JavaExec) {
 // Build grammar
 task grammar(type: JavaExec, dependsOn: generateLexer) {
     main = "org.intellij.grammar.Main"
-    intellij_libs.each { println(it) }
     classpath = intellij_libs.plus(files(file("grammar-kit.jar")))
     args = ["gen", "src${File.separator}bnf${File.separator}RustGrammar.bnf"]
 }
