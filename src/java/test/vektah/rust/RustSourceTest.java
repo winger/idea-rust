@@ -22,7 +22,7 @@ public class RustSourceTest extends ParsingTestCase {
 
 	@Override
 	protected String getTestDataPath() {
-		return "/home/adam/projects/rust/src/";
+		return "./../rust/src/";
 	}
 
 	public void testCompileTest() { doAllTests("compiletest"); }
