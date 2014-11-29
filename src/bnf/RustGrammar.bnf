@@ -168,7 +168,7 @@ expr_bitwise_or ::= expr '|' expr
 
 // Need to break out of this expression parser before recursing here, otherwise the priorities will be off
 expr_index ::= expr '[' index_expr ']'
-index_expr ::= expr
+index_expr ::= expr '..'?
 expr_field ::= expr '.' expr
 
 expr_borrow ::= '&' lifetime? 'mut'? expr
