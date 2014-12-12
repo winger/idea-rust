@@ -21,6 +21,7 @@ If you want to live on the bleeding edge (or help out!) you will need:
  - Plugin Devkit (plugin)
  - Grammar-Kit (plugin)
  - JFlex Support (plugin)
+ - UI Designer (plugin)
 
 ### Building
  - Open up the project file included in the repo
