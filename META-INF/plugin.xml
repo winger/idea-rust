@@ -63,7 +63,9 @@
   </project-components>
 
   <actions>
-    <!-- Add your actions here -->
+      <action id="Rust.NewFile" class="vektah.rust.actions.NewRustFileAction">
+          <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewGroup1"/>
+      </action>
   </actions>
 
 </idea-plugin>
