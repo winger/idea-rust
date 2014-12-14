@@ -49,6 +49,7 @@
 
       <programRunner implementation="vektah.rust.ide.runner.RustRunner"/>
       <configurationType implementation="vektah.rust.ide.runner.RustConfigurationType"/>
+      <configurationType implementation="vektah.rust.ide.runner.cargo.CargoConfigurationType"/>
 
       <projectService serviceInterface="com.intellij.openapi.compiler.CompilerManager" serviceImplementation="vektah.rust.ide.builder.RustCompilerManager" overrides="true"/>
   </extensions>

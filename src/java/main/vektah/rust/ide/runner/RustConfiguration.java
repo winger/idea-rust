@@ -38,7 +38,7 @@ public class RustConfiguration extends ModuleBasedConfiguration<RustModuleBasedC
 	private boolean passParentEnvs;
 	public String mainFile;
 
-	public RustConfiguration(String name, Project project, RustConfigurationType configurationType) {
+	public RustConfiguration(String name, Project project, ConfigurationType configurationType) {
 		super(name, new RustModuleBasedConfiguration(project), configurationType.getConfigurationFactories()[0]);
 	}
 
