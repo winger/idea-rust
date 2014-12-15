@@ -14,6 +14,7 @@ pub fn main() {
     let b: bool = true;
     let c: bool = false;
     let _numbers = [1, 2, 3];
+    let t = _numbers[a..];
 
     // As a naked if
     if b || c {
