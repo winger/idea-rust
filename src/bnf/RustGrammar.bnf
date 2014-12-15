@@ -37,6 +37,7 @@
 		KW_IMPL = "impl"
 		KW_IN = "in"
 		KW_LET = "let"
+		KW_CONST = "const"
 		KW_LOOP = "loop"
 		KW_MATCH = "match"
 		KW_MOD = "mod"
@@ -115,6 +116,7 @@ item ::= mod_item
 	| struct_item
 	| enum_item
 	| static_item
+	| const_item
 	| trait_item
 	| impl_item
 	| extern_item {extends="vektah.rust.psi.mixin.item.RustItemMixin" implements="com.intellij.psi.PsiNamedElement"}
@@ -276,12 +278,12 @@ tuple_match_pattern ::= match_label? 'box'? '&'? type? '(' tuple_match_pattern_a
 private tuple_match_pattern_argument ::= match_pattern | '..'
 
 vector_match_pattern ::= 'box'? 'ref'? '&'? '[' [vector_match_identifier (',' vector_match_identifier)* ] ']'
-private vector_match_identifier ::= '..' IDENTIFIER? | match_pattern
+private vector_match_identifier ::= IDENTIFIER? '..' | match_pattern
 
 struct_match_pattern ::= 'box'? 'ref'? type '{' (struct_match_pattern_argument (',' struct_match_pattern_argument)* [',' '..'] | '..') '}'
 private struct_match_pattern_argument ::= match_identifier [':' match_pattern]
 
-range_match_pattern ::= match_label? (literal | match_identifier) '..' (literal | match_identifier)
+range_match_pattern ::= match_label? (literal | match_identifier) '...' (literal | match_identifier)
 
 basic_match_pattern ::= match_label? ('&'? 'box'? literal | type | match_identifier )
 match_identifier ::= 'box'? ref? 'ref'? 'mut'? IDENTIFIER
@@ -469,6 +471,9 @@ private mod_contents ::= ( use
 
 // STATIC
 static_item ::= (comment | attribute)* visibility? 'static' 'mut'? itemName ':' type '=' expr ';' {pin=3 mixin="vektah.rust.psi.mixin.item.RustStaticItemMixin"}
+
+// CONST
+const_item ::= (comment | attribute)* visibility? 'const' itemName ':' type '=' expr ';' {pin=3 mixin="vektah.rust.psi.mixin.item.RustConstItemMixin"}
 
 
 // TYPE
