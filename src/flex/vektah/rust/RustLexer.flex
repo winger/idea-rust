@@ -50,6 +50,7 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 	// Keywords
 	"as"                                            { yybegin(YYINITIAL); return RustTokens.KW_AS; }
 	"break"                                         { yybegin(YYINITIAL); return RustTokens.KW_BREAK; }
+	"const"                                         { yybegin(YYINITIAL); return RustTokens.KW_CONST; }
 	"crate"                                         { yybegin(YYINITIAL); return RustTokens.KW_CRATE; }
 	"else"                                          { yybegin(YYINITIAL); return RustTokens.KW_ELSE; }
 	"enum"                                          { yybegin(YYINITIAL); return RustTokens.KW_ENUM; }

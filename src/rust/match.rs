@@ -31,7 +31,7 @@ pub fn main() {
     let a = 5;
     let message = match a {
       0 | 1  => "not many",
-      2 .. 9 => "a few",
+      2 ... 9 => "a few",
       _      => "lots"
     };
 
@@ -49,7 +49,7 @@ pub fn main() {
 fn is_symmetric(list: &[uint]) -> bool {
     match list {
         [] | [_]                   => true,
-        [x, ..inside, y] if x == y => is_symmetric(inside),
+        [x, inside.. , y] if x == y => is_symmetric(inside),
         _                          => false
     }
 }
