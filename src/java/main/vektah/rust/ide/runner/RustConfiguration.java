@@ -11,6 +11,7 @@ import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction;
 import com.intellij.execution.util.ProgramParametersUtil;
+import com.intellij.openapi.compiler.CompilerPaths;
 import com.intellij.openapi.components.PathMacroManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -86,6 +87,21 @@ public class RustConfiguration extends ModuleBasedConfiguration<RustModuleBasedC
 		state.setConsoleBuilder(TextConsoleBuilderFactory.getInstance().createBuilder(project));
 		state.addConsoleFilters(new RustConsoleFilter(project, project.getBasePath()));
 		return state;
+	}
+
+	public String getExecPath() throws Exception {
+		String outputPath = CompilerPaths.getModuleOutputPath(getModules()[0], false);
+		if (outputPath == null) {
+			throw new Exception("Could not retrieve the output directory");
+		}
+
+		String execName = outputPath.concat("/").concat(getName());
+
+		if (execName.endsWith(".rs")) {
+			execName = execName.substring(0, execName.length() - 3);
+		}
+
+		return execName;
 	}
 
 	@Override
