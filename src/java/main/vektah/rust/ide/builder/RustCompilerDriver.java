@@ -32,7 +32,7 @@ import com.intellij.packaging.impl.compiler.ArtifactCompilerUtil;
 import com.intellij.packaging.impl.compiler.ArtifactsCompiler;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.util.ThrowableRunnable;
-import com.intellij.util.containers.*;
+import com.intellij.util.containers.MultiMap;
 import com.intellij.util.messages.MessageBus;
 import gnu.trove.THashSet;
 import org.jetbrains.annotations.NotNull;
@@ -44,8 +44,6 @@ import org.jetbrains.jps.api.RequestFuture;
 import javax.swing.*;
 import java.io.File;
 import java.util.*;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
 public class RustCompilerDriver {
@@ -285,7 +283,7 @@ public class RustCompilerDriver {
 					if (idx <= 0) {
 						continue;
 					}
-					String fileName = line.substring(0, idx);
+					String fileName = line.substring(0, idx).replace('\\', '/');
 					VirtualFile file = files.get(fileName);
 					if (file == null) {
 						file = myProject.getBaseDir().findFileByRelativePath(fileName);

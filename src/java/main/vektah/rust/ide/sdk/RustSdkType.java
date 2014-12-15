@@ -1,10 +1,8 @@
 package vektah.rust.ide.sdk;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.util.SystemInfo;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.xmlb.XmlSerializer;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +11,7 @@ import vektah.rust.RustIcons;
 import vektah.rust.i18n.RustBundle;
 
 import javax.swing.*;
+import java.io.File;
 
 public class RustSdkType extends SdkType {
 	private RustSdkData sdkData;
@@ -30,6 +29,18 @@ public class RustSdkType extends SdkType {
 	public String suggestHomePath() {
 		if (SystemInfo.isMac || SystemInfo.isLinux) {
 			return "/usr/local/bin";
+		}
+		else if (SystemInfo.isWindows) {
+			String programFiles = System.getenv("ProgramFiles");
+			File rustFolder = new File(programFiles, "Rust");
+			if (!rustFolder.exists()) rustFolder = new File(programFiles + " (x86)", "Rust");
+
+			try {
+				return new File(rustFolder, "bin").getCanonicalPath();
+			}
+			catch (Exception e) {
+				// nobody cares
+			}
 		}
 		return null;
 	}
