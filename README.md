@@ -17,14 +17,27 @@ Development
 
 ### Prerequisites
 If you want to live on the bleeding edge (or help out!) you will need:
- - Intellij
- - Plugin Devkit (plugin)
- - Grammar-Kit (plugin)
- - JFlex Support (plugin)
+
+ - Intellij 13.1.5
+ - Gradle
 
 ### Building
- - Open up the project file included in the repo
- - Navigate to src/flex/vektah/rust/RustLexer.flex, Right Click -> Run Jflex generator
- - Remove the RustLexerAdapter - jflex outputs in
- - Navigate to src/bnf/RustGrammar.bnf, Right Click -> Generate Parser Code
- - Run 'idea-rust'
+ * Add a gradle.properties file to the root directory of the project, with the following properties
+    * libraries_intellij : the root directory of your intelliJ installation
+    * rust_source : the root directory of the rust project (required to run tests)
+    
+    For example
+    ```
+    libraries_intellij=C:\\dev\\bin\\intellij-13.1.5\\
+    rust_source=C:\\dev\\projects\\rust\\src\\
+    ```
+ * Run ```gradle grammar``` to generate the grammar and lexer. 
+ * Run ```gradle runIdea``` or ```gradle debugIdea``` to start the plugin.
+ 
+### Contributing
+We use the following IntelliJ plugins to develop this plugin:
+ - Plugin Devkit
+ - Grammar-Kit
+ - JFlex Support
+ - Gradle plugin
+ 
