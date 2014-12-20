@@ -363,17 +363,14 @@ public class RustBuildManager implements com.intellij.openapi.components.Applica
 									processHandler.startNotify();
 									final boolean terminated = processHandler.waitFor();
 									if (terminated) {
-										final int exitValue = processHandler.getProcess().exitValue();
-										if (exitValue != 0) {
-											final String msg;
-											if (stdErrOutput.length() > 0) {
-												msg = stdErrOutput.toString();
-											}
-											else {
-												msg = "Abnormal build process termination: unknown error";
-											}
-											handler.handleFailure(sessionId, CmdlineProtoUtil.createFailure(msg, null));
+										final String msg;
+										if (stdErrOutput.length() > 0) {
+											msg = stdErrOutput.toString();
 										}
+										else {
+											msg = "Abnormal build process termination: unknown error";
+										}
+										handler.handleFailure(sessionId, CmdlineProtoUtil.createFailure(msg, null));
 									}
 									else {
 										handler.handleFailure(sessionId, CmdlineProtoUtil.createFailure("Disconnected from build process", null));
