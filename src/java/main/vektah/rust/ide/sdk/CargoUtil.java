@@ -1,6 +1,8 @@
 package vektah.rust.ide.sdk;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.Nullable;
 
 public class CargoUtil {
 
@@ -8,8 +10,18 @@ public class CargoUtil {
         return "cargo";
     }
 
+    @Nullable
+    public static VirtualFile findTomlOf(Project project) {
+        return findTomlIn(project.getBaseDir());
+    }
+
+    @Nullable
+    private static VirtualFile findTomlIn(VirtualFile dir) {
+        return dir.findChild("Cargo.toml");
+    }
+
     public static String findOutCrateNameOf(VirtualFile contentRoot) throws Exception {
-        VirtualFile toml = contentRoot.findChild("Cargo.toml");
+        VirtualFile toml = findTomlIn(contentRoot);
         if (toml == null) {
             throw new Exception("Can't find Cargo.toml file");
         }

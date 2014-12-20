@@ -434,11 +434,8 @@ public class RustBuildManager implements com.intellij.openapi.components.Applica
 		final GeneralCommandLine cmdLine = new GeneralCommandLine();
 
 		final RunConfiguration runConfig = scope.getUserData(CompileStepBeforeRun.RUN_CONFIGURATION);
-		if (runConfig == null) {
-			throw new ExecutionException("'Run Configuration' not found. If you're trying to compile without running, that's not yet supported");
-		}
 
-		if (runConfig instanceof CargoConfiguration) {
+		if (itsOkToBuildWithCargo(runConfig, project)) {
 			// build with cargo
 
 			cmdLine.setWorkDirectory(new File(project.getBasePath()));
@@ -447,6 +444,10 @@ public class RustBuildManager implements com.intellij.openapi.components.Applica
 		}
 		else {
 			// build with rustc
+
+			if (runConfig == null) {
+				throw new ExecutionException("'Run Configuration' not found. If you're trying to compile without running, that's not yet supported");
+			}
 
 			final RustConfiguration rustConfiguration = (RustConfiguration) runConfig;
 			final CompilerModuleExtension compilerModuleExtension = CompilerModuleExtension.getInstance(rustConfiguration.getModules()[0]);
@@ -477,6 +478,12 @@ public class RustBuildManager implements com.intellij.openapi.components.Applica
 				return true;
 			}
 		};
+	}
+
+	private static boolean itsOkToBuildWithCargo(RunConfiguration runConfig, Project project) {
+		return
+			(runConfig == null && CargoUtil.findTomlOf(project) != null) ||
+			(runConfig instanceof CargoConfiguration);
 	}
 
 	@Override
