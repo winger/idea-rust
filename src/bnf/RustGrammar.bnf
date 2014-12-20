@@ -324,7 +324,9 @@ type ::= type_basic | type_vector | type_tuple | type_closure | type_function | 
 private type_modifiers ::= ( ref | lifetime | '*' | 'mut' | '*' 'mut' | '@' | '~' | '$' | 'box')*
 type_basic ::= type_modifiers type_path
 type_vector ::= type_modifiers '[' type [',' '..' expr] ']'
-type_tuple ::= ref? '(' 'ref'? type (',' 'ref'? type)* ','? ')'
+type_tuple ::= type_modifiers '(' tupled_type (',' tupled_type)* ','? ')'
+private tupled_type ::= 'ref'? type ['+' (kind | lifetime)]
+private kind ::= IDENTIFIER
 type_function ::= ref? 'unsafe'? ['extern' STRING_LIT?] 'fn' trait_bounds? fn_prototype_args ['->' return_type]
 fn_prototype_args ::= '(' prototype_args ')'
 type_closure ::= ['<'lifetime'>'] closure_prototype_args [':' lifetime] ['->' return_type]
@@ -339,8 +341,7 @@ lifetime ::= "'" (IDENTIFIER | 'static')
 
 // GENERIC PARAM LIST eg function<A>(...)
 generic_params ::= '<' generic_param (',' generic_param)* '>'
-private generic_param ::= lifetime | IDENTIFIER  [(':' | '=') (type | region_bound) ('+' (type | region_bound))* ]
-region_bound ::= "'" 'static'
+private generic_param ::= (lifetime [':' lifetime]) | IDENTIFIER  [(':' | '=') (type | lifetime) ('+' (type | lifetime))* ]
 
 // GENERIC TYPES eg Option<Foo>
 generic ::= '<' (generic_without_lifetime | generic_with_lifetime) '>'
@@ -415,6 +416,7 @@ trait_implements ::= ':' type ('+' type)* {recoverWhile="not_open_brace"}
 trait_function_declaration ::= (comment | attribute)* visibility? 'unsafe'? 'fn' IDENTIFIER generic_params? '(' prototype_args ','? '...'? ')' ['->' return_type] {pin=4 recoverWhile="not_semicolon_or_open_brace" }
 
 trait_bounds ::= ':' (IDENTIFIER | region_bound)?
+region_bound ::= "'" 'static' //?
 
 
 // EXTERNALS
