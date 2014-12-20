@@ -29,7 +29,6 @@ import com.intellij.openapi.project.ProjectCoreUtil;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.CompilerModuleExtension;
-import com.intellij.openapi.roots.CompilerProjectExtension;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Key;
@@ -54,7 +53,6 @@ import org.jetbrains.jps.api.CmdlineProtoUtil;
 import org.jetbrains.jps.api.CmdlineRemoteProto;
 import org.jetbrains.jps.api.RequestFuture;
 import vektah.rust.ide.runner.RustConfiguration;
-import vektah.rust.ide.sdk.RustSdkData;
 import vektah.rust.ide.sdk.RustSdkType;
 import vektah.rust.ide.sdk.RustSdkUtil;
 
@@ -363,17 +361,14 @@ public class RustBuildManager implements com.intellij.openapi.components.Applica
 									processHandler.startNotify();
 									final boolean terminated = processHandler.waitFor();
 									if (terminated) {
-										final int exitValue = processHandler.getProcess().exitValue();
-										if (exitValue != 0) {
-											final String msg;
-											if (stdErrOutput.length() > 0) {
-												msg = stdErrOutput.toString();
-											}
-											else {
-												msg = "Abnormal build process termination: unknown error";
-											}
-											handler.handleFailure(sessionId, CmdlineProtoUtil.createFailure(msg, null));
+										final String msg;
+										if (stdErrOutput.length() > 0) {
+											msg = stdErrOutput.toString();
 										}
+										else {
+											msg = "Abnormal build process termination: unknown error";
+										}
+										handler.handleFailure(sessionId, CmdlineProtoUtil.createFailure(msg, null));
 									}
 									else {
 										handler.handleFailure(sessionId, CmdlineProtoUtil.createFailure("Disconnected from build process", null));
