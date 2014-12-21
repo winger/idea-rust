@@ -22,7 +22,8 @@ public class ParserTest extends ParsingTestCase {
 	public void testimpl() { doTest(true); }
 	public void teststatic() { doTest(true); }
 	public void testmacro_call() { doTest(true); }
-	public void testconst() {doTest(true);}
+	public void testconst() { doTest(true); }
+	public void testlifetime() { doTest(true); }
 
 	@Override
 	protected String getTestDataPath() {
