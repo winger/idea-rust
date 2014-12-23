@@ -279,14 +279,14 @@ public class RustCompilerDriver {
 					if (Character.isWhitespace(line.charAt(0))) {
 						continue;
 					}
-					int idx = line.indexOf(':');
+					int idx = findOutFileNameEndIdx(line);
 					if (idx <= 0) {
 						continue;
 					}
 					String fileName = line.substring(0, idx).replace('\\', '/');
 					VirtualFile file = files.get(fileName);
 					if (file == null) {
-						file = myProject.getBaseDir().findFileByRelativePath(fileName);
+						file = findFileIn(myProject.getBaseDir(), fileName);
 						if (file != null) {
 							files.put(fileName, file);
 						}
@@ -326,6 +326,19 @@ public class RustCompilerDriver {
 					} catch (Exception ex) {
 					}
 				}
+			}
+
+			private int findOutFileNameEndIdx(String line) {
+				boolean windowsAbsolutePath = line.substring(1, 3).equals(":\\");
+				return line.indexOf(':', windowsAbsolutePath ? 2 : 0);
+			}
+
+			private VirtualFile findFileIn(VirtualFile baseDir, String fileName) {
+				String basePath = baseDir.getCanonicalPath();
+				if (fileName.startsWith(basePath)) { // it can be absolute
+					fileName = fileName.substring(basePath.length());
+				}
+				return baseDir.findFileByRelativePath(fileName);
 			}
 
 			@Override
