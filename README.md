@@ -33,6 +33,7 @@ If you want to live on the bleeding edge (or help out!) you will need:
     ```
  * Run ```gradle grammar``` to generate the grammar and lexer. 
  * Run ```gradle runIdea``` or ```gradle debugIdea``` to start the plugin.
+   Please note that ```$JAVA_HOME``` has to be set and point to a valid jdk otherwise idea will be unable to find tools.jar.
  
 ### Contributing
 We use the following IntelliJ plugins to develop this plugin:
