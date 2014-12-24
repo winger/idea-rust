@@ -53,6 +53,8 @@ import org.jetbrains.jps.api.CmdlineProtoUtil;
 import org.jetbrains.jps.api.CmdlineRemoteProto;
 import org.jetbrains.jps.api.RequestFuture;
 import vektah.rust.ide.runner.RustConfiguration;
+import vektah.rust.ide.runner.cargo.CargoConfiguration;
+import vektah.rust.ide.sdk.CargoUtil;
 import vektah.rust.ide.sdk.RustSdkType;
 import vektah.rust.ide.sdk.RustSdkUtil;
 
@@ -429,28 +431,41 @@ public class RustBuildManager implements com.intellij.openapi.components.Applica
 		final GeneralCommandLine cmdLine = new GeneralCommandLine();
 
 		final RunConfiguration runConfig = scope.getUserData(CompileStepBeforeRun.RUN_CONFIGURATION);
-		if (runConfig == null) {
-			throw new ExecutionException("'Run Configuration' not found. If you're trying to compile without running, that's not yet supported");
-		}
-		final RustConfiguration rustConfiguration = (RustConfiguration) runConfig;
-		final CompilerModuleExtension compilerModuleExtension = CompilerModuleExtension.getInstance(rustConfiguration.getModules()[0]);
-		if (compilerModuleExtension == null) {
-			throw new ExecutionException("Cannot find compiler module extension from module");
-		}
 
-        final String outputPathUrl = CompilerPaths.getModuleOutputPath(rustConfiguration.getModules()[0], false);
+		if (itsOkToBuildWithCargo(runConfig, project)) {
+			// build with cargo
 
-		File outputPathFile = new File(outputPathUrl);
-		if (!outputPathFile.exists()) {
-			if (!outputPathFile.mkdirs()) {
-				throw new ExecutionException("Cannot create output path '" + outputPathUrl + "'");
+			cmdLine.setWorkDirectory(new File(project.getBasePath()));
+			cmdLine.setExePath(CargoUtil.findCargoPath());
+			cmdLine.addParameter("build");
+		}
+		else {
+			// build with rustc
+
+			if (runConfig == null) {
+				throw new ExecutionException("'Run Configuration' not found. If you're trying to compile without running, that's not yet supported");
 			}
-		}
 
-		cmdLine.setWorkDirectory(new File(project.getBasePath()));
-		cmdLine.setExePath(RustSdkUtil.testRustSdk(defaultSdk.getHomePath()).pathRustc);
-		cmdLine.addParameter(rustConfiguration.mainFile);
-		cmdLine.addParameters("-o", outputPathUrl.concat("/").concat(rustConfiguration.getName()));
+			final RustConfiguration rustConfiguration = (RustConfiguration) runConfig;
+			final CompilerModuleExtension compilerModuleExtension = CompilerModuleExtension.getInstance(rustConfiguration.getModules()[0]);
+			if (compilerModuleExtension == null) {
+				throw new ExecutionException("Cannot find compiler module extension from module");
+			}
+
+			final String outputPathUrl = CompilerPaths.getModuleOutputPath(rustConfiguration.getModules()[0], false);
+
+			File outputPathFile = new File(outputPathUrl);
+			if (!outputPathFile.exists()) {
+				if (!outputPathFile.mkdirs()) {
+					throw new ExecutionException("Cannot create output path '" + outputPathUrl + "'");
+				}
+			}
+
+			cmdLine.setWorkDirectory(new File(project.getBasePath()));
+			cmdLine.setExePath(RustSdkUtil.testRustSdk(defaultSdk.getHomePath()).pathRustc);
+			cmdLine.addParameter(rustConfiguration.mainFile);
+			cmdLine.addParameters("-o", outputPathUrl.concat("/").concat(rustConfiguration.getName()));
+		}
 
 		final Process process = cmdLine.createProcess();
 
@@ -460,6 +475,12 @@ public class RustBuildManager implements com.intellij.openapi.components.Applica
 				return true;
 			}
 		};
+	}
+
+	private static boolean itsOkToBuildWithCargo(RunConfiguration runConfig, Project project) {
+		return
+			(runConfig == null && CargoUtil.findTomlOf(project) != null) ||
+			(runConfig instanceof CargoConfiguration);
 	}
 
 	@Override

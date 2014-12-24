@@ -13,6 +13,7 @@ public class RustIcons {
 	public static final Icon ICON_RUST_24 = IconLoader.getIcon("/vektah/rust/icons/logo24.png");
 	public static final Icon ICON_RUST_32 = IconLoader.getIcon("/vektah/rust/icons/logo32.png");
 	public static final Icon ICON_RUST_48 = IconLoader.getIcon("/vektah/rust/icons/logo48.png");
+	public static final Icon ICON_CARGO_16 = IconLoader.getIcon("/vektah/rust/icons/cargo16.png");
 
     // TODO: Replace the following items with proper icons
     public static final Icon ICON_MODULE = PlatformIcons.PACKAGE_ICON;

@@ -8,7 +8,6 @@ import com.intellij.execution.configurations.SimpleProgramParameters;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.util.ProgramParametersUtil;
-import com.intellij.openapi.compiler.CompilerPaths;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.SystemInfo;
@@ -49,30 +48,26 @@ public class RustRunProfileState extends CommandLineState {
 		final SimpleProgramParameters params = new SimpleProgramParameters();
 		ProgramParametersUtil.configureConfiguration(params, rustConfiguration);
 
-		String outputPath = CompilerPaths.getModuleOutputPath(rustConfiguration.getModules()[0], false);
-		if (outputPath == null) {
-			throw new CantRunException("Could not retrieve the output directory");
-		}
-
 		// Build and run
-		String execName = outputPath.concat("/").concat(rustConfiguration.getName());
+		try {
+			String execName = rustConfiguration.getExecPath();
 
-		if (execName.endsWith(".rs")) {
-			execName = execName.substring(0, execName.length() - 3);
+			if (SystemInfo.isWindows) {
+				execName = execName.concat(".exe");
+			}
+
+			// Now run the build
+			GeneralCommandLine commandLine = new GeneralCommandLine();
+
+			commandLine.setExePath(execName);
+			commandLine.addParameters(params.getProgramParametersList().getParameters());
+			commandLine.getEnvironment().putAll(params.getEnv());
+			commandLine.setWorkDirectory(params.getWorkingDirectory());
+
+			return RustProcessHandler.runCommandLine(commandLine);
 		}
-
-		if (SystemInfo.isWindows) {
-			execName = execName.concat(".exe");
+		catch (Exception e) {
+			throw new CantRunException(e.getMessage());
 		}
-
-		// Now run the build
-		GeneralCommandLine commandLine = new GeneralCommandLine();
-
-		commandLine.setExePath(execName);
-		commandLine.addParameters(params.getProgramParametersList().getParameters());
-		commandLine.getEnvironment().putAll(params.getEnv());
-		commandLine.setWorkDirectory(params.getWorkingDirectory());
-
-		return RustProcessHandler.runCommandLine(commandLine);
 	}
 }
