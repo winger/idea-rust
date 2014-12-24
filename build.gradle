@@ -69,27 +69,27 @@ task copyIntoIdea(dependsOn: build, type: Copy) {
     from jar.archivePath
 }
 
-task runIdea(dependsOn: copyIntoIdea) << {
-    ant.java(classname: "com.intellij.idea.Main", fork: true, spawn: true, classpath: intellij_libs.plus(files("$System.env.JAVA_HOME/lib/tools.jar")).asPath) {
-        sysproperty(key: "idea.config.path", value: "build/run/config")
-        sysproperty(key: "idea.system.path", value: "build/run/system")
-        sysproperty(key: "idea.plugins.path", value: "build/run/plugins")
-        sysproperty(key: "idea.platform.prefix", value: "Idea")
-        sysproperty(key: "idea.launcher.port", value: "8998")
-        sysproperty(key: "idea.launcher.bin.path", value: libraries_intellij + "bin/")
-    }
+task runIdea(type: JavaExec, dependsOn: copyIntoIdea) {
+    main = "com.intellij.idea.Main"
+    classpath = intellij_libs.plus(files("$System.env.JAVA_HOME/lib/tools.jar"))
+
+    systemProperty "idea.config.path", "build/run/config"
+    systemProperty "idea.system.path", "build/run/system"
+    systemProperty "idea.plugins.path", "build/run/plugins"
+    systemProperty "idea.launcher.port", "8998"
+    systemProperty "idea.launcher.bin.path", libraries_intellij + "bin/"
 }
 
-task debugIdea(dependsOn: copyIntoIdea) << {
-    ant.java(classname: "com.intellij.idea.Main", fork: true, spawn: true, classpath: intellij_libs.plus(files("$System.env.JAVA_HOME/lib/tools.jar")).asPath) {
-        sysproperty(key: "idea.config.path", value: "build/run/config")
-        sysproperty(key: "idea.system.path", value: "build/run/system")
-        sysproperty(key: "idea.plugins.path", value: "build/run/plugins")
-        sysproperty(key: "idea.platform.prefix", value: "Idea")
-        sysproperty(key: "idea.launcher.port", value: "8998")
-        sysproperty(key: "idea.launcher.bin.path", value: libraries_intellij + "bin/")
-        jvmarg(value: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005')
-    }
+task debugIdea(type: JavaExec, dependsOn: copyIntoIdea) {
+    main = "com.intellij.idea.Main"
+    classpath = intellij_libs.plus(files("$System.env.JAVA_HOME/lib/tools.jar"))
+
+    systemProperty "idea.config.path", "build/run/config"
+    systemProperty "idea.system.path", "build/run/system"
+    systemProperty "idea.plugins.path", "build/run/plugins"
+    systemProperty "idea.launcher.port", "8998"
+    systemProperty "idea.launcher.bin.path", libraries_intellij + "bin/"
+    jvmArgs '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
 }
 
 //For CI / publishing
