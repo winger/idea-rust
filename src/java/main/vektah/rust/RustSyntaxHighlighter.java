@@ -3,6 +3,7 @@ package vektah.rust;
 import com.intellij.lexer.FlexAdapter;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
+import com.intellij.openapi.editor.HighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
@@ -30,6 +31,8 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 	public static final TextAttributesKey OPERATOR = TextAttributesKey.createTextAttributesKey("OPERATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN);
 	public static final TextAttributesKey PATH_SEPARATOR = TextAttributesKey.createTextAttributesKey("PATH_SEPARATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN);
 	public static final TextAttributesKey ATTRIBUTE = TextAttributesKey.createTextAttributesKey("ATTRIBUTE", DefaultLanguageHighlighterColors.METADATA);
+	public static final TextAttributesKey DELIMITER = TextAttributesKey.createTextAttributesKey("DELIMITER", DefaultLanguageHighlighterColors.OPERATION_SIGN);
+	public static final TextAttributesKey BAD_CHAR = TextAttributesKey.createTextAttributesKey("BAD_CHAR", HighlighterColors.BAD_CHARACTER);
 
 	public static final TextAttributesKey[] KEYWORD_KEYS = new TextAttributesKey[]{KEYWORD};
 	public static final TextAttributesKey[] IDENTIFIER_KEYS = new TextAttributesKey[]{IDENTIFIER};
@@ -46,6 +49,8 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 	public static final TextAttributesKey[] SEMICOLON_KEYS = new TextAttributesKey[]{SEMICOLON};
 	public static final TextAttributesKey[] OPERATOR_KEYS = new TextAttributesKey[]{OPERATOR};
 	public static final TextAttributesKey[] PATH_SEPARATOR_KEYS = new TextAttributesKey[]{PATH_SEPARATOR};
+	public static final TextAttributesKey[] DELIMITER_KEYS = new TextAttributesKey[]{DELIMITER};
+	public static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHAR};
 	public static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
 	@NotNull
@@ -114,7 +119,7 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 			return NUMBER_KEYS;
 		}
 		if (type == HASH) {
-			return SYMBOL_KEYS;
+			return SYMBOL_KEYS; //? probably should be joined with delimiters
 		}
 		if (type == OPEN_PAREN || type == CLOSE_PAREN) {
 			return PARENTHESES_KEYS;
@@ -126,21 +131,45 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 			return BRACKET_KEYS;
 		}
 		// FIXME: I think there are missing operators here... (and some might not be operators as well)
+		// Actually meaning of some of them can't be distinquished on lexer phase
+		// (like '&' can be used as an operator or as a type modifier, or '|' can be used in lambda)
 		if (
+				type == ASSIGN ||
+				type == ASSIGN_LEFT_SHIFT ||
+				type == ASSIGN_RIGHT_SHIFT ||
+
+				type == BITWISE_AND ||
+				type == BITWISE_OR ||
+				type == BITWISE_XOR ||
+
+				type == PLUS ||
+				type == MINUS ||
+				type == MULTIPLY ||
+				type == DIVIDE ||
+				type == REMAINDER ||
+
+				type == EQUAL ||
+				type == NOT_EQUAL ||
 				type == GREATER_THAN ||
 				type == GREATER_THAN_OR_EQUAL ||
 				type == LESS_THAN ||
 				type == LESS_THAN_OR_EQUAL ||
-				type == PLUS ||
-				type == MINUS ||
-				type == ASSIGN ||
-				type == ASSIGN_LEFT_SHIFT ||
-				type == ASSIGN_RIGHT_SHIFT ||
-				type == MULTIPLY ||
-				type == DIVIDE ||
-				type == REMAINDER
+
+				type == NOT ||
+				type == BOX || //
+				type == AT ||  //
+				type == DOLLAR // are not used anymore?
 		) {
 			return OPERATOR_KEYS;
+		}
+		if (
+				type == FAT_ARROW ||
+				type == THIN_ARROW ||
+				type == DOT ||
+				type == COLON ||
+				type == SINGLE_QUOTE
+		) {
+			return DELIMITER_KEYS;
 		}
 		if (type == RustTokens.COMMA) {
 			return COMMA_KEYS;
@@ -150,6 +179,9 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 		}
 		if (type == RustTokens.DOUBLE_COLON) {
 			return PATH_SEPARATOR_KEYS;
+		}
+		if (type == RustTokens.BAD_CHARACTER) {
+			return BAD_CHAR_KEYS;
 		}
 
 		return EMPTY_KEYS;
