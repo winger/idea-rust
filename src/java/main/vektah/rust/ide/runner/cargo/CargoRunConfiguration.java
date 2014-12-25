@@ -8,6 +8,7 @@ import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import vektah.rust.ide.sdk.CargoUtil;
 
 /**
  * This is the model backing an instance of a run configuration.
@@ -19,6 +20,7 @@ public class CargoRunConfiguration extends RunConfigurationBase {
 
     public CargoRunConfiguration(Project project, ConfigurationFactory factory) {
         super(project, factory, "Cargo");
+        workingDirectory = CargoUtil.findCargoWorkingDirectory(project);
     }
 
     public CargoTarget getTarget() {

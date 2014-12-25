@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import org.jetbrains.annotations.NotNull;
 import vektah.rust.ide.runner.RustProcessHandler;
+import vektah.rust.ide.sdk.CargoUtil;
 import vektah.rust.ide.sdk.RustSdkData;
 import vektah.rust.ide.sdk.RustSdkUtil;
 
@@ -47,16 +48,16 @@ public class CargoRunProfileState extends CommandLineState {
         try {
             GeneralCommandLine commandLine = new GeneralCommandLine();
 
-            commandLine.setExePath("cargo");
+            commandLine.setExePath(CargoUtil.findCargoPath());
+
             if (config.getTarget() == CargoTarget.RUN) {
                 commandLine.addParameter("run");
             } else if (config.getTarget() == CargoTarget.BUILD) {
                 commandLine.addParameter("build");
             }
 
-            commandLine.setWorkDirectory("/home/adam/projects/hello-rust");
+            commandLine.setWorkDirectory(config.getWorkingDirectory());
 
-            System.out.println(commandLine.getCommandLineString());
             return RustProcessHandler.runCommandLine(commandLine);
         }
         catch (Exception e) {
