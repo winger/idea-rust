@@ -6,5 +6,9 @@
 /gen/
 /src/flex/vektah/rust/*.java
 /src/flex/vektah/rust/*.java~
-gradle.properties
+/gradle.properties
+/.gradle
+/build
 *.iml
+*.iws
+*.ipr

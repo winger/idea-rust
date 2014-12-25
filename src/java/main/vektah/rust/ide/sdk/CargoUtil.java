@@ -20,6 +20,10 @@ public class CargoUtil {
         return dir.findChild("Cargo.toml");
     }
 
+    public static String findCargoWorkingDirectory(Project project) {
+        return CargoUtil.findTomlOf(project).getParent().getCanonicalPath();
+    }
+
     public static String findOutCrateNameOf(VirtualFile contentRoot) throws Exception {
         VirtualFile toml = findTomlIn(contentRoot);
         if (toml == null) {

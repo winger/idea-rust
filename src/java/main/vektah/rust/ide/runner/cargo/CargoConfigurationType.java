@@ -1,9 +1,7 @@
 package vektah.rust.ide.runner.cargo;
 
-import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationType;
-import com.intellij.execution.configurations.ModuleBasedConfiguration;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.project.Project;
@@ -52,19 +50,14 @@ public class CargoConfigurationType implements ConfigurationType {
 		return ContainerUtil.findInstance(Extensions.getExtensions(CONFIGURATION_TYPE_EP), CargoConfigurationType.class);
 	}
 
-	private class CargoConfigurationFactory extends ConfigurationFactoryEx {
+	private class CargoConfigurationFactory extends ConfigurationFactory {
 		public CargoConfigurationFactory(CargoConfigurationType cargoConfigurationType) {
 			super(cargoConfigurationType);
 		}
 
 		@Override
 		public RunConfiguration createTemplateConfiguration(Project project) {
-			return new CargoConfiguration(RustBundle.message("runner.cargo.name"), project, getInstance());
-		}
-
-		@Override
-		public void onNewConfigurationCreated(@NotNull RunConfiguration configuration) {
-			((ModuleBasedConfiguration)configuration).onNewConfigurationCreated();
+			return new CargoRunConfiguration(project, this);
 		}
 	}
 }
