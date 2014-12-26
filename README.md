@@ -1,4 +1,4 @@
-idea-rust
+idea-rust [![Build Status](https://travis-ci.org/Vektah/idea-rust.svg)](https://travis-ci.org/Vektah/idea-rust)
 =========
 
 Language support for the Rust Language
