@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>vektah.rust</id>
   <name>Rust</name>
-  <version>0.0.3</version>
+  <version>0.0.4</version>
   <vendor email="adam@vektah.net" url="http://github.com/Vektah/idea-rust">Vektah</vendor>
 
   <description><![CDATA[
@@ -12,7 +12,7 @@
 
   <change-notes><![CDATA[
     <ul>
-        <li><b>0.0.4</b>: Basic smart indenting support.
+        <li><b>0.0.4</b>: Support for rust 0.13, Run cargo from editor, Structure view, Auto commenting, Smart indentation, Create new rust file from editor</li>
         <li><b>0.0.3</b>: Added expression support, disabled wildcards. Grammar should now be more or less complete</li>
         <li><b>0.0.2</b>: Added grammar support for functions, structs, use, traits, externals, lets, types, struct tuples and static vars</li>
         <li><b>0.0.1</b>: Initial plugin</li>
@@ -47,18 +47,9 @@
       <moduleType id="RUST_MODULE" implementationClass="vektah.rust.ide.module.RustModuleType" classpathProvider="true"/>
       <moduleConfigurationEditorProvider implementation="vektah.rust.ide.module.RustModuleEditorsProvider"/>
 
-      <programRunner implementation="vektah.rust.ide.runner.RustRunner"/>
-      <configurationType implementation="vektah.rust.ide.runner.RustConfigurationType"/>
+      <programRunner implementation="vektah.rust.ide.runner.cargo.CargoRunner"/>
       <configurationType implementation="vektah.rust.ide.runner.cargo.CargoConfigurationType"/>
-
-      <projectService serviceInterface="com.intellij.openapi.compiler.CompilerManager" serviceImplementation="vektah.rust.ide.builder.RustCompilerManager" overrides="true"/>
   </extensions>
-
-  <application-components>
-      <component>
-          <implementation-class>vektah.rust.ide.builder.RustBuildManager</implementation-class>
-      </component>
-  </application-components>
 
   <project-components>
   </project-components>

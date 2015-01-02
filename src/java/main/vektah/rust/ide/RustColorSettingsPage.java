@@ -36,6 +36,8 @@ public class RustColorSettingsPage implements ColorSettingsPage, InspectionColor
 			new AttributesDescriptor(RustBundle.message("options.rust.attribute.descriptor.operator"), RustSyntaxHighlighter.OPERATOR),
 			new AttributesDescriptor(RustBundle.message("options.rust.attribute.descriptor.path_separator"), RustSyntaxHighlighter.PATH_SEPARATOR),
 			new AttributesDescriptor(RustBundle.message("options.rust.attribute.descriptor.attribute"), RustSyntaxHighlighter.ATTRIBUTE),
+			new AttributesDescriptor(RustBundle.message("options.rust.attribute.descriptor.delimiter"), RustSyntaxHighlighter.DELIMITER),
+			new AttributesDescriptor(RustBundle.message("options.rust.attribute.descriptor.bad_char"), RustSyntaxHighlighter.BAD_CHAR),
 	};
 
 	@Nullable
