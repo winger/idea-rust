@@ -341,7 +341,9 @@ lifetime ::= "'" (IDENTIFIER | 'static')
 
 // GENERIC PARAM LIST eg function<A>(...)
 generic_params ::= '<' generic_param (',' generic_param)* '>'
-private generic_param ::= (lifetime [':' lifetime]) | IDENTIFIER  [(':' | '=') (type | lifetime) ('+' (type | lifetime))* ]
+private generic_param ::= (lifetime [':' lifetime]) | IDENTIFIER  [(':' | '=') bounds]
+private bounds ::= a_bound ('+' a_bound)*
+private a_bound ::= type | lifetime
 
 // GENERIC TYPES eg Option<Foo>
 generic ::= '<' (generic_without_lifetime | generic_with_lifetime) '>'
@@ -407,13 +409,17 @@ enum_variant_struct_member ::= visibility? IDENTIFIER ':' type
 impl_item ::= 'impl' generic_params? type impl_for? impl_block {pin=1 mixin="vektah.rust.psi.mixin.item.RustImplItemMixin"}
 impl_block ::= '{' impl_body '}'
 impl_for ::= 'for' type
-impl_body ::= fn_item* {recoverWhile="not_close_brace"}
+impl_body ::= impl_subitem* {recoverWhile="not_close_brace"}
+private impl_subitem ::= fn_item | impl_assoc_type;
+impl_assoc_type ::= 'type' itemName '=' type ';' {pin=1}
 
 
 // TRAITS
-trait_item ::= visibility? 'trait' generic_params? itemName generic_params? trait_implements? '{' (trait_function_declaration (';' | statement_block) )* (comment|attribute)* '}' {pin=2}
+trait_item ::= visibility? 'trait' generic_params? itemName generic_params? trait_implements? '{' trait_subitem* '}' {pin=2}
 trait_implements ::= ':' type ('+' type)* {recoverWhile="not_open_brace"}
+private trait_subitem ::= (trait_function_declaration (';' | statement_block)) | trait_assoc_type | comment | attribute
 trait_function_declaration ::= (comment | attribute)* visibility? 'unsafe'? 'fn' IDENTIFIER generic_params? '(' prototype_args ','? '...'? ')' ['->' return_type] {pin=4 recoverWhile="not_semicolon_or_open_brace" }
+trait_assoc_type ::= 'type' itemName [':' bounds] /* TODO: where_clause? */ ['=' type] ';' {pin=1}
 
 trait_bounds ::= ':' (IDENTIFIER | region_bound)?
 region_bound ::= "'" 'static' //?
