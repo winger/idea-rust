@@ -92,7 +92,7 @@ Rust File
               PsiElement(IDENTIFIER)('t')
           PsiElement(IDENTIFIER)('str')
       PsiElement())(')')
-      PsiElement(;)(';')
+    PsiElement(;)(';')
   PsiComment(LINE_COMMENT)('// Declare a public enum with two public variants')
   RustEnumItemImpl(ENUM_ITEM)
     RustVisibilityImpl(VISIBILITY)

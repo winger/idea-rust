@@ -83,6 +83,7 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 	"while"                                         { yybegin(YYINITIAL); return RustTokens.KW_WHILE; }
 	"continue"                                      { yybegin(YYINITIAL); return RustTokens.KW_CONTINUE; }
 	"box"                                           { yybegin(YYINITIAL); return RustTokens.KW_BOX; }
+	"where"                                         { yybegin(YYINITIAL); return RustTokens.KW_WHERE; }
 	"macro_rules!"                                  { yybegin(YYINITIAL); return RustTokens.KW_MACRO_RULES; }
 
 	"/*" ("!"|"*"[^*/])                             { yybegin(IN_BLOCK_COMMENT); start_comment = zzStartRead; doc_comment = true; comment_depth = 1; }

@@ -25,6 +25,7 @@ public class ParserTest extends ParsingTestCase {
 	public void testconst() { doTest(true); }
 	public void testlifetime() { doTest(true); }
 	public void testassociated() { doTest(true); }
+	public void testwhere() { doTest(true); }
 
 	@Override
 	protected String getTestDataPath() {

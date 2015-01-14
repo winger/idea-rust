@@ -16,11 +16,9 @@
 	extends("expr_.*")=expr
 	extends("block_.*")=expr_block
 	extends("type_.*")=type
-	extends("struct_body_.*")=struct_body
 	extends("enum_variant_.*")=enum_variant
 	extends(".*_match_pattern")=match_pattern
 	extends("let_.*_bind")=let_bind
-	extends("fn_.*_bind")=fn_arg
 	consumeTokenMethod("expr_.*|expr")="consumeTokenFast"
 
 	tokens = [
@@ -59,6 +57,7 @@
 		KW_WHILE = "while"
 		KW_CONTINUE = "continue"
 		KW_BOX = "box"
+		KW_WHERE = "where"
 		KW_MACRO_RULES = "macro_rules!"
 
 		FAT_ARROW = "=>"
@@ -135,6 +134,7 @@ private not_open_brace ::= !'{'
 private not_close_brace ::= !'}'
 private not_semicolon ::= !';'
 private not_semicolon_or_open_brace ::= !('{' | ';')
+private not_open_brace_or_where ::= !('{' | 'where')
 
 visibility ::= 'priv' | 'pub'
 
@@ -334,7 +334,7 @@ closure_prototype_args ::= '|' prototype_args '|'
 type_proc ::= 'proc' trait_bounds? fn_prototype_args trait_bounds? ['->' return_type]
 type_unit ::= ref? '*'? 'mut'? '@'? '(' ')'
 
-private type_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* '::'? generic? trait_bounds?
+private type_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* '::'? generic? /*trait_bounds?*/
 ref ::= '&'+ lifetime?
 lifetime ::= "'" (IDENTIFIER | 'static')
 
@@ -350,6 +350,10 @@ generic ::= '<' (generic_without_lifetime | generic_with_lifetime) '>'
 private generic_with_lifetime ::= lifetime (',' lifetime)* (',' type)*
 private generic_without_lifetime ::= type ( ',' type)*
 
+// WHERE CLAUSES
+where_clause ::= 'where' where_bound (',' where_bound)* ','? {pin=1}
+where_bound ::= type ':' bounds '+'?
+
 
 // USE
 use ::= use_internal ';'
@@ -360,7 +364,7 @@ private use_part ::= (IDENTIFIER | 'super' | 'self')
 
 // FUNCTIONS
 fn_item ::= (comment | attribute)* fn_declaration statement_block {mixin="vektah.rust.psi.mixin.item.RustFnItemMixin"}
-fn_declaration ::= visibility? 'unsafe'? 'fn' itemName generic_params? fn_args ['->' return_type] {pin=3 recoverWhile="function_recover" }
+fn_declaration ::= visibility? 'unsafe'? 'fn' itemName generic_params? fn_args ['->' return_type] where_clause? {pin=3 recoverWhile="function_recover"}
 fn_args ::= '(' let_args ')'
 private return_type ::= type | '!'
 private function_recover ::= !('{'|';')
@@ -381,18 +385,19 @@ private statement ::= expr ';'?
 return_statement ::= 'return' expr? ';'?
 empty_statement ::= ';'
 
+
 // STRUCTS
-struct_item ::= visibility? 'struct' itemName generic_params? struct_body {mixin="vektah.rust.psi.mixin.item.RustStructItemMixin"}
-struct_body ::= struct_body_empty | struct_body_block | struct_body_tuple
+struct_item ::= visibility? 'struct' itemName generic_params? struct_body_with_where {mixin="vektah.rust.psi.mixin.item.RustStructItemMixin"}
+private struct_body_with_where ::=
+	struct_body_tuple where_clause? ';' |
+	where_clause? (';' | struct_body_block)
 
 struct_body_block ::= '{' [struct_property (',' struct_property)* ','? (comment | attribute)*] '}' {pin=1}
 struct_property ::= (comment | attribute)* visibility? let_variable_bind {recoverWhile="struct_recover" extends="vektah.rust.psi.mixin.struct.RustStructPropertyMixin" implements="com.intellij.psi.PsiNamedElement"}
 struct_recover ::= !('}' | ',')
 
-struct_body_tuple ::= '(' struct_tuple_property (',' struct_tuple_property)* ')' ';'
+struct_body_tuple ::= '(' struct_tuple_property (',' struct_tuple_property)* ')' {pin=1}
 struct_tuple_property ::= visibility? type;
-
-struct_body_empty ::= ';'
 
 
 // ENUMS
@@ -406,7 +411,7 @@ enum_variant_struct_member ::= visibility? IDENTIFIER ':' type
 
 
 // IMPL
-impl_item ::= 'impl' generic_params? type impl_for? impl_block {pin=1 mixin="vektah.rust.psi.mixin.item.RustImplItemMixin"}
+impl_item ::= 'impl' generic_params? type impl_for? where_clause? impl_block {pin=1 mixin="vektah.rust.psi.mixin.item.RustImplItemMixin"}
 impl_block ::= '{' impl_body '}'
 impl_for ::= 'for' type
 impl_body ::= impl_subitem* {recoverWhile="not_close_brace"}
@@ -415,11 +420,11 @@ impl_assoc_type ::= 'type' itemName '=' type ';' {pin=1}
 
 
 // TRAITS
-trait_item ::= visibility? 'trait' generic_params? itemName generic_params? trait_implements? '{' trait_subitem* '}' {pin=2}
-trait_implements ::= ':' type ('+' type)* {recoverWhile="not_open_brace"}
+trait_item ::= visibility? 'trait' generic_params? itemName generic_params? trait_implements? where_clause? '{' trait_subitem* '}' {pin=2}
+trait_implements ::= ':' type ('+' type)* {recoverWhile="not_open_brace_or_where"}
 private trait_subitem ::= (trait_function_declaration (';' | statement_block)) | trait_assoc_type | comment | attribute
 trait_function_declaration ::= (comment | attribute)* visibility? 'unsafe'? 'fn' IDENTIFIER generic_params? '(' prototype_args ','? '...'? ')' ['->' return_type] {pin=4 recoverWhile="not_semicolon_or_open_brace" }
-trait_assoc_type ::= 'type' itemName [':' bounds] /* TODO: where_clause? */ ['=' type] ';' {pin=1}
+trait_assoc_type ::= 'type' itemName [':' bounds] where_clause? ['=' type] ';' {pin=1}
 
 trait_bounds ::= ':' (IDENTIFIER | region_bound)?
 region_bound ::= "'" 'static' //?

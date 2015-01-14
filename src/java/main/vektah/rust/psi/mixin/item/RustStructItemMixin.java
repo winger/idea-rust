@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import vektah.rust.ide.structure.HasStructureViewChildren;
-import vektah.rust.psi.RustStructBody;
 import vektah.rust.psi.RustStructBodyBlock;
 import vektah.rust.psi.RustStructItem;
 import vektah.rust.psi.impl.RustItemImpl;
@@ -45,9 +44,9 @@ public abstract class RustStructItemMixin extends RustItemImpl implements RustSt
     }
 
     public List<? extends com.intellij.psi.PsiNamedElement> getChildrenItems() {
-        RustStructBody structBody = getStructBody();
-        if (structBody instanceof RustStructBodyBlock) {
-            return ((RustStructBodyBlock) structBody).getStructPropertyList();
+        RustStructBodyBlock structBodyBlock = getStructBodyBlock();
+        if (structBodyBlock != null) {
+            return structBodyBlock.getStructPropertyList();
         }
 
         return Collections.emptyList();
