@@ -1,5 +1,5 @@
 pub fn unite<I>(mut boxes: I) -> BoundingBox
-        where I: Iterator {
+        where I: Iterator<Item=BoundingBox> {
     Unknown
 }
 

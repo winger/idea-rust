@@ -334,7 +334,7 @@ closure_prototype_args ::= '|' prototype_args '|'
 type_proc ::= 'proc' trait_bounds? fn_prototype_args trait_bounds? ['->' return_type]
 type_unit ::= ref? '*'? 'mut'? '@'? '(' ')'
 
-private type_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* '::'? generic? /*trait_bounds?*/
+private type_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* '::'? generic?
 ref ::= '&'+ lifetime?
 lifetime ::= "'" (IDENTIFIER | 'static')
 
@@ -347,8 +347,9 @@ private a_bound ::= type | lifetime
 
 // GENERIC TYPES eg Option<Foo>
 generic ::= '<' (generic_without_lifetime | generic_with_lifetime) '>'
-private generic_with_lifetime ::= lifetime (',' lifetime)* (',' type)*
-private generic_without_lifetime ::= type ( ',' type)*
+private generic_with_lifetime ::= lifetime (',' lifetime)* (',' type_param)*
+private generic_without_lifetime ::= type_param (',' type_param)*
+private type_param ::= [IDENTIFIER '='] type
 
 // WHERE CLAUSES
 where_clause ::= 'where' where_bound (',' where_bound)* ','? {pin=1}
