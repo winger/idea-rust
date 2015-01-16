@@ -247,11 +247,12 @@ private primary_group ::= expr_block | expr_paren | expr_vector | expr_struct_in
 // These constructs don't need a trailing semicolon unless found as part of an expression
 expr_block ::= statement_block | block_for | block_if | block_while | block_loop | block_unsafe | block_match
 block_for ::= 'for' let_bind 'in' expr statement_block
-block_while ::= 'while' expr statement_block
+block_while ::= 'while' if_let? expr statement_block
 block_loop ::= [lifetime ':'] 'loop' statement_block
 block_unsafe ::= 'unsafe' statement_block
-block_if ::= 'if' expr statement_block if_tail
-if_tail ::= ('else' 'if' expr statement_block)* ['else' statement_block]
+block_if ::= 'if' if_let? expr statement_block if_tail
+if_tail ::= ('else' 'if' if_let? expr statement_block)* ['else' statement_block]
+private if_let ::= 'let' let_bind '=' {pin=1}
 
 expr_paren ::= '(' expr expr_tuple_body? ')'
 expr_tuple_body ::= ',' [expr (',' expr)*]
