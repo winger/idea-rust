@@ -3,7 +3,7 @@ use libc::{c_char, FILE};
 
 #[allow(dead_code)]
 extern {
-    fn fopen(filename: *c_char, mode: *c_char) -> *FILE;
+    fn fopen(filename: *const c_char, mode: *const c_char) -> *mut FILE;
 }
 
 extern "stdcall" { }

@@ -1,17 +1,17 @@
 use std::task::spawn;
 
 // Takes a closure and prints its result
-fn closure(f: || -> int) {
+fn closure<F>(f: F) where F: Fn() -> int {
     println!("{}", f())
 }
 
 // Takes a closure and calls it
-fn typed_closure(f: |int|) {
+fn typed_closure<F>(f: F) where F: Fn(int) {
     f(42);
 }
 
 // Takes a closure that takes a closure and calls it with its own closure
-fn double_closure(f: |g: |int||) {
+fn double_closure<F, G>(f: F) where F: Fn(G), G: Fn(int) {
     f(|x| println!("{}", x + 1))
 }
 
@@ -19,10 +19,10 @@ fn double_closure(f: |g: |int||) {
 pub fn main() {
     closure(|| 1);
     typed_closure(|a| println!("typed {}", a));
-    double_closure(|g: |int|| g(1));
+    double_closure(|g| g(1));
 
-    // proc is the closure which will be spawned.
-    spawn(proc() {
+    // move || is the closure which will be spawned.
+    spawn(move || {
         println!("I'm a new task")
     });
 }
