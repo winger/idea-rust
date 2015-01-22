@@ -68,6 +68,7 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 	"mut"                                           { yybegin(YYINITIAL); return RustTokens.KW_MUT; }
 	"priv"                                          { yybegin(YYINITIAL); return RustTokens.KW_PRIV; }
 	"proc"                                          { yybegin(YYINITIAL); return RustTokens.KW_PROC; }
+	"move"                                          { yybegin(YYINITIAL); return RustTokens.KW_MOVE; }
 	"pub"                                           { yybegin(YYINITIAL); return RustTokens.KW_PUB; }
 	"ref"                                           { yybegin(YYINITIAL); return RustTokens.KW_REF; }
 	"return"                                        { yybegin(YYINITIAL); return RustTokens.KW_RETURN; }

@@ -4,7 +4,7 @@ pub fn unite<I>(mut boxes: I) -> BoundingBox
 }
 
 pub fn with_loaded<F>(shape: &Shape, cache: &mut ShapeCache, f: F)
-        where F: Fn {
+        where F: Fn(u32, u32, i32) -> bool {
     //...
 }
 

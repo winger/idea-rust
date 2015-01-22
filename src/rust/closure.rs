@@ -15,6 +15,26 @@ fn double_closure<F, G>(f: F) where F: Fn(G), G: Fn(int) {
     f(|x| println!("{}", x + 1))
 }
 
+// Takes a reference to a closure
+fn closure_ref(f: &Fn(Figure) -> String + Send) {
+    //...
+}
+
+// Takes boxed closure
+fn boxed_closure(f: Box<Fn(Figure) -> String + Send>) {
+    //...
+}
+
+// FIXME:
+// Not so simple closure signature
+//fn some_func<F>(f: F) where F: Fn(&Figure, (&Shape, char)) -> [String; 4] {
+//    //...
+//}
+
+// Some typedefs
+type MyFn1<'a> = FnMut(u32) -> String + 'a;
+type MyFn2<'a> = FnOnce(Figure) + 'a;
+
 
 pub fn main() {
     closure(|| 1);

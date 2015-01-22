@@ -47,7 +47,6 @@ public class RustIndentProcessor {
 			parentType == EXPR_PAREN ||
 			parentType == CLOSURE_EXPR_ARGS ||
 			parentType == FN_ARGS ||
-			parentType == CLOSURE_PROTOTYPE_ARGS ||
 			parentType == FN_PROTOTYPE_ARGS ||
 			parentType == CALL_PARAMS
 		) {

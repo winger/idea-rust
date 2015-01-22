@@ -42,6 +42,7 @@
 		KW_MUT = "mut"
 		KW_PRIV = "priv"
 		KW_PROC = "proc"
+		KW_MOVE = "move"
 		KW_PUB = "pub"
 		KW_REF = "ref"
 		KW_RETURN = "return"
@@ -157,7 +158,7 @@ expr ::= expr_macro
 	| expr_as
 	| mul_group
 	| unary_group
-	| closure_group
+	| expr_closure
 	| expr_index
 	| expr_field
 	| primary_group
@@ -235,10 +236,8 @@ expr_equal_to ::= expr '==' expr
 expr_logical_and ::= expr '&' '&' expr
 expr_logical_or ::= expr '|' '|' expr
 
-private closure_group ::= expr_closure | expr_proc
-expr_closure ::= closure_expr_args closure_body
+expr_closure ::= 'move'? closure_expr_args closure_body
 closure_expr_args ::= '|' let_args '|'
-expr_proc ::= 'proc' fn_args closure_body
 
 closure_body ::= ['->' type] (statement | expr | statement_block)
 
@@ -275,13 +274,13 @@ match_if ::= 'if' expr
 match_pattern ::= tuple_match_pattern | struct_match_pattern | vector_match_pattern | range_match_pattern | basic_match_pattern
 match_label ::= match_identifier '@'
 
-tuple_match_pattern ::= match_label? 'box'? '&'? type? '(' tuple_match_pattern_argument (',' tuple_match_pattern_argument)* ')'
+tuple_match_pattern ::= match_label? 'box'? '&'? type_path? '(' tuple_match_pattern_argument (',' tuple_match_pattern_argument)* ')'
 private tuple_match_pattern_argument ::= match_pattern | '..'
 
 vector_match_pattern ::= 'box'? 'ref'? '&'? '[' [vector_match_identifier (',' vector_match_identifier)* ] ']'
 private vector_match_identifier ::= IDENTIFIER? '..' | match_pattern
 
-struct_match_pattern ::= 'box'? 'ref'? type '{' (struct_match_pattern_argument (',' struct_match_pattern_argument)* [',' '..'] | '..') '}'
+struct_match_pattern ::= 'box'? 'ref'? type_path '{' (struct_match_pattern_argument (',' struct_match_pattern_argument)* [',' '..'] | '..') '}'
 private struct_match_pattern_argument ::= match_identifier [':' match_pattern]
 
 range_match_pattern ::= match_label? (literal | match_identifier) '...' (literal | match_identifier)
@@ -320,37 +319,39 @@ expr_break ::= 'break' lifetime?
 
 // TYPES
 expr_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' (IDENTIFIER | generic))*
-type ::= type_basic | type_vector | type_tuple | type_closure | type_function | type_proc | type_unit
+type ::= type_basic | type_vector | type_tuple | type_function | type_proc | type_unit
 
 private type_modifiers ::= ( ref | lifetime | '*' | 'mut' | '*' 'mut' | '@' | '~' | '$' | 'box')*
-type_basic ::= type_modifiers type_path
+type_basic ::= type_modifiers type_path '::'? [generic | closure_sugar]
 type_vector ::= type_modifiers '[' type [',' '..' expr] ']'
 type_tuple ::= type_modifiers '(' tupled_type (',' tupled_type)* ','? ')'
 private tupled_type ::= 'ref'? type ['+' (kind | lifetime)]
 private kind ::= IDENTIFIER
 type_function ::= ref? 'unsafe'? ['extern' STRING_LIT?] 'fn' trait_bounds? fn_prototype_args ['->' return_type]
 fn_prototype_args ::= '(' prototype_args ')'
-type_closure ::= ['<'lifetime'>'] closure_prototype_args [':' lifetime] ['->' return_type]
-closure_prototype_args ::= '|' prototype_args '|'
 type_proc ::= 'proc' trait_bounds? fn_prototype_args trait_bounds? ['->' return_type]
 type_unit ::= ref? '*'? 'mut'? '@'? '(' ')'
 
-private type_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)* '::'? generic?
+private type_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)*
 ref ::= '&'+ lifetime?
 lifetime ::= "'" (IDENTIFIER | 'static')
 
 
 // GENERIC PARAM LIST eg function<A>(...)
-generic_params ::= '<' generic_param (',' generic_param)* '>'
+generic_params ::= '<' generic_param (',' generic_param)* '>' {pin=1}
 private generic_param ::= (lifetime [':' lifetime]) | IDENTIFIER  [(':' | '=') bounds]
 private bounds ::= a_bound ('+' a_bound)*
 private a_bound ::= type | lifetime
 
+
 // GENERIC TYPES eg Option<Foo>
-generic ::= '<' (generic_without_lifetime | generic_with_lifetime) '>'
+generic ::= '<' (generic_without_lifetime | generic_with_lifetime) '>' {pin=1}
 private generic_with_lifetime ::= lifetime (',' lifetime)* (',' type_param)*
 private generic_without_lifetime ::= type_param (',' type_param)*
 private type_param ::= [IDENTIFIER '='] type
+
+// CLOSURE SUGAR eg FnMut(i32, char) -> String
+closure_sugar ::= '(' [type (',' type)*] ')' ['->' return_type] ['+' bounds] {pin=1}
 
 // WHERE CLAUSES
 where_clause ::= 'where' where_bound (',' where_bound)* ','? {pin=1}
@@ -447,8 +448,8 @@ let ::= 'let' let_bind ['=' (expr | statement_block)] ';'?
 let_args ::= [ let_bind ( ',' let_bind)* ','? ]
 let_bind ::= let_tuple_bind | let_struct_bind | let_variable_bind | let_unit_bind | let_self_arg
 let_variable_bind ::= variable_signature [':' type]
-let_tuple_bind ::= ref* type_basic? '(' let_bind (',' let_bind)* ','? ')' [':' type]
-let_struct_bind ::= type '{' struct_bind_member (',' struct_bind_member )* ','? '..'? ','? '}' [':' type]
+let_tuple_bind ::= ref* type_path? '(' let_bind (',' let_bind)* ','? ')' [':' type]
+let_struct_bind ::= type_path '{' struct_bind_member (',' struct_bind_member )* ','? '..'? ','? '}' [':' type]
 let_unit_bind ::= '(' ')'
 let_self_arg ::= ref? 'mut'? '~'? 'self'
 
@@ -474,7 +475,7 @@ private attrib_recover ::= !(']' | ';')
 
 
 // MOD
-mod_item ::= (comment | attribute)* visibility? 'mod' type_path (';' | '{' mod_contents '}') {pin=3 mixin="vektah.rust.psi.mixin.item.RustModItemMixin"}
+mod_item ::= (comment | attribute)* visibility? 'mod' type_path (';' | '::' '{' mod_contents '}') {pin=3 mixin="vektah.rust.psi.mixin.item.RustModItemMixin"}
 private mod_contents ::= ( use
     | item
     | attribute

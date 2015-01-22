@@ -31,7 +31,6 @@ public class RustFormattingBlock extends AbstractBlock {
 		EXPR_PAREN,
 		CLOSURE_EXPR_ARGS,
 		FN_ARGS,
-		CLOSURE_PROTOTYPE_ARGS,
 		FN_PROTOTYPE_ARGS,
 		EXPR_CALL,
 		EXTERN_BLOCK,
