@@ -13,6 +13,7 @@ impl Foo<A, B> where (A, B): SomeTrait + Send {
 }
 
 struct Foo<A, B> where A: Shape, B: SomeTrait + Send, {
+    some_field: A,
     //...
 }
 
