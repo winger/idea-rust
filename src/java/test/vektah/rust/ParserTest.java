@@ -2,6 +2,8 @@ package vektah.rust;
 
 import com.intellij.testFramework.ParsingTestCase;
 
+import java.io.File;
+
 public class ParserTest extends ParsingTestCase {
 	public ParserTest() {
 		super("", "rs", new RustParserDefinition());
@@ -41,5 +43,33 @@ public class ParserTest extends ParsingTestCase {
 	@Override
 	protected boolean includeRanges() {
 		return false;
+	}
+
+	//
+
+	@Override
+	protected void doTest(boolean checkResult) {
+		String filename = getTestName(false) + ".rs";
+		try {
+			Process p = Runtime.getRuntime().exec(
+					new String[]{"rustc", "-Z", "parse-only", filename},
+					null, new File(getTestDataPath()));
+
+			p.waitFor();
+			String output = convertStreamToString(p.getErrorStream());
+			System.out.println(output);
+			if (output.contains("error:")) {
+				fail(filename + " is not valid");
+			}
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+
+		super.doTest(checkResult);
+	}
+
+	private static String convertStreamToString(java.io.InputStream is) {
+		java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+		return s.hasNext() ? s.next() : "";
 	}
 }
