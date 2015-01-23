@@ -206,14 +206,12 @@ expr_multiply ::= expr '*' expr
 expr_modulo ::= expr '%' expr
 
 // Private rules to define operators with the same priority
-private unary_group ::= expr_unary_plus | expr_unary_minus | expr_unary_not | expr_deref | expr_box | expr_old_box | expr_managed_box
+private unary_group ::= expr_unary_plus | expr_unary_minus | expr_unary_not | expr_deref | expr_box
 expr_unary_minus ::= '-' expr
 expr_unary_plus ::= '+' expr
 expr_unary_not ::= '!' expr
 expr_deref ::= '*' expr
 expr_box ::= 'box' expr
-expr_old_box ::= '~' expr
-expr_managed_box ::= '@' expr
 
 private add_group ::= expr_plus | expr_minus
 expr_plus ::= expr '+' expr
@@ -261,7 +259,7 @@ expr_struct_initializer ::= expr '{' struct_initializer_list [',' struct_default
 struct_default ::= '..' expr
 struct_initializer_list ::= IDENTIFIER ':' expr (',' IDENTIFIER ':' expr)*
 
-expr_vector ::= '~'? '[' [(comment | attribute)* expr (',' (comment | attribute)* expr)*] (comment | attribute)* [',' '..' expr] ','?(comment | attribute)*']'
+expr_vector ::= '[' [(comment | attribute)* expr (',' (comment | attribute)* expr)*] (comment | attribute)* [',' '..' expr] ','?(comment | attribute)*']'
 
 
 // MATCH
@@ -451,7 +449,7 @@ let_variable_bind ::= variable_signature [':' type]
 let_tuple_bind ::= ref* type_path? '(' let_bind (',' let_bind)* ','? ')' [':' type]
 let_struct_bind ::= type_path '{' struct_bind_member (',' struct_bind_member )* ','? '..'? ','? '}' [':' type]
 let_unit_bind ::= '(' ')'
-let_self_arg ::= ref? 'mut'? '~'? 'self'
+let_self_arg ::= ref? 'mut'? 'self'
 
 // Prototype args are used by closure definitions, externs and trait declarations of functions. A single param here is
 // considered an identifier
@@ -460,7 +458,7 @@ prototype_arg ::= prototype_tuple_arg | prototype_struct_arg | prototype_variabl
 prototype_variable_arg ::= variable_signature ':' type | type
 prototype_tuple_arg ::= ref* type_basic? '(' prototype_arg (',' prototype_arg)* ','? ')' [':' type]
 prototype_struct_arg ::= type '{' struct_bind_member (',' struct_bind_member )* ','? '..'? ','? '}' [':' type]
-prototype_self_arg ::= ref? 'mut'? '~'? 'self'
+prototype_self_arg ::= ref? 'mut'? 'self'
 
 private struct_bind_member ::= IDENTIFIER ':' variable_signature | variable_signature
 private variable_signature ::= 'ref'? ref? 'mut'? itemName
