@@ -24,6 +24,7 @@ public class ParserTest extends ParsingTestCase {
 	public void testimpl() { doTest(true); }
 	public void teststatic() { doTest(true); }
 	public void testmacro_call() { doTest(true); }
+	public void testmacro_rules() { doTest(true); }
 	public void testconst() { doTest(true); }
 	public void testlifetime() { doTest(true); }
 	public void testassociated() { doTest(true); }

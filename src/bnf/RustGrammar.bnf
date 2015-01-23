@@ -497,4 +497,4 @@ type_item ::= (comment | attribute)* visibility? 'type' itemName generic_params?
 
 
 // MACRO
-macro_rules ::= 'macro_rules!' IDENTIFIER (macro_paren | macro_bracket | macro_brace)
+macro_rules ::= 'macro_rules!' IDENTIFIER (macro_paren ';' | macro_bracket ';' | macro_brace)
