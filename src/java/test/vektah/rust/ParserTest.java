@@ -30,6 +30,7 @@ public class ParserTest extends ParsingTestCase {
 	public void testassociated() { doTest(true); }
 	public void testwhere() { doTest(true); }
 	public void testiflet() { doTest(true); }
+	public void testarray() { doTest(true); }
 
 	@Override
 	protected String getTestDataPath() {

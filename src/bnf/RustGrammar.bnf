@@ -259,7 +259,7 @@ expr_struct_initializer ::= expr '{' struct_initializer_list [',' struct_default
 struct_default ::= '..' expr
 struct_initializer_list ::= IDENTIFIER ':' expr (',' IDENTIFIER ':' expr)*
 
-expr_vector ::= '[' [(comment | attribute)* expr (',' (comment | attribute)* expr)*] (comment | attribute)* [',' '..' expr] ','?(comment | attribute)*']'
+expr_vector ::= '[' [(comment | attribute)* expr (',' (comment | attribute)* expr)*] (comment | attribute)* [';' expr] ','?(comment | attribute)*']'
 
 
 // MATCH
@@ -321,7 +321,7 @@ type ::= type_basic | type_vector | type_tuple | type_function | type_proc | typ
 
 private type_modifiers ::= ( ref | lifetime | '*' 'const' | 'mut' | '*' 'mut' | 'box')*
 type_basic ::= type_modifiers type_path '::'? [generic | closure_sugar]
-type_vector ::= type_modifiers '[' type [',' '..' expr] ']'
+type_vector ::= type_modifiers '[' type [';' expr] ']'
 type_tuple ::= type_modifiers '(' tupled_type (',' tupled_type)* ','? ')'
 private tupled_type ::= 'ref'? type ['+' (kind | lifetime)]
 private kind ::= IDENTIFIER

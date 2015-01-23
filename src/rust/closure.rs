@@ -25,11 +25,10 @@ fn boxed_closure(f: Box<Fn(Figure) -> String + Send>) {
     //...
 }
 
-// FIXME:
 // Not so simple closure signature
-//fn some_func<F>(f: F) where F: Fn(&Figure, (&Shape, char)) -> [String; 4] {
-//    //...
-//}
+fn some_func<F>(f: F) where F: Fn(&Figure, (&Shape, char)) -> [String; 4] {
+    //...
+}
 
 // Some typedefs
 type MyFn1<'a> = FnMut(u32) -> String + 'a;
