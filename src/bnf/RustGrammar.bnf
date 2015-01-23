@@ -321,7 +321,7 @@ expr_break ::= 'break' lifetime?
 expr_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' (IDENTIFIER | generic))*
 type ::= type_basic | type_vector | type_tuple | type_function | type_proc | type_unit
 
-private type_modifiers ::= ( ref | lifetime | '*' | 'mut' | '*' 'mut' | '@' | '~' | '$' | 'box')*
+private type_modifiers ::= ( ref | lifetime | '*' 'const' | 'mut' | '*' 'mut' | 'box')*
 type_basic ::= type_modifiers type_path '::'? [generic | closure_sugar]
 type_vector ::= type_modifiers '[' type [',' '..' expr] ']'
 type_tuple ::= type_modifiers '(' tupled_type (',' tupled_type)* ','? ')'
@@ -330,7 +330,7 @@ private kind ::= IDENTIFIER
 type_function ::= ref? 'unsafe'? ['extern' STRING_LIT?] 'fn' trait_bounds? fn_prototype_args ['->' return_type]
 fn_prototype_args ::= '(' prototype_args ')'
 type_proc ::= 'proc' trait_bounds? fn_prototype_args trait_bounds? ['->' return_type]
-type_unit ::= ref? '*'? 'mut'? '@'? '(' ')'
+type_unit ::= ref? '*'? 'mut'? '(' ')'
 
 private type_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)*
 ref ::= '&'+ lifetime?
