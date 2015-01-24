@@ -317,19 +317,21 @@ expr_break ::= 'break' lifetime?
 
 // TYPES
 expr_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' (IDENTIFIER | generic))*
-type ::= type_basic | type_vector | type_tuple | type_function | type_proc | type_unit
+type ::= type_basic | type_vector | type_tuple | type_function | type_unit
+private type_sum ::= type_bounded | type
 
-private type_modifiers ::= ( ref | lifetime | '*' 'const' | 'mut' | '*' 'mut' | 'box')*
-type_basic ::= type_modifiers type_path '::'? [generic | closure_sugar]
-type_vector ::= type_modifiers '[' type [';' expr] ']'
+type_basic ::= just_type_basic
+type_bounded ::= just_type_basic '+' bounds
+private just_type_basic ::= type_modifiers type_path '::'? [generic | closure_sugar]
+
+type_vector ::= type_modifiers '[' type_sum [';' expr] ']'
 type_tuple ::= type_modifiers '(' tupled_type (',' tupled_type)* ','? ')'
-private tupled_type ::= 'ref'? type ['+' (kind | lifetime)]
-private kind ::= IDENTIFIER
+private tupled_type ::= 'ref'? type_sum
 type_function ::= ref? 'unsafe'? ['extern' STRING_LIT?] 'fn' trait_bounds? fn_prototype_args ['->' return_type]
 fn_prototype_args ::= '(' prototype_args ')'
-type_proc ::= 'proc' trait_bounds? fn_prototype_args trait_bounds? ['->' return_type]
 type_unit ::= ref? '*'? 'mut'? '(' ')'
 
+private type_modifiers ::= ( ref | lifetime | '*' 'const' | 'mut' | '*' 'mut' | 'box')*
 private type_path ::= '::'? ('self' '::' | 'super' '::')* IDENTIFIER ('::' IDENTIFIER)*
 ref ::= '&'+ lifetime?
 lifetime ::= "'" (IDENTIFIER | 'static')
@@ -346,10 +348,10 @@ private a_bound ::= type | lifetime
 generic ::= '<' (generic_without_lifetime | generic_with_lifetime) '>' {pin=1}
 private generic_with_lifetime ::= lifetime (',' lifetime)* (',' type_param)*
 private generic_without_lifetime ::= type_param (',' type_param)*
-private type_param ::= [IDENTIFIER '='] type
+private type_param ::= [IDENTIFIER '='] type_sum
 
 // CLOSURE SUGAR eg FnMut(i32, char) -> String
-closure_sugar ::= '(' [type (',' type)*] ')' ['->' return_type] ['+' bounds] {pin=1}
+closure_sugar ::= '(' [type (',' type)*] ')' ['->' return_type] {pin=1}
 
 // WHERE CLAUSES
 where_clause ::= 'where' where_bound (',' where_bound)* ','? {pin=1}
@@ -398,7 +400,7 @@ struct_property ::= (comment | attribute)* visibility? let_variable_bind {recove
 struct_recover ::= !('}' | ',')
 
 struct_body_tuple ::= '(' struct_tuple_property (',' struct_tuple_property)* ')' {pin=1}
-struct_tuple_property ::= visibility? type;
+struct_tuple_property ::= visibility? type_sum;
 
 
 // ENUMS
@@ -445,8 +447,8 @@ let ::= 'let' let_bind ['=' (expr | statement_block)] ';'?
 // let args are used by function and closure implementations and of course let. A single param here is considered a type
 let_args ::= [ let_bind ( ',' let_bind)* ','? ]
 let_bind ::= let_tuple_bind | let_struct_bind | let_variable_bind | let_unit_bind | let_self_arg
-let_variable_bind ::= variable_signature [':' type]
-let_tuple_bind ::= ref* type_path? '(' let_bind (',' let_bind)* ','? ')' [':' type]
+let_variable_bind ::= variable_signature [':' type_sum]
+let_tuple_bind ::= ref* type_path? '(' let_bind (',' let_bind)* ','? ')' [':' type_sum]
 let_struct_bind ::= type_path '{' struct_bind_member (',' struct_bind_member )* ','? '..'? ','? '}' [':' type]
 let_unit_bind ::= '(' ')'
 let_self_arg ::= ref? 'mut'? 'self'
@@ -491,7 +493,7 @@ const_item ::= (comment | attribute)* visibility? 'const' itemName ':' type '=' 
 
 
 // TYPE
-type_item ::= (comment | attribute)* visibility? 'type' itemName generic_params? '=' type ';' {pin=3 mixin="vektah.rust.psi.mixin.item.RustTypeItemMixin"}
+type_item ::= (comment | attribute)* visibility? 'type' itemName generic_params? '=' type_sum ';' {pin=3 mixin="vektah.rust.psi.mixin.item.RustTypeItemMixin"}
 
 
 // MACRO
