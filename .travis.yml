@@ -1,5 +1,6 @@
 language: java
 install:
+  - curl -s https://static.rust-lang.org/rustup.sh | sudo sh
   - mkdir -p /tmp/rust ; pushd /tmp/rust ; curl -0 https://codeload.github.com/rust-lang/rust/tar.gz/master | tar -zxf - --strip 1 ; popd
   - mkdir -p /tmp/idea ; pushd /tmp/idea ; curl -0 http://download-cf.jetbrains.com/idea/ideaIC-13.1.6.tar.gz | tar -zxf - --strip 1 ; popd
   - echo "libraries_intellij=/tmp/idea/" > gradle.properties

@@ -48,14 +48,22 @@ public class ParserTest extends ParsingTestCase {
 		return false;
 	}
 
-	//
-
 	@Override
 	protected void doTest(boolean checkResult) {
+		validateTestFile();
+		super.doTest(checkResult);
+	}
+
+	/**
+	 * Validates test .rs file against rustc compiler.
+	 * Rust bin directory must be in system environment as {@code %PATH%}
+	 * or in gradle.properties as {@code rust_binary}.
+	 */
+	private void validateTestFile() {
 		String filename = getTestName(false) + ".rs";
 		try {
 			Process p = Runtime.getRuntime().exec(
-					new String[]{"rustc", "-Z", "parse-only", filename},
+					new String[]{rustBinaryPath() + "rustc", "-Z", "parse-only", filename},
 					null, new File(getTestDataPath()));
 
 			p.waitFor();
@@ -67,12 +75,15 @@ public class ParserTest extends ParsingTestCase {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-
-		super.doTest(checkResult);
 	}
 
 	private static String convertStreamToString(java.io.InputStream is) {
 		java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
 		return s.hasNext() ? s.next() : "";
+	}
+
+	private static String rustBinaryPath() {
+		String path = System.getProperty("rust.binary");
+		return (path == null) ? "" : path; // running it from current dir if not specified
 	}
 }

@@ -55,6 +55,7 @@ task cleanGrammar(type: Delete) {
 
 tasks.withType(Test) {
     systemProperty 'rust.source', rust_source
+    systemProperty 'rust.binary', rust_binary
 }
 
 jar {
