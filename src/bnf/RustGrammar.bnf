@@ -360,8 +360,8 @@ where_bound ::= type ':' bounds '+'?
 
 // USE
 use ::= use_internal ';'
-private use_internal ::= visibility? 'use' (use_glob | use_part ('::' use_part)* ('::' use_glob | '=' expr_path)?) {pin=2 recoverWhile="not_semicolon"}
-private use_glob ::= ('*' | '{' IDENTIFIER ( ',' IDENTIFIER )* ','? '}')
+private use_internal ::= visibility? 'use' (use_glob | use_part ('::' use_part)* ('::' use_glob | '=' expr_path)? ('as' IDENTIFIER)?) {pin=2 recoverWhile="not_semicolon"}
+private use_glob ::= ('*' | '{' (IDENTIFIER | 'self') ( ',' (IDENTIFIER | 'self') )* ','? '}')
 private use_part ::= (IDENTIFIER | 'super' | 'self')
 
 

@@ -33,6 +33,7 @@ public class ParserTest extends ParsingTestCase {
 	public void testarray() { doTest(true); }
 	public void testbounds() { doTest(true); }
 	public void testmodule() { doTest(true); }
+	public void testuse() { doTest(true); }
 	public void testfailed() { doTest(true); }
 
 	@Override
