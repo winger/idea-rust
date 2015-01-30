@@ -475,7 +475,7 @@ private attrib_recover ::= !(']' | ';')
 
 
 // MOD
-mod_item ::= (comment | attribute)* visibility? 'mod' type_path (';' | '::' '{' mod_contents '}') {pin=3 mixin="vektah.rust.psi.mixin.item.RustModItemMixin"}
+mod_item ::= (comment | attribute)* visibility? 'mod' type_path (';' | '{' mod_contents '}') {pin=3 mixin="vektah.rust.psi.mixin.item.RustModItemMixin"}
 private mod_contents ::= ( use
     | item
     | attribute
