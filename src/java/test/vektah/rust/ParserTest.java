@@ -32,6 +32,9 @@ public class ParserTest extends ParsingTestCase {
 	public void testiflet() { doTest(true); }
 	public void testarray() { doTest(true); }
 	public void testbounds() { doTest(true); }
+	public void testmodule() { doTest(true); }
+	public void testuse() { doTest(true); }
+	public void testprecedence() { doTest(true); }
 
 	@Override
 	protected String getTestDataPath() {

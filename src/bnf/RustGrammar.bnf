@@ -142,8 +142,6 @@ visibility ::= 'priv' | 'pub'
 // EXPRESSIONS! - this is based heavily https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md
 // These are in increasing order of precedence  (opposite of rust manual)
 expr ::= expr_macro
-	| expr_borrow
-	| expr_call
 	| builtin_expression_group
 	| assign_group
 	| expr_logical_or
@@ -158,6 +156,7 @@ expr ::= expr_macro
 	| expr_as
 	| mul_group
 	| unary_group
+	| expr_call
 	| expr_closure
 	| expr_index
 	| expr_field
@@ -167,14 +166,12 @@ expr_as ::= expr 'as' type
 
 expr_bitwise_and ::= expr '&' expr
 expr_bitwise_xor ::= expr '^' expr
-expr_bitwise_or ::= expr '|' expr
+expr_bitwise_or ::= expr '|' !'|' expr
 
 // Need to break out of this expression parser before recursing here, otherwise the priorities will be off
 expr_index ::= expr '[' index_expr ']'
 index_expr ::= expr '..'?
 expr_field ::= expr '.' expr
-
-expr_borrow ::= '&' lifetime? 'mut'? expr
 
 private assign_group ::= expr_assign
 	| expr_assign_increment
@@ -206,12 +203,14 @@ expr_multiply ::= expr '*' expr
 expr_modulo ::= expr '%' expr
 
 // Private rules to define operators with the same priority
-private unary_group ::= expr_unary_plus | expr_unary_minus | expr_unary_not | expr_deref | expr_box
+private unary_group ::= expr_unary_plus | expr_unary_minus | expr_unary_not | expr_deref | expr_box | expr_borrow
 expr_unary_minus ::= '-' expr
 expr_unary_plus ::= '+' expr
 expr_unary_not ::= '!' expr
 expr_deref ::= '*' expr
 expr_box ::= 'box' expr
+expr_borrow ::= '&' lifetime? 'mut'? expr
+
 
 private add_group ::= expr_plus | expr_minus
 expr_plus ::= expr '+' expr
@@ -360,8 +359,8 @@ where_bound ::= type ':' bounds '+'?
 
 // USE
 use ::= use_internal ';'
-private use_internal ::= visibility? 'use' (use_glob | use_part ('::' use_part)* ('::' use_glob | '=' expr_path)?) {pin=2 recoverWhile="not_semicolon"}
-private use_glob ::= ('*' | '{' IDENTIFIER ( ',' IDENTIFIER )* ','? '}')
+private use_internal ::= visibility? 'use' (use_glob | use_part ('::' use_part)* ('::' use_glob | '=' expr_path)? ('as' IDENTIFIER)?) {pin=2 recoverWhile="not_semicolon"}
+private use_glob ::= ('*' | '{' (IDENTIFIER | 'self') ( ',' (IDENTIFIER | 'self') )* ','? '}')
 private use_part ::= (IDENTIFIER | 'super' | 'self')
 
 
@@ -475,7 +474,7 @@ private attrib_recover ::= !(']' | ';')
 
 
 // MOD
-mod_item ::= (comment | attribute)* visibility? 'mod' type_path (';' | '::' '{' mod_contents '}') {pin=3 mixin="vektah.rust.psi.mixin.item.RustModItemMixin"}
+mod_item ::= (comment | attribute)* visibility? 'mod' type_path (';' | '{' mod_contents '}') {pin=3 mixin="vektah.rust.psi.mixin.item.RustModItemMixin"}
 private mod_contents ::= ( use
     | item
     | attribute

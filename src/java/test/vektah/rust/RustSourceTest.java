@@ -34,33 +34,19 @@ public class RustSourceTest extends ParsingTestCase {
 	public void testLibCollections() { doAllTests("libcollections"); }
 	public void testLibCore() { doAllTests("libcore"); }
 	public void testLibFlate() { doAllTests("libflate"); }
-	public void testLibFourcc() { doAllTests("libfourcc"); }
 	public void testLibGetOpts() { doAllTests("libgetopts"); }
-	public void testLibGlob() { doAllTests("libglob"); }
 	public void testLibGraphviz() { doAllTests("libgraphviz"); }
-	public void testLibGreen() { doAllTests("libgreen"); }
-	public void testLibHexFloat() { doAllTests("libhexfloat"); }
 	public void testLibC() { doAllTests("liblibc"); }
 	public void testLibLog() { doAllTests("liblog"); }
-	public void testLibNative() { doAllTests("libnative"); }
-	public void testLibNum() { doAllTests("libnum"); }
 	public void testLibRand() { doAllTests("librand"); }
 	public void testLibRegex() { doAllTests("libregex"); }
-	public void testLibRegexMacros() { doAllTests("libregex_macros"); }
 	public void testLibRustDoc() { doAllTests("librustdoc"); }
-	public void testLibRustUV() { doAllTests("librustuv"); }
-	public void testLibsemver() { doAllTests("libsemver"); }
 
 	public void testLibSerialize() { doAllTests("libserialize"); }
-	public void testLibSync() { doAllTests("libsync"); }
 	public void testLibSyntax() { doAllTests("libsyntax"); }
 	public void testLibTerm() { doAllTests("libterm"); }
 	public void testLibTest() { doAllTests("libtest"); }
-	public void testLibTime() { doAllTests("libtime"); }
-	public void testLibUrl() { doAllTests("liburl"); }
-	public void testLibUuid() { doAllTests("libuuid"); }
 	public void testLibUV() { doAllTests("libuv"); }
-	public void testLibWorkCache() { doAllTests("libworkcache"); }
 
 	public void testLibRustC() {
 		doAllTests("librustc", new String[] {
