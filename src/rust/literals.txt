@@ -29,7 +29,7 @@ Rust File
         PsiElement(STRING_LIT)('"aa\t\n"')
       PsiElement(;)(';')
       RustExprValueImpl(EXPR_VALUE)
-        PsiElement(STRING_LIT)('"\xFF"')
+        PsiElement(STRING_LIT)('"\x7F"')
       PsiElement(;)(';')
       RustExprValueImpl(EXPR_VALUE)
         PsiElement(STRING_LIT)('"\u0A4f"')

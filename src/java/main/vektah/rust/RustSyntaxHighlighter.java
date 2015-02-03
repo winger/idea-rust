@@ -81,6 +81,7 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 			type == KW_MUT |
 			type == KW_PRIV |
 			type == KW_PROC |
+			type == KW_MOVE |
 			type == KW_PUB |
 			type == KW_REF |
 			type == KW_RETURN |
@@ -95,7 +96,8 @@ public class RustSyntaxHighlighter extends SyntaxHighlighterBase {
 			type == KW_USE |
 			type == KW_WHILE |
 			type == KW_CONTINUE |
-			type == KW_BOX)
+			type == KW_BOX |
+			type == KW_WHERE)
 		{
 			return KEYWORD_KEYS;
 		}

@@ -55,6 +55,13 @@ task cleanGrammar(type: Delete) {
 
 tasks.withType(Test) {
     systemProperty 'rust.source', rust_source
+    systemProperty 'rust.binary', rust_binary
+
+    afterSuite { desc, result ->
+        if (!desc.parent) {
+            println "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+        }
+    }
 }
 
 jar {

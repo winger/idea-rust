@@ -68,6 +68,7 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 	"mut"                                           { yybegin(YYINITIAL); return RustTokens.KW_MUT; }
 	"priv"                                          { yybegin(YYINITIAL); return RustTokens.KW_PRIV; }
 	"proc"                                          { yybegin(YYINITIAL); return RustTokens.KW_PROC; }
+	"move"                                          { yybegin(YYINITIAL); return RustTokens.KW_MOVE; }
 	"pub"                                           { yybegin(YYINITIAL); return RustTokens.KW_PUB; }
 	"ref"                                           { yybegin(YYINITIAL); return RustTokens.KW_REF; }
 	"return"                                        { yybegin(YYINITIAL); return RustTokens.KW_RETURN; }
@@ -83,6 +84,7 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 	"while"                                         { yybegin(YYINITIAL); return RustTokens.KW_WHILE; }
 	"continue"                                      { yybegin(YYINITIAL); return RustTokens.KW_CONTINUE; }
 	"box"                                           { yybegin(YYINITIAL); return RustTokens.KW_BOX; }
+	"where"                                         { yybegin(YYINITIAL); return RustTokens.KW_WHERE; }
 	"macro_rules!"                                  { yybegin(YYINITIAL); return RustTokens.KW_MACRO_RULES; }
 
 	"/*" ("!"|"*"[^*/])                             { yybegin(IN_BLOCK_COMMENT); start_comment = zzStartRead; doc_comment = true; comment_depth = 1; }
@@ -105,7 +107,7 @@ HEX_LIT = "0x" [a-fA-F0-9_]+ {INT_SUFFIX}?
 	{XID_START}{XID_CONTINUE}*                      { yybegin(YYINITIAL); return RustTokens.IDENTIFIER; }
 
 
-	"..."                                            { yybegin(YYINITIAL); return RustTokens.TRIPLE_DOT; }
+	"..."                                           { yybegin(YYINITIAL); return RustTokens.TRIPLE_DOT; }
 	".."                                            { yybegin(YYINITIAL); return RustTokens.DOUBLE_DOT; }
 	">>="                                           { yybegin(YYINITIAL); return RustTokens.ASSIGN_RIGHT_SHIFT; }
 	"<<="                                           { yybegin(YYINITIAL); return RustTokens.ASSIGN_LEFT_SHIFT; }

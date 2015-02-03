@@ -6,7 +6,7 @@ pub fn main() {
     "asdf";
     "asdf \" ffff";
     "aa\t\n";
-    "\xFF";
+    "\x7F";
     "\u0A4f";
     "\uBEEFCAFE";
     "soe\\path\\to\\hello.txt";
