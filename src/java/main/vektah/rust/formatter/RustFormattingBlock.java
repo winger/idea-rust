@@ -37,7 +37,7 @@ public class RustFormattingBlock extends AbstractBlock {
 		MATCH_BLOCK
 	);
 	public static final TokenSet CURLY_CONTAINERS = TokenSet.create(
-		STATEMENT_BLOCK, STRUCT_BODY_BLOCK, IMPL_BLOCK, MACRO_BRACE, MATCH_BLOCK
+		STATEMENT_BLOCK, STRUCT_BODY_BLOCK, IMPL_BLOCK, MACRO_BRACE, MATCH_BLOCK, USE_GROUP
 	);
 	public static final TokenSet PARENTHESIS_CONTAINERS = TokenSet.create(
 		EXPR_PAREN, LET_ARGS, PROTOTYPE_ARGS, MACRO_PAREN
@@ -150,6 +150,9 @@ public class RustFormattingBlock extends AbstractBlock {
 			if (childType != OPEN_SQUARE_BRACKET && childType != CLOSE_SQUARE_BRACKET) {
 				return baseAlignment;
 			}
+		}
+		if (childType == ATTRIBUTE_ARG) {
+			return baseAlignment;
 		}
 
 		return null;

@@ -56,19 +56,27 @@ public class RustFormattingModelBuilder implements FormattingModelBuilder {
 			.after(COMMA).spaceIf(settings.SPACE_AFTER_COMMA)
 			.before(SEMICOLON).none()
 
-
 			.after(OPEN_SQUARE_BRACKET).none()
 			.before(CLOSE_SQUARE_BRACKET).none()
-			.after(OPEN_SQUARE_BRACKET).none()
-			.before(CLOSE_BRACE).none()
+
+			.afterInside(OPEN_BRACE, USE_GROUP).none()
+			.beforeInside(CLOSE_BRACE, USE_GROUP).none()
+			.after(OPEN_BRACE).spaces(1)
+			.before(CLOSE_BRACE).spaces(1)
 
 			.withinPair(OPEN_PAREN, CLOSE_PAREN).spaceIf(settings.SPACE_WITHIN_METHOD_CALL_PARENTHESES)
 
-			.around(keywords).spaces(1)
+			.between(REF, KW_SELF).spacing(0, 1, 0, false, 0) // &self
+			.between(REF, KW_MUT).spacing(0, 1, 0, false, 0)  // &mut
+			.between(MULTIPLY, KW_MUT).none()                 // *mut
+			.between(KW_IMPL, GENERIC_PARAMS).none()          // impl<
+			.between(SINGLE_QUOTE, KW_STATIC).none()          // 'static
+			.between(KW_SELF, DOT).none()                     // self.
+			.between(KW_SELF, DOUBLE_COLON).none()            // self::
+			.between(KW_SUPER, DOUBLE_COLON).none()           // super::
+			.between(DOUBLE_COLON, KW_SUPER).none()           // ::super
 
-			// &mut and *mut
-			.between(MULTIPLY, KW_MUT).spaces(0)
-			.between(BITWISE_AND, KW_MUT).spaces(0)
+			.around(keywords).spaces(1)
 			;
 	}
 
