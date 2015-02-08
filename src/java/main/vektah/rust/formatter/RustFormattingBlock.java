@@ -3,6 +3,7 @@ package vektah.rust.formatter;
 import com.intellij.formatting.*;
 import com.intellij.formatting.alignment.AlignmentStrategy;
 import com.intellij.lang.ASTNode;
+import com.intellij.lang.parser.GeneratedParserUtilBase;
 import com.intellij.openapi.util.Ref;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.TokenType;
@@ -34,7 +35,18 @@ public class RustFormattingBlock extends AbstractBlock {
 		FN_PROTOTYPE_ARGS,
 		EXPR_CALL,
 		EXTERN_BLOCK,
-		MATCH_BLOCK
+		MATCH_BLOCK,
+		MATCH_ARM,
+		MACRO_BRACKET,
+		MACRO_PAREN,
+		MACRO_BRACE,
+		MACRO_BODY,
+		EXPR_STRUCT_INITIALIZER,
+		STRUCT_BODY_BLOCK,
+		IMPL_BLOCK,
+		TRAIT_BLOCK,
+		ENUM_ITEM,
+		ENUM_BODY
 	);
 	public static final TokenSet CURLY_CONTAINERS = TokenSet.create(
 		STATEMENT_BLOCK, STRUCT_BODY_BLOCK, IMPL_BLOCK, MACRO_BRACE, MATCH_BLOCK, USE_GROUP
@@ -44,6 +56,11 @@ public class RustFormattingBlock extends AbstractBlock {
 	);
 	public static final TokenSet BRACKETS_CONTAINERS = TokenSet.create(
 		MACRO_BRACKET
+	);
+	public static final TokenSet OPERATORS = TokenSet.create(
+		ASSIGN, PLUS, MINUS, MULTIPLY, DIVIDE,
+		LESS_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL,
+		BITWISE_AND, BITWISE_OR, BITWISE_XOR
 	);
 
 	private final Indent myIndent;
@@ -230,8 +247,12 @@ public class RustFormattingBlock extends AbstractBlock {
 	@Nullable
 	private Indent getChildIndent(@Nullable IElementType type, int newChildIndex) {
 
-		if (BLOCKS_TOKEN_SET.contains(type)) {
+		if (BLOCKS_TOKEN_SET.contains(type) || type == GeneratedParserUtilBase.DUMMY_BLOCK) {
 			return Indent.getNormalIndent(false);
+		}
+
+		if (OPERATORS.contains(type)) {
+			return Indent.getContinuationIndent();
 		}
 
 		return null;
