@@ -360,8 +360,9 @@ where_bound ::= type ':' bounds '+'?
 // USE
 use ::= use_internal ';'
 private use_internal ::= visibility? 'use' (use_glob | use_part ('::' use_part)* ('::' use_glob | '=' expr_path)? ('as' IDENTIFIER)?) {pin=2 recoverWhile="not_semicolon"}
-private use_glob ::= ('*' | '{' (IDENTIFIER | 'self') ( ',' (IDENTIFIER | 'self') )* ','? '}')
+private use_glob ::= ('*' | use_group)
 private use_part ::= (IDENTIFIER | 'super' | 'self')
+use_group ::= '{' (IDENTIFIER | 'self') ( ',' (IDENTIFIER | 'self') )* ','? '}';
 
 
 // FUNCTIONS
@@ -422,7 +423,8 @@ impl_assoc_type ::= 'type' itemName '=' type ';' {pin=1}
 
 
 // TRAITS
-trait_item ::= visibility? 'trait' generic_params? itemName generic_params? trait_implements? where_clause? '{' trait_subitem* '}' {pin=2}
+trait_item ::= visibility? 'trait' generic_params? itemName generic_params? trait_implements? where_clause? trait_block {pin=2}
+trait_block ::= '{' trait_subitem* '}'
 trait_implements ::= ':' type ('+' type)* {recoverWhile="not_open_brace_or_where"}
 private trait_subitem ::= (trait_function_declaration (';' | statement_block)) | trait_assoc_type | comment | attribute
 trait_function_declaration ::= (comment | attribute)* visibility? 'unsafe'? 'fn' IDENTIFIER generic_params? '(' prototype_args ','? '...'? ')' ['->' return_type] {pin=4 recoverWhile="not_semicolon_or_open_brace" }
