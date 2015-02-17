@@ -71,9 +71,8 @@ public class ParserTest extends ParsingTestCase {
 
 			p.waitFor();
 			String output = convertStreamToString(p.getErrorStream());
-			System.out.println(output);
 			if (output.contains("error:")) {
-				fail(filename + " is not valid");
+				fail(filename + " is not valid: " + output);
 			}
 		} catch (Exception e) {
 			fail(e.getMessage());

@@ -69,6 +69,8 @@ jar {
     from("META-INF") {
         include 'plugin.xml' into "META-INF" filter { String line -> buildNumber != null ? line.replaceAll("<version>(.+)</version>", "<version>\$1-${String.format("%08d", buildNumber)}</version>") : line }
     }
+
+    from "src/main/resources"
 }
 
 task copyIntoIdea(dependsOn: build, type: Copy) {

@@ -2,7 +2,7 @@ package vektah.rust.ide.sdk;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class CargoUtil {
 
@@ -10,14 +10,20 @@ public class CargoUtil {
         return "cargo";
     }
 
-    @Nullable
+    @NotNull
     public static VirtualFile findTomlOf(Project project) {
         return findTomlIn(project.getBaseDir());
     }
 
-    @Nullable
+    @NotNull
     private static VirtualFile findTomlIn(VirtualFile dir) {
-        return dir.findChild("Cargo.toml");
+        VirtualFile file = dir.findChild("Cargo.toml");
+
+        if (file == null) {
+            throw new RuntimeException("Unable to find Cargo.toml for this project");
+        }
+
+        return file;
     }
 
     public static String findCargoWorkingDirectory(Project project) {
@@ -25,12 +31,7 @@ public class CargoUtil {
     }
 
     public static String findOutCrateNameOf(VirtualFile contentRoot) throws Exception {
-        VirtualFile toml = findTomlIn(contentRoot);
-        if (toml == null) {
-            throw new Exception("Can't find Cargo.toml file");
-        }
-
-        String[] tomlLines = new String(toml.contentsToByteArray()).split("\n");
+        String[] tomlLines = new String(findTomlIn(contentRoot).contentsToByteArray()).split("\n");
         for (String line : tomlLines) {
             if (line.startsWith("name = \"")) {
                 return line.split("\"")[1];

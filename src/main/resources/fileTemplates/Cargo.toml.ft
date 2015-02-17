@@ -1,0 +1,5 @@
+[package]
+
+name = "${PROJECT_NAME}"
+version = "0.0.1"
+authors = ["${USER} <you@example.com>"]
