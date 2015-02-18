@@ -49,6 +49,9 @@
 
       <programRunner implementation="vektah.rust.ide.runner.cargo.CargoRunner"/>
       <configurationType implementation="vektah.rust.ide.runner.cargo.CargoConfigurationType"/>
+
+      <internalFileTemplate name="Rust Hello" />
+      <internalFileTemplate name="Cargo" />
   </extensions>
 
   <project-components>
