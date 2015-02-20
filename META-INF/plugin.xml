@@ -52,6 +52,9 @@
 
       <internalFileTemplate name="Rust Hello" />
       <internalFileTemplate name="Cargo" />
+
+      <applicationService serviceImplementation="vektah.rust.config.RustConfigService" />
+      <applicationConfigurable implementation="vektah.rust.config.RustConfigEntry" />
   </extensions>
 
   <project-components>
