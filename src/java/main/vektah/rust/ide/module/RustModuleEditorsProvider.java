@@ -24,6 +24,7 @@ public class RustModuleEditorsProvider implements ModuleConfigurationEditorProvi
 		List<ModuleConfigurationEditor> editors = new ArrayList<ModuleConfigurationEditor>();
 		editors.add(editorFactory.createModuleContentRootsEditor(state));
 		editors.add(editorFactory.createOutputEditor(state));
+        editors.add(editorFactory.createClasspathEditor(state));
 
 		return editors.toArray(new ModuleConfigurationEditor[editors.size()]);
 	}
