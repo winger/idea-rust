@@ -5,7 +5,7 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.components.StoragePathMacros;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @State(
 	name = "Rust",
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 public class RustConfigService implements PersistentStateComponent<RustConfig> {
 	private RustConfig config = new RustConfig();
 
-	@Nullable
+	@NotNull
 	@Override
 	public RustConfig getState() {
 		return config;

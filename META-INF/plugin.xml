@@ -55,6 +55,16 @@
 
       <applicationService serviceImplementation="vektah.rust.config.RustConfigService" />
       <applicationConfigurable implementation="vektah.rust.config.RustConfigEntry" />
+
+      <!-- Cargo -->
+      <externalSystemManager implementation="vektah.rust.cargo.project.CargoExternalSystemManager"/>
+
+      <projectService serviceImplementation="vektah.rust.cargo.project.settings.CargoSettings"/>
+      <projectService serviceImplementation="vektah.rust.cargo.project.settings.CargoLocalSettings"/>
+      <projectService serviceImplementation="vektah.rust.cargo.project.settings.CargoProjectSettings"/>
+
+      <projectImportProvider implementation="vektah.rust.cargo.project.CargoProjectImportProvider"/>
+      <projectImportBuilder implementation="vektah.rust.cargo.project.CargoProjectImportBuilder"/>
   </extensions>
 
   <project-components>
