@@ -438,7 +438,7 @@ region_bound ::= "'" 'static' //?
 extern_item ::= visibility? 'unsafe'? 'extern' (extern_crate ';' | extern_block '}' | extern_function)
 extern_block ::= STRING_LIT? '{' (attribute | extern_variable ';' | trait_function_declaration ';')* {pin=2 recoverWhile="not_close_brace"}
 extern_variable ::= visibility? 'static'? 'ref'? ref? 'mut'? IDENTIFIER [':' type]
-extern_crate ::= 'crate' IDENTIFIER ['=' STRING_LIT] {pin=1 recoverWhile="not_semicolon"}
+extern_crate ::= 'crate' [STRING_LIT 'as'] IDENTIFIER {pin=1 recoverWhile="not_semicolon"}
 extern_function ::= STRING_LIT? fn_item
 
 
