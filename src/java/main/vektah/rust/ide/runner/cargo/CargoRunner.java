@@ -46,6 +46,6 @@ public class CargoRunner <Settings extends com.intellij.execution.configurations
 
         ExecutionResult execute = state.execute(environment.getExecutor(), this);
 
-        return new RunContentBuilder(this, execute, environment).showRunContent(null);
+        return new RunContentBuilder(execute, environment).showRunContent(null);
     }
 }

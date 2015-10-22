@@ -1,7 +1,6 @@
 package vektah.rust.cargo.project.settings;
 
 import com.intellij.openapi.components.*;
-import com.intellij.openapi.externalSystem.service.project.PlatformFacade;
 import com.intellij.openapi.externalSystem.settings.AbstractExternalSystemLocalSettings;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nullable;
@@ -15,8 +14,8 @@ import vektah.rust.cargo.project.CargoProjectSystem;
 )
 public class CargoLocalSettings extends AbstractExternalSystemLocalSettings
     implements PersistentStateComponent<AbstractExternalSystemLocalSettings.State> {
-    protected CargoLocalSettings(Project project, PlatformFacade facade) {
-        super(CargoProjectSystem.ID, project, facade);
+    protected CargoLocalSettings(Project project) {
+        super(CargoProjectSystem.ID, project);
     }
 
     @Nullable
